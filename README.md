@@ -5,6 +5,8 @@
 ## Table of Contents
  - [**Introduction**](#introduction)
  - [**Booting into the ArchISO**](#boot-to-archiso)
+   - [**Creating the installation medium**](#creating-boot-medium)
+   - [**Entering your computer's boot menu**](#entering-boot-menu)
  - [**Connect to the Internet**](#connect-to-the-internet)
  - [**Disk Partitioning**](#preparing-the-disk-for-system)
  - [**Base System Installation**](#base-system-installation)
@@ -60,10 +62,14 @@ Arch Linux is fantastic for its Arch User Repository (AUR) and simplicity of des
 
 # Booting into the ArchISO <a name="boot-to-archiso"></a>
 
-## Creating the Arch installation medium
+## Creating the Arch installation medium <a name="creating-boot-medium"></a>
 
 Firstly, get the EFI ISO file from [the official Arch Linux website](https://archlinux.org/download/) or [the website for the community-maintained 32-bit Arch Linux OS](https://www.archlinux32.org/download/) either through torrenting it, or using of the mirrorlinks.\
-You'll need to use software such as [Ventoy](https://www.ventoy.net/en/download.html), [Rufus](https://rufus.ie/en/) or [BalenaEtcher](https://etcher.balena.io/#download-etcher). The instructions on how to use such software can be found within their websites. Once the ISO has been written to a storage medium (that could be a USB thumb drive, SD card .etc), you'll need to go into your computers boot options through the firmware interface. To do so, follow the instructions below, based on your Operating System.
+You'll need to use software such as [Ventoy](https://www.ventoy.net/en/download.html), [Rufus](https://rufus.ie/en/) or [BalenaEtcher](https://etcher.balena.io/#download-etcher). The instructions on how to use such software can be found within their websites.
+
+## Entering the boot menu <a name="entering-boot-menu"></a>
+
+Once the ISO has been written to a storage medium (that could be a USB thumb drive, SD card .etc), you'll need to go into your computers boot options through the firmware interface. To do so, follow the instructions below, based on your Operating System.
 
 <details>
  <summary><h3>Windows</h3></summary>
@@ -90,56 +96,28 @@ You'll need to use software such as [Ventoy](https://www.ventoy.net/en/download.
  Then, wait for it to boot before selecting the option containing ```Arch Linux install medium``` or ```Arch Linux install medium (with speech)``` if you are visually impaired, and have someone reading this guide to you out loud.
 </details>
 
-## Connect to the internet <a name="connect-to-the-internet"></a>
-Firstly, use the command:
-```
-iwctl
-```
+<details>
+ <summary><h3>Linux</h3></summary>
 
-To see which networks stations you have installed, use the command:
-```
-device list
-```
+ Assuming you have SystemD installed on your system, run the below command:
+ ```
+ sudo systemctl reboot --firmware-setup
+ ```
 
-Select a station from the ones listed and power it on by using the command:
-```
-device [selected station] set-property Powered on
-```
+ And enter your computer's boot menu. Once that's done, select the storage medium that contains your ArchISO.\
+ Then, wait for it to boot before selecting the option containing ```Arch Linux install medium``` or ```Arch Linux install medium (with speech)``` if you are visually impaired, and have someone reading this guide to you out loud.
+</details>
 
-Use the command above to turn on its corresponding adapter, only replacing "device" with "adapter"
-Then, you may either scan for networks or connect through WPS.
+---
 
-### WPS
+## Pre-installation configuration
 
-Use the following command:
-```
-wsc [selected station] push-button
-```
+Now that you've booted into the ArchISO, you need to run some commands before installing Arch to make it possible to install.
 
-And push the WPS button at the back of your router. This may take a minute or two to complete.
-Once the WPS LED on your router stops flashing, your computer has been connected to the internet!
+### Load Keymaps
 
-### Regular method
+A keymap is how your keyboard is laid out. It defines the keys you use and where they are placed on the keyboard. To find a list of all the keymaps available for your language/region, run the below command:
 
-Use the following command to scan for all of the access points you can currently connect to:
-```
-station [selected station] scan
-```
-
-Then, to display the networks, use the following command:
-```
-station [selected station] get-networks
-```
-
-Select an access point from the list provided and connect to it by using the following command:
-```
-station [selected station] connect [SSID]
-```
-
-IWCTL will prompt you to enter the access point's passphrase. Enter it and you should be connected to the internet soon after.
-
-### Load Keymaps (for non US-ENG Keyboard Users only)
-For a list of all the available keymaps, use the command:
 ```
 localectl list-keymaps
 ```
@@ -149,99 +127,212 @@ To search for a keymap, use the following command, replacing `[search_term]` wit
 localectl list-keymaps | grep -i [search_term]
 ```
 
-### Now Loadkeys
+Once you've found a keymap that matches your physical keyboard's layout, run the below command.
+
 ```
 loadkeys [keymap]
 ```
 
-### Check for Internet Connectivity
+### Connect to the internet
+
+The ArchISO *requires* an internet connection in order to be set up properly.\
+If your computer is connected via Ethernet, you may skip this section by going [here](#test-connectivity).\
+If it isn't however, you must connect to the internet by reading the instructions below.
+
+Check if your access point is either a Wi-Fi router or mobile broadband modem, of which the former is more likely.
+
+<details>
+ <summary><h3>WiFi Router (iwctl)</h3></summary>
+
+ If your access point is a Wi-Fi router, run the below command:
+ ```
+ iwctl
+ ```
+ This will bring up an interactive prompt session and change your prompt from:
+ ```
+ root@archiso ~ #
+ ```
+ to:
+ ```
+ [iwd]#
+ ```
+
+ If you don't know what your wireless device's name is, you can list them by running:
+ ```
+ device list
+ ```
+ To turn your wireless device and its corresponding adapter on, run the below commands:
+ ```
+ device [device-name] set-property Powered on
+ adapter [adapter-name] set-property Powered on
+ ```
+ (replacing ```[device-name]``` with your device's name and ```[adapter-name]``` with its corresponding adapter's name respectively) 
+
+ Then, to scan for Wi-Fi networks, run:
+ ```
+ station [device-name] scan
+ ```
+ To list them, run:
+ ```
+ station [device-name] get-networks
+ ```
+ Find your router's SSID amongst the list shown, and connect to it by running:
+ ```
+ station [device-name] connect [your router's SSID]
+ ```
+</details>
+
+<details>
+ <summary><h3>Mobile Broadband Modem (mmcli)</h3></summary>
+
+ Start and enable ```ModemManager.service```, this is the service that allows you to connect to your Mobile Broadband Modem.\
+ You can do so by running:
+ ```
+ systemctl start ModemManager.service
+ systemctl enable ModemManager.service
+ ```
+ You can find a list of modems nearby you by running:
+ ```
+ mmcli -L
+ ```
+ Look for ```/org/freedesktop/ModemManager1/Modem/[modem index]```
+ (where your modem index is a unique number representing your modem)
+
+ Connect to your modem by running:
+ ```
+ mmcli -m [modem index] --simple-connect="apn=[your modem's APN]"
+ ```
+
+ Your APN is your modem's Access Point Name and will have been given to you by your ISP.
+ If your modem requires a username and password, you can specify them like so:
+ ```
+ mmcli -m [modem index] --simple-connect="apn=[your modem's APN],user=[username],password=[password]"
+ ```
+ 
+</details>
+
+#### Testing your internet connection <a name="test-connectivity"></a>
+```ping``` is a command that sends data to a URL and checks that the data has been sent properly. This is normally done to test the URL or to test your internet connection, of which you are doing the latter.
 ```
 ping -c 4 archlinux.org
 ```
-- If you are connected through Ethernet, then your Internet will be working out of the box.
-- If you are using Wi-Fi, then use `wifi-menu` to connect to your local network.
-- If this step is successful then we will head to next one.
+> The ```-c``` switch represents the amount of sample data you are sending to that URL, in this case, 4.
 
-### Update system clock
-```
-timedatectl set-ntp true
-```
 
 ### Check the system clock is correct
+
+Your computer keeps track of time by utilising an internal hardware clock.\
+To check that it's in sync with the real world time, run the below command:
+
 ```
 timedatectl
 ```
 
+If ```NTP service``` does not show ```active```, run the below command:
+```
+timedatectl set-ntp true
+```
+
 As of now, you don't have to worry about the timezone, just make sure that the UTC time it returns matches real-world UTC time
 
-</br>
+---
 
-## Preparing the Disk for System
+## Creating necessary partitions
 
-> :warning: Be extremely careful when managing your disks, incase you delete your precious data then DON'T blame me.
+:warning: - Make sure that all of your data on the disk you want to install Arch Linux onto has been backed up. If you've already done that or you don't care about the data present on it, proceed with this guide. If not, exit out the ArchISO and back up your data.
+
+Run the below command:
+```
+[ -d /sys/firmware/efi ] && echo UEFI || echo BIOS
+```
+
+And take note of whether it returns ```UEFI``` or ```BIOS```
 
 ### Disk Partitioning
-We are going to make two partitions on our HDD, `EFI BOOT & ROOT` using `gdisk`.
-- **IMPORTANT**:  Do not make a `/boot` partition if you are installing on an MBR system
-- If you have a brand new HDD or if no partition table is found, then create GPT Partition Table by pressing `g`.
-```
-gdisk /dev/[disk name] # If you are on an EFI system
-fdisk /dev/[disk name] # If you are on an MBR system
-```
-- [disk name] = device to partition, find yours by running `lsblk`, this shows all the mountpoints and partitions of a disk.
-- We will be using separate partitions for our `/`, `/boot`, `/swap` & `/home`.
-- Firstly, we will initialise the disk by using the commands below:
 
-If you are on an EFI system:
-```
-x - Expert command
-z - "Zap" the disk
-y - Blank our MBR (Fully initialises the disk)
-```
+<details>
+ <summary><h3>UEFI</h3></summary>
 
-If you are on an MBR system:
+Run the below commands to initialise the disk:
 ```
-q - To quit
-sfdisk --delete /dev/[disk name]
+gdisk /dev/sdx
+```
+> (where sdx refers to the letter of your drive)
+
+The above will open up an interactive prompt session and change the prompt from:
+```
+root@archiso ~ #
+```
+to:
+```
+Command (? for help):
 ```
 
-Then, run gdisk or fdisk again.
-
+Run:
 ```
+x
+```
+
+which will change your prompt to:
+```
+Expert command (? for help):
+```
+
+And enter:
+```
+z
+```
+To "zap" the disk (basically, to initialise the disk).\
+It will ask you if you want to confirm, enter ```y``` and it will then if ask you want to "blank out MBR?", which means it will wipe all of the boot code and other critical data necessary for an OS to boot. Since you're no longer booting from your old OS, go ahead and hit ```y```.\
+
+Run gdisk again and follow the below instructions (do not type anything where ```=``` precedes it, as those are just explanations for what each command does):
+
+ ```
 n = New Partition
-simply press enter = 1st Partition
-simply press enter = As First Sector
+[simply press enter] = 1st Partition
+[simply press enter] = As First Sector
 +1G = As Last sector (BOOT Partition Size)
 ef00 = EFI Partition Type
 
 n = New Partition
-simply press enter = 2nd Partition
-simply press enter = As First Sector
+[simply press enter] = 2nd Partition
+[simply press enter] = As First Sector
 +16G = As Last sector (SWAP size, or double your RAM, whichever is smaller)
 8200 = Linux Swap
+```
 
+If you want to create a home partition (separates the data that is your system from your basic user apps and configurations), enter the below:
+
+```
 n = New Partition
-simply press enter = 3rd Partition
-simply press enter = As First Sector
+[simply press enter] = 3rd Partition
+[simply press enter] = As First Sector
 +40G = As Last sector [ROOT Partition Size (you may use 20GiB if you have a small hard drive)]
-8300 or simply press enter = Linux filesystem
+[simply press enter] = Linux filesystem
 
 n = New Parition
-simply press enter = 4th Partition
-simply press enter = As first sector
-simply press enter = As last sector [HOME parition size (takes up remaining hard drive space)]
-8300 or simply press enter = Linux filesystem
+[simply press enter] = 4th Partition
+[simply press enter] = As first sector
+[simply press enter] = As last sector [HOME parition size (takes up remaining hard drive space)]
+[simply press enter] = Linux filesystem
 
-w = write & exit
+w = Write partitions and quit
 ```
 
-It is ABSOLUTELY recommended to make a home partitition, for both security and convenience if you do decide to distro-hop.
-
-**IMPORTANT**: From now on, your disk will be referred to as sdx, with x being the letter representing your drive.
-
-### Format non-swap partitions
+If you don't want to do that, however, enter the below:
 ```
-mkfs.fat -F32 /dev/sdx1
+n = New Parition
+[simply press enter] = 3rd Partition
+[simply press enter] = As first sector
+[simply press enter] = As last sector [ROOT parition size (takes up remaining hard drive space)]
+[simply press enter] = Linux filesystem
+
+w = Write partitions and quit
+```
+
+### Format non-swap partitions (so that data can be written/read from it)
+```
+mkfs.fat -F32 /dev/sdx1 # Done as it needs to be in a universally-recognised file system, so your computer can boot from it.
 mkfs.btrfs /dev/sdx3 # Add -f if your system tells you another filesystem like ext4 is already present
 mkfs.btrfs /dev/sdx4
 ```
@@ -252,16 +343,94 @@ mkswap /dev/sdx2
 swapon /dev/sdx2
 ```
 
-### Mount Remaining Partitions
+### Mount Remaining Partitions (so they can be accessed)
 ```
 mount /dev/sdx3 /mnt 
-mount --mkdir /dev/sdx1 /mnt/boot
-mount --mkdir /dev/sdx4 /mnt/home
+mount -m /dev/sdx1 /mnt/boot
+mount -m /dev/sdx4 /mnt/home
 ```
 
-## Base System Installation
+</details>
 
-### Update Mirrors using Reflector (optional but recommended for faster download speeds, slow download speeds can time out) <a name="update-mirrors-using-reflector"></a>
+<details>
+ <summary><h3>MBR</h3></summary>
+
+To initialise the disk you want to install Arch on ("sdx" from now on), run the below command:
+```
+sfdisk --delete /dev/sdx
+```
+
+Then, enter the below (do not type anything where ```=``` precedes it, as those are just explanations for what each command does):
+```
+n = New Partition
+1 = Partition number, MBR only supports 4 partitions
+[simply press enter] = First sector size
++16G = (or double the size of your RAM, whichever is smaller, this is your SWAP size)
+
+t = Change partition type ID
+19 = Linux SWAP
+```
+
+If you want to create a home partition (separates the data that is your system from your basic user apps and configurations), enter the below:
+
+```
+n = New Partition
+2 = Partition number, MBR only supports 4 partitions
+[simply press enter] = First sector size
++20G = (this is your ROOT size)
+
+n = New Partition
+3 = Partition number, MBR only supports 4 partitions
+[simply press enter] = First sector size
+[simply press enter] = (this is your HOME size, takes up the rest of the disk)
+
+x = Enter expert mode
+A = Make a partition bootable
+2 = Make your ROOT partition bootable
+
+w = Write partitions and quit
+```
+
+Else, just enter the below:
+
+```
+n = New Partition
+2 = Partition number, MBR only supports 4 partitions
+[simply press enter] = First sector size
+[simply press enter] = (this is your ROOT size, takes up the rest of the disk)
+
+x = Enter expert mode
+A = Make a partition bootable
+2 = Make your ROOT partition bootable
+
+w = Write partitions and quit
+```
+
+### Format non-swap partitions
+```
+mkfs.ext4 /dev/sdx2
+mkfs.ext4 /dev/sdx3 # If you made a home partition
+```
+
+Format and turn on swap memory
+```
+mkswap /dev/sdx1
+swapon /dev/sdx1
+```
+
+### Mount Remaining Partitions
+```
+mount /dev/sdx2 /mnt 
+mount -m /dev/sdx3 /mnt/home
+```
+
+</details>
+
+---
+
+# Base System Installation
+
+## Update Mirrors using Reflector (optional but recommended for faster download speeds, slow download speeds can time out) <a name="update-mirrors-using-reflector"></a>
 ```
 reflector -c County1 -c Country2 -a 12 -p https --sort rate --save /etc/pacman.d/mirrorlist
 ```

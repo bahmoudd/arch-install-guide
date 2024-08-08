@@ -1038,7 +1038,7 @@ Now open your browser and point to it `your-machine-ip:9000` and login with ***r
 
 ## Changelog
 
- - **2024-06-25**
-   - A lot of changes, improvements, and updates. Special thanks to our biggest contributor @[Exvix](https://github.com/Exvix).
+ - **2024-08-08**
+   - Initial guide created. 
 
-#### Full and complete changelog, [click here](https://github.com/XxAcielxX/arch-plasma-install/blob/main/CHANGELOG.md).
+#### Full and complete changelog, [click here]([https://github.com/Exvix/arch-install-guide/blob/main/CHANGELOG.md].

@@ -8,7 +8,7 @@
    - [**Creating the installation medium**](#creating-boot-medium)
    - [**Entering your computer's boot menu**](#entering-boot-menu)
  - [**Connect to the Internet**](#connect-to-the-internet)
- - [**Disk Partitioning**](#preparing-the-disk-for-system)
+ - [**Disk Partitioning**](#partition-disk)
  - [**Base System Installation**](#base-system-installation)
    - [Update Mirrors](#update-mirrors-using-reflector)
    - [Base System](https://github.com/XxAcielxX/arch-plasma-install#install-base-system)
@@ -237,7 +237,7 @@ As of now, you don't have to worry about the timezone, just make sure that the U
 
 ---
 
-## Creating necessary partitions
+## Creating necessary partitions <a name="partition-disk"></a>
 
 :warning: - Make sure that all of your data on the disk you want to install Arch Linux onto has been backed up. If you've already done that or you don't care about the data present on it, proceed with this guide. If not, exit out the ArchISO and back up your data.
 

@@ -428,50 +428,72 @@ mount -m /dev/sdx3 /mnt/home
 
 ---
 
-# Base System Installation
+# Base System Installation <a name="base-system-installation"></a>
 
 ## Update Mirrors using Reflector (optional but recommended for faster download speeds, slow download speeds can time out) <a name="update-mirrors-using-reflector"></a>
 ```
 reflector -c County1 -c Country2 -a 12 -p https --sort rate --save /etc/pacman.d/mirrorlist
 ```
-Replace `Country1` & `Country2` with countries near to you or with the one you're living in. Refer to **[Reflector](https://wiki.archlinux.org/index.php/reflector)** for more info.
+
+A mirror is basically a repository of files located within a specific region so that people near that region can download files with minimal ping (as ping is how long it takes for the data you requested for reaches you).\
+A mirrorlist is a list of these mirrors ranked based on their speed relative to your computer.\
+The ```-c``` flag allows you to specify which country you live in, this is to reduce ping.\
+The ```-a``` flag excludes mirrors that haven't been updated within the hour range specifies (in this case, 12 hours)\
+The ```-p``` flag specifies the protocol you want to download packages through. HTTPS is chosen here as it is the fastest and the safest.\
+```--sort``` sorts the mirrors by how fast they are, relative to your computer.\
+```--save``` specifies to reflector to save them in ```/etc/pacman.d/mirrorlist```, which is where pacman refers to when you want to download a package.
 
 Example:
 ```
-reflector -c 'United States' -a 12 -p https --sort rate --save /etc/pacman.d/mirrorlist
+reflector -c 'United Kingdom' -a 12 -p https --sort rate --save /etc/pacman.d/mirrorlist
 ```
 
 ### Install base system
 ```
-pacstrap /mnt base base-devel linux linux-firmware linux-headers nano intel-ucode reflector mtools dosfstools
+pacstrap /mnt base base-devel linux linux-firmware linux-headers nano intel-ucode mtools dosfstools networkmanager
 ```
-- Replace `linux` with *linux-hardened*, *linux-lts* or *linux-zen* to install the kernel of your choice.
-- Replace `linux-headers` with Kernel type type of your choice respectively (e.g if you installed `linux-zen` then you will need `linux-zen-headers`).
-- Replace `nano` with editor of your choice (i.e `vim` or `vi`).
+
+`base` is all the software necessary to make Arch Linux work.\
+`base-devel` is software for development purposes only, such as GCC or G++.\
+`linux`, `linux-headers` and `linux-firmware` are the kernel, which, together, act as the middleman between the software on your computer and the hardware on your computer.\
+`mtools` allows the user to access MS-DOS disks.\
+`dosfstools` allows the user to format MS-DOS disks./
+`networkmanager` allows the user to connect to the internet.\
+
+- Replace `nano` with editor of your choice (i.e `vim` or `vi`). Nano is the most beginner friendly
 - Replace `intel-ucode` with `amd-ucode` if you are using an AMD Processor.
+- If you want to include a derivative of the Linux kernel (e.g. linux-zen, linux-hardened, linux-lts), include that ALONGSIDE the original kernel and headers so if something breaks, you always have that extra option to use the regular Linux kernel. This can be done by appending your chosen Linux derivative (e.g. `linux-zen`) and its headers (e.g. `linux-zen-headers`)
 
 ### Generate fstab
-(use `-U` or `-L` to define by [UUID](https://wiki.archlinux.org/index.php/UUID) or labels, respectively)
+
+The fstab file lists all available disk partitions and other types of file systems and data sources that may not necessarily be disk-based, and indicates how they are to be initialized or otherwise integrated into the larger file system structure. It is *essential* for your system to function.
+
 ```
 genfstab -U /mnt >> /mnt/etc/fstab
 ```
 
-> Note: A single ```>``` will overwrite a file and a double ```>``` will append to a file. Ensure you don't confuse these with each other, and make sure the commands you type are as how this guide has written it before you hit enter.
+> Note: A ```>``` will overwrite a file and a ```>>``` will append to a file. Ensure you don't confuse these with each other, and make sure the commands you type are as how this guide has written it before you hit enter.
 
-Check the resulting `/mnt/etc/fstab` file, and edit it in case of errors. Do not touch the file if you don't know what its contents mean.
-</br>
+
+---
 
 ## Chroot
+
+Chroot essentially takes you inside of the Arch Linux system, so you can perform necessary configuration to it for it to function. This can be done by running:
 
 ```
 arch-chroot /mnt
 ```
 
 ### Set Time & Date
+
+The below symbolically links ```/etc/localtime``` to ```/usr/share/zoneinfo/Region/City``` so that your computer knows it is measuring the date and time in the correct timezone.
+
 ```
 ln -sf /usr/share/zoneinfo/Region/City /etc/localtime 
 hwclock --systohc # Sync hardware clock with system time
 ```
+
 Replace `Region` & `City` according to your Time zone. To see what timezones are available, use the following commands:
 ```
 ls /usr/share/zoneinfo/
@@ -486,61 +508,68 @@ An example of this would be:
 ```
 
 ## Set Language
-We will use `en_US.UTF-8` here but, if you want to set your language, replace `en_US.UTF-8` with yours in all below instances.
+We will use `en_GB.UTF-8` here but, if you want to set your language, replace `en_GB.UTF-8` with yours in all below instances.
 
 #### Edit locale.gen
+
+A locale customises your system to be tailored more towards a specific region.
+
 ```
 nano /etc/locale.gen
 ```
 Uncomment the below line (or any line, depending on your region and what language your keyboard is in) by removing the hashtag preceeding the line
 ```
-#en_US.UTF-8 UTF-8
+#en_GB.UTF-8 UTF-8
 ```
-save & exit.
+save & exit, by hitting Ctrl+W, Enter then Ctrl+X.
 
-### Generate Locale
+### Generate The Locale
 ```
 locale-gen
 ```
 
 ### Add LANG to locale.conf
 ```
-echo LANG=en_US.UTF-8 > /etc/locale.conf
+echo LANG=en_GB.UTF-8 > /etc/locale.conf
 ```
 
 ### Add Keymaps to vconsole
-For keyboard users with non US Eng only. Replace `[keymap]` with yours.
+For keyboard users with non US Eng only. Replace `uk` with yours.
 ```
-echo "KEYMAP=[keymap]" > /etc/vconsole.conf
+echo "KEYMAP=uk" > /etc/vconsole.conf
 ```
 
 ## Set Hostname
+
+A hostname is what your computer calls itself when talking to other computers. To set a hostname, run the below command:
 
 ```
 echo arch > /etc/hostname
 ```
 Replace `arch` with hostname of your choice.
 
-### Set Hosts
+### Configure hosts file
 ```
 nano /etc/hosts
 ```
-#### add these lines to it
+#### Add these lines to it
 ```
 127.0.0.1    localhost
 ::1          localhost
 127.0.1.1    arch.localdomain arch
 ```
-Replace `arch` with hostname of your choice.
-save & exit.
+Replace `arch` with hostname of your choice.\
+Save & exit.
 
-### Install & Enable NetworkManager
+### Enable NetworkManager
 ```
-pacman -S networkmanager
 systemctl enable NetworkManager
 ```
 
 ### Set ROOT Password
+
+The ROOT account is an account on your computer that can do anything on your computer. Set a password for it as not doing so leaves your system vulnerable to cyberattackers.
+
 ```
 passwd
 ```
@@ -548,12 +577,12 @@ passwd
 ## Installling the bootloader <a name="installing-bootloader"></a>
 
 The bootloader is what manages the boot process, and is the PID 0 of your Arch system.\
-For MBR systems, we will install GRUB and for UEFI system, we will install SystemD-Boot
+If you're on an MBR systems, install GRUB and if you're on an EFI system, install SystemD-Boot.
 
-### Installing GRUB (MBR) <a name="grub"></a>
-
+<details>
+ <summary><h3>Installing and generating config files for GRUB</h3></summary>
 "Targets" are CPU architechtures. These are important for grub to know so it can handle the boot proess correctly.\
-Find your CPU architechture from [this site](https://renenyffenegger.ch/notes/Linux/shell/commands/grub-install#grub-install-target) and specify that as the target
+Find your CPU architechture from [this site](https://renenyffenegger.ch/notes/Linux/shell/commands/grub-install#grub-install-target) and specify that as the target.
 
 ```
 pacman -S grub
@@ -561,7 +590,13 @@ grub-install /dev/[disk name] # You don't need to specify a target because the d
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-### Install SystemD-Boot (UEFI) <a name="systemd-boot"></a>
+</details>
+
+<details>
+ <summary><h3>Installing and configuring SystemD-Boot (UEFI)</h3></summary>
+
+
+Install SystemD-Boot by running:
 ```
 bootctl install
 ```
@@ -573,11 +608,18 @@ Open and edit /boot/loader/loader.conf
 nano /boot/loader/loader.conf
 ```
 Comment out any line beginning with ```default``` by putting a hashtag at the beginning of the line.
-
 And add this line to the bottom of the file
 ```
+timeout 3
+console-mode keep
 default arch.conf
+editor no
 ```
+
+```timeout 3``` stalls your system by 3 seconds before it boots so you have time to select an option.\
+```console-mode keep``` keeps your console-based SystemD-Boot menu to how it was last time.\
+```default arch.conf``` is what SystemD-Boot automatically boots to when you don't select an option.\
+```editor no``` prevents any edits to be made to the boot options within the menu itself.
 
 Once that's done, type:
 ```
@@ -592,6 +634,11 @@ initrd   /initramfs-linux.img
 options  root=UUID="[root partition UUID]" rw
 ```
 
+```title``` is what the boot option will display.\
+```linux``` refers to the Linux kernel.\
+```initrd``` is what your RAM will be formatted to on boot, so memory can be stored on to it during uptime.\
+```options``` specifies your ROOT partition, and specifies that it can be read and written to.
+
 You can find the root partition's UUID by typing into the command line (not your editor):
 ```
 blkid /dev/sdx3
@@ -599,7 +646,7 @@ blkid /dev/sdx3
 
 (Keeping in mind that sdx refers to the drive you want to install Arch Linux onto)
 
-Save by hitting Ctrl+O, Enter, then Ctrl+X.
+Save and exit.
 
 We need to make a similar file for the fallback image. To do that, type:
 ```
@@ -623,10 +670,9 @@ title Arch Linux Fallback
 initrd /initrams-linux-fallback.img
 ```
 
-Save by hitting Ctrl+O then Enter, quit by hitting Ctrl+X.
+**:warning: - Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.** 
 
-**:warning: - Did you follow the above steps? That section is MANDATORY. Additionally, any mistakes made can and will cause your Arch system to fail its boot sequence.** 
-
+</details>
 
 ### Final Step
 ```

@@ -1,14 +1,10 @@
-[<img src="https://img.shields.io/badge/BTC-1USXozdnotw3u5XkzooUadw7NrdyV752V-E66000?labelColor=353535&style=for-the-badge&logo=btc"/>](https://acielgaming.cb.id)
+> Tested working as of: 2024.08.01
 
-(Works with Arch ISO Image build as of: 2024.01.*)
-
-# Arch Linux with KDE Plasma Installation Guide (UEFI & MBR)
-
-Hello everyone, This is my guide for installing Arch Linux with KDE Plasma. In this guide, we will go step by step on how to do so.
-</br>
+# The ultimate Arch linux install guide (UEFI & MBR)
 
 ## Table of Contents
- - [**Let's Begin**](#lets-begin)
+ - [**Introduction**](#introduction)
+ - [**Booting into the ArchISO**](#boot-to-archiso)
  - [**Connect to the Internet**](#connect-to-the-internet)
  - [**Disk Partitioning**](#preparing-the-disk-for-system)
  - [**Base System Installation**](#base-system-installation)
@@ -53,18 +49,46 @@ Hello everyone, This is my guide for installing Arch Linux with KDE Plasma. In t
  - [**Changelog**](#changelog)
 </br>
 
-## Let's begin! <a name="lets-begin"></a>
+# Introduction
 
-- Grab the latest built ISO Image from **[Arch Linux Download](https://www.archlinux.org/download/)** and write it to an empty USB Stick.
-- After the image is done writing, restart your computer and hold one of the following keys: Del, F12, F9, F7, Option
-- Your computer will then prompt you to select a bootable device
-- Select the bootable USB stick and your computer should show a range of options
-- Select "Arch Linux Install medium" and wait to be booted into the ArchISO
+## What is Arch Linux?
+Arch Linux is an independently-developed rolling-release distribution of Linux. This means that there are no major updates that are delivered to Arch, unlike Windows. Instead, Arch delivers updates in small, frequent amounts, meaning that you have access to the latest drivers, firmware and software as soon as it's available. Since Arch is based off the Linux kernel, it's distributed under the GNU GPLv2 license, meaning that anyone can view the kernel, and what makes up Arch, as well as being able to modify it any point, so long as the software remains open-source.
 
-If your computer doesn't recognise the USB stick or throws an error when trying to boot into it, you likely has Secure Boot on.\
-Go into your BIOS settings and disable Secure Boot.
+Arch Linux is fantastic for its Arch User Repository (AUR) and simplicity of design. It is well known for its straightforwardness and is relatively easy for the end user to understand directly, rather than having to dig through multiple layers of graphical interfaces. The package manager - pacman - has no GUI, meaning that everything has to be installed through the command line. This may seem a bit scary at first, but in this guide, I will go through how to install Arch Linux, and how to use its many features.
 
-> Tip: Hit CTRL+L to quickly clear the screen
+---
+
+# Booting into the ArchISO <a name="boot-to-archiso"></a>
+
+## Creating the Arch installation medium
+
+Firstly, get the EFI ISO file from [the official Arch Linux website](https://archlinux.org/download/) or [the website for the community-maintained 32-bit Arch Linux OS](https://www.archlinux32.org/download/) either through torrenting it, or using of the mirrorlinks.\
+You'll need to use software such as [Ventoy](https://www.ventoy.net/en/download.html), [Rufus](https://rufus.ie/en/) or [BalenaEtcher](https://etcher.balena.io/#download-etcher). The instructions on how to use such software can be found within their websites. Once the ISO has been written to a storage medium (that could be a USB thumb drive, SD card .etc), you'll need to go into your computers boot options through the firmware interface. To do so, follow the instructions below, based on your Operating System.
+
+<details>
+ <summary><h3>Windows</h3></summary>
+
+ 
+ On Windows systems, open up the command prompt by hitting the Win and searching ```cmd```.\
+ Make sure you run it as an administrator.\
+ Once you've done that, enter the following command:
+ ```
+ shutdown /r /fw /t 0
+ ```
+
+ And enter your computer's boot menu. Once that's done, select the storage medium that contains your ArchISO.\
+ Then, wait for it to boot before selecting the option containing ```Arch Linux install medium``` or ```Arch Linux install medium (with speech)``` if you are visually impaired, and have someone reading this guide to you out loud.
+</details>
+
+<details>
+ <summary><h3>MacOS</h3></summary>
+
+ 
+ On a MacOS system, there is no way through the command line to enter the boot menu.\
+ You can only do so by powering off the system entirely and holding the ```Alt``` or ```Option``` key when powering it on.\
+ Select the storage medium that contains your ArchISO.\
+ Then, wait for it to boot before selecting the option containing ```Arch Linux install medium``` or ```Arch Linux install medium (with speech)``` if you are visually impaired, and have someone reading this guide to you out loud.
+</details>
 
 ## Connect to the internet <a name="connect-to-the-internet"></a>
 Firstly, use the command:

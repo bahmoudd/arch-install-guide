@@ -1,0 +1,3 @@
+- Fix Table of Contents
+- Add optional step to unify kernel images
+- Add optional step to use LUKS encryption.

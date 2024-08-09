@@ -1,2 +1,0 @@
-- ~~Fix Table of Contents~~
-- ~~Add optional step to use LUKS encryption.~~

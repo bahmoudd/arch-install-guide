@@ -1039,4 +1039,4 @@ Now open your browser and point to it `your-machine-ip:9000` and login with ***r
  - **2024-08-08**
    - Initial guide created. 
 
-#### Full and complete changelog, [click here]([https://github.com/Exvix/arch-install-guide/blob/main/CHANGELOG.md].
+#### Full and complete changelog, [click here](https://github.com/Exvix/arch-install-guide/blob/main/CHANGELOG.md).

@@ -829,6 +829,7 @@ reboot
 
 ## Login as your user account <a name="reconnect-to-the-internet"></a>
 
+If you've encrypted your ROOT/HOME partion(s), enter your password to access your Arch system.\
 You'll have to reconnect to the internet as we're using NetworkManager instead of iwd, so our connection settings have been lost and you'll have to reconnect.\
 If you were connected to the internet through a Mobile Broadband Modem, the connection process is the same as before.
 

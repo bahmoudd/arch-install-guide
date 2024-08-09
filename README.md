@@ -460,6 +460,11 @@ pacstrap /mnt base base-devel linux linux-firmware linux-headers nano intel-ucod
 `dosfstools` allows the user to format MS-DOS disks./
 `networkmanager` allows the user to connect to the internet.\
 
+If you're connected to the internet through a Mobile Broadband Modem, append the below packages to your command:
+```
+modemmanager usb_modeswitch
+```
+
 - Replace `nano` with editor of your choice (i.e `vim` or `vi`). Nano is the most beginner friendly
 - Replace `intel-ucode` with `amd-ucode` if you are using an AMD Processor.
 - If you want to include a derivative of the Linux kernel (e.g. linux-zen, linux-hardened, linux-lts), include that ALONGSIDE the original kernel and headers so if something breaks, you always have that extra option to use the regular Linux kernel. This can be done by appending your chosen Linux derivative (e.g. `linux-zen`) and its headers (e.g. `linux-zen-headers`)
@@ -670,9 +675,55 @@ title Arch Linux Fallback
 initrd /initrams-linux-fallback.img
 ```
 
+Do the same for any other LInux derivatives you have installed.\
+Example:
+```
+title Arch Linux Zen
+linux /vmlinuz-linux-zen
+initrd /initramfs-linuz-zen.img
+```
+
 **:warning: - Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.** 
 
 </details>
+
+---
+
+### Create a user account
+
+Doing this is common sense, as many login managers do not include the root account as one of the login options.\
+To do this, run the below:
+```
+useradd -mG wheel [username]
+```
+replacing ```[username]``` with the username of your choice.
+The ```-m``` option creates a user directory for you, where local configurations and apps are stored.
+The ```-G wheel``` option creates the user as part of the wheel group, which will allow you to make changes on the system itself. For example, downloading and installing packages, and configuring them.
+
+Set a password for the user account by running:
+```
+passwd [username]
+```
+
+Repeat the above process as many times as you want, depending on the amount of users you want to add to your system.\
+If you do not want a user to use sudo commands , use the below command instead:
+
+```
+useradd -m [username]
+```
+
+### Allow Wheel Group to use Sudo Commands
+
+You need to do this to actually allow your user to make changes to the system.
+```
+EDITOR=nano visudo
+```
+
+And find and uncomment the below line by remove the preceeding hashtag.
+```
+#%wheel ALL=(ALL) ALL
+```
+Save & exit.
 
 ### Final Step
 ```
@@ -681,47 +732,13 @@ reboot
 ```
 </br>
 
-## Now boot into your freshly installed Arch system
+---
 
-### Login as "root" and enter root password when prompted
+## Login as your user account <a name="reconnect-to-the-internet"></a>
 
-### Add new User
-```
-useradd -mG wheel [username]
-```
-Replace `[username]` with your username of choice.
+You'll have to reconnect to the internet as we're using NetworkManager instead of iwd, so our connection settings have been lost and you'll have to reconnect.\
+If you were connected to the internet through a Mobile Broadband Modem, the connection process is the same as before.
 
-### Set User Password
-```
-passwd [username]
-```
-
-Repeat the above process as many times as you want, depending on the amount of users you want to add to your system.\
-If you do not want a user to use sudo commands, use the below command instead:
-
-```
-useradd -m [username]
-```
-
-### Allow Wheel Group to use Sudo Commands
-```
-EDITOR=nano visudo
-```
-
-#### Find and uncomment the below line
-```
-#%wheel ALL=(ALL) ALL
-```
-save & exit.
-
-### Logout of "root"
-```
-exit
-```
-
-## Login as USER and let's connect to the internet again! <a name="reconnect-to-the-internet"></a>
-
-Since we're now using NetworkManager instead of iwd, our connection settings have been lost (and the connection process is slightly different)\
 Firstly, to take a look at what network stations you have installed on your computer, use the command:
 ```
 nmcli device
@@ -739,21 +756,26 @@ Select one of the access points listed and connect to it by running the followin
 nmcli device wifi connect [Access Point SSID] password [Access Point Password]
 ```
 
-You don't need to check for updates as Arch will have already downloaded the latest version of Arch Linux
+You don't need to check for updates as Arch will have already downloaded the latest version of Arch Linux.
 
 You can stop here if you want to do a server installation or have a desktop-less Arch system for any other reason.
+
+---
 
 ### Xorg & GPU Drivers
 ```
 sudo pacman -S xorg [xf86-video-your gpu type]
 ```
+
+```xorg``` is the free and open-source implementation of the X Window System (X11) display server. It essentially allows whatever applications you want to run to actually draw windows and display/
+
 - For Nvidia GPUs, type `nvidia` & `nvidia-settings`. For more info/old GPUs, refer to [Arch Wiki - Nvidia](https://wiki.archlinux.org/index.php/NVIDIA).
 - For newer AMD GPUs, type `xf86-video-amdgpu`.
 - For legacy Radeon GPUs like HD 7xxx Series & below, type `xf86-video-ati`.
 - For dedicated Intel Graphics, type `xf86-video-intel`.
 
 ### Enable Multilib Repo (optional but absolutely recommended) <a name="multilib"></a>
-multilib contains 32-bit software and libraries that can be used to run and build 32-bit applications on 64-bit installs (e.g. [Wine](https://www.winehq.org/), [Steam](https://store.steampowered.com/), etc).
+Multilib allows you to download and run 32-bit software if you're on a 64-bit machine. Of course, if you're running this on a 32-bit machine, you can go ahead and skip this step.
 
 Edit `/etc/pacman.conf` & uncomment the below two lines.
 ```
@@ -774,6 +796,8 @@ Note: The above install will not work if you don't specify ```-Sy``` or type ```
 sudo pacman -S sddm
 sudo systemctl enable sddm
 ```
+
+```sddm``` is a login manager. It helps you login into your system through a graphical frontend.
 
 ### KDE Plasma & Applications
 ```
@@ -801,11 +825,23 @@ alsa-utils  | This contains (among other utilities) the `alsamixer` and `amixer`
 bluez       | Provides the Bluetooth protocol stack.
 bluez-utils | Provides the `bluetoothctl` utility.
 
-#### Enable Bluetooth Service
+#### Enable Bluetooth
 ```
 sudo systemctl enable bluetooth.service
 ```
 
+### Final Reboot
+```
+reboot
+```
+</br>
+
+---
+# The Conclusion <a name="the-conclusion"></a>
+Now everything is installed and after the final `reboot`, you will land in the SDDM greeter. You can continue reading for some steps to further improve your experience. I recommend you to install `yay` & `paccache`.
+- Yay will provide your packages from AUR (Arch User Repository), which are not available in the official repos.
+- Paccache can be used clean pacman cached packages either manually or in an automated way.
+</br>
 
 ### Apps I would personally recommend installing but aren't required
 You can install all the following packages or only the one you want.
@@ -832,20 +868,6 @@ sudo systemctl enable sshd.service
 sudo systemctl enable --now cups.service
 ```
 
-### Final Reboot
-```
-reboot
-```
-</br>
-
-### The Conclusion <a name="the-conclusion"></a>
-Now everything is installed and after the final `reboot`, you will land in the SDDM greeter. You can continue reading for some steps to further improve your experience. I recommend you to install `yay` & `paccache`.
-- Yay will provide your packages from AUR (Arch User Repository), which are not available in the official repos.
-- Paccache can be used clean pacman cached packages either manually or in an automated way.
-</br>
-
-## Extras (optional but worth a read) <a name="extras"></a>
-
 ### Install [Yay](https://github.com/Jguer/yay)
 Yet Another Yogurt - An AUR Helper.
 A lot of programs written for Arch can be founded in the AUR, but be careful of what you download from there.
@@ -857,131 +879,37 @@ cd .
 rm -rf yay # To delete the yay folder as it isn't necessary anymore
 ```
 
-### Install [NuShell](https://www.nushell.sh) <a name="alternative-shells"></a>
-NuShell is a powerful shell that has really helpful debug statements and is overall a solid shell environment.
+### Enabling Secure Boot
+
+Secure Boot is a security standard designed to ensure that a device boots using only trusted software. To enable it, go into your firmware settings and erase all of your secure boot keys. The way on how to do so differs between manufacturers.\
+Once you've done that, install sbctl.
+
 ```
-yay -S nushell
+sudo pacman -S sbctl
 ```
 
-### Install [Zsh](https://wiki.archlinux.org/index.php/zsh/)
-Zsh is a powerful shell that operates as both an interactive shell and as a scripting language interpreter. It's a preferred shell environment by many.
+Then create secure boot keys by running the below command:
 ```
-sudo pacman -S zsh zsh-completions
-```
-Read *[here](#install-oh-my-zsh)* for customisation & theming for Zsh. Read below how to change your SHELL.
-
-### Changing your SHELL
-First check your current SHELL by running:
-```
-echo $SHELL
+sudo sbctl create-keys
 ```
 
-#### To get list of all available/installed SHELLs:
+Then enroll those keys, alongside Microsoft's, to the UEFI
 ```
-chsh -l
-```
-
-### Set NuShell or Zsh as our SHELL
-For an example, we will set Zsh as default SHELL which we installed in the last step:
-```
-chsh -s /usr/bin/zsh # To set Zsh as the default SHELL
-chsh -s /usr/bin/nu # To set NuShell as the default SHELL
-```
-For the changes to apply, you will have Logout and Log back in or better do `reboot`.
-
-## PipeWire
-[PipeWire](https://wiki.archlinux.org/title/PipeWire) is a new low-level multimedia framework. It aims to offer capture and playback for both audio and video with minimal latency and support for PulseAudio, JACK, ALSA and GStreamer-based applications.
-#### Install
-```
-sudo pacman -S pipewire wireplumber pipewire-audio pipewire-alsa pipewire-pulse
+sudo enroll-keys -m
 ```
 
-## EasyEffects
-[EasyEffects](https://wiki.archlinux.org/title/PipeWire#EasyEffects) (former PulseEffects) is a GTK utility which provides a large array of audio effects and filters to individual application output streams and microphone input streams. Notable effects include an input/output equalizer, output loudness equalization and bass enhancement, and input de-esser and noise reduction plug-in.
-Install
+Check what files need to be signed by running:
 ```
-sudo pacman -S easyeffects
-# or
-yay -S easyeffects-git
-```
-> This will also install pipewire-pulse and replace PulseAudio with PipeWire.
-
-## ClamAV
-[Clam AntiVirus](https://wiki.archlinux.org/index.php/ClamAV) is an open source (GPL) anti-virus toolkit for UNIX. It provides a number of utilities including a flexible and scalable multi-threaded daemon, a command line scanner and advanced tool for automatic database updates.
-#### 1. Install
-```
-sudo pacman -S clamav
+sbctl verify
 ```
 
-#### 2. Update Signatures/Database (must do)
+And sign those files:
 ```
-sudo freshclam
-```
-
-#### 3. Enable & start services
-```
-sudo systemctl enable --now clamav-freshclam.service
-sudo systemctl enable --now clamav-daemon.service
+sbctl sign -s /boot/vmlinuz-linux
+sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
 ```
 
-#### 4a. ClamTK (optional)
-GUI for ClamAV
-```
-sudo pacman -S clamtk
-```
-
-#### 4b. KDE Dolphin File Manager Plugin (optional)
-Download the latest `master zip` from [ClanTK-KDE Gitlab](https://gitlab.com/dave_m/clamtk-kde) & extract it your `~/Downloads` folder. Now open a terminal from within the extracted folder & run:
-```
-sudo cp clamtk-kde.desktop /usr/share/kservices5/ServiceMenus/
-```
-</br>
-
-## Theming & Customisations
-
-### Install [Oh My Zsh](https://ohmyz.sh/)
-Oh My Zsh is an open source, community-driven framework for managing your Zsh configuration.
-```
-sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
-```
-My favourite theme is Powerlevel10k (follow below for installation).
-- You can visit [here](https://github.com/ohmyzsh/ohmyzsh/wiki/Themes) to download theme of your choice.
-
-### Get [Powerlevel10k](https://github.com/romkatv/powerlevel10k/) Theme for Oh My Zsh
-This is the theme I'll install to spice up my terminal experience.
-```
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-```
-
-#### Get the recommended fonts
-We will be using ***Yay*** to install the below two packages as one of them is only available from AUR.
-```
-yay -S ttf-dejavu ttf-meslo-nerd-font-powerlevel10k
-```
-Also set your Konsole Terminal font to `MesloGS-NF-Regular`.
-
-#### Set Powerlevel10k as your Zsh Theme
-```
-nano ~/.zshrc
-```
-Find the line starting with `ZSH_THEME="...."` and replace the theme name so the line should now look like this `ZSH_THEME="powerlevel10k/powerlevel10k"` Now do `source ~/.zshrc`.
-#### Configuration
-> ***For new users***, on the first run, Powerlevel10k configuration wizard will ask you a few questions and configure your prompt. If it doesn't trigger automatically, type `p10k configure`. Configuration wizard creates `~/.p10k.zsh` based on your preferences. Additional prompt customization can be done by editing this file. It has plenty of comments to help you navigate through configuration options.
-
-## Kvantum Manager
-[Kvantum](https://github.com/tsujan/Kvantum) is a SVG-based theme engine for Qt, tuned to KDE and LXQt, with an emphasis on elegance, usability and practicality.
-
-### Install through Yay (git version)
-```
-yay -S kvantum-qt5-git
-```
-
-***Or***
-
-### Install through Pacman
-```
-sudo pacman -S kvantum
-```
+If you have any Linux derivatives installed, go ahead and sign those too.
 
 ## Maintenance, Performance Tuning & Monitoring
 

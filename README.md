@@ -37,14 +37,6 @@
  - [**The Conclusion**](#the-conclusion)
  - [**Extras (optional)**](#extras)
    - [Yay](#install-yay)
-   - [Alternative Shells](#alternative-shells)
-   - [Change SHELL](#changing-your-shell)
-   - [PipeWire](#pipewire)
-   - [EasyEffects](#easyeffects)
-   - [Clam AntiVirus](#clamav)
- - [**Theming & Customisations**](#theming--customisations)
-    - [Oh My Zsh & Powerlevel10k Theme](#install-oh-my-zsh)
-    - [Kvantum Manager](#kvantum-manager)
  - [**Maintenance, Performance Tuning & Monitoring**](maintenance-performance-tuning--monitoring)
    - [Paccache](#paccache)
    - [Cockpit](#install-cockpit)
@@ -330,6 +322,35 @@ n = New Parition
 w = Write partitions and quit
 ```
 
+### Set up LUKS encryption (optional)
+
+> Note: You may skip this step.
+
+LUKS encryption encrypts your root partition (and home partition too, if present) so that attackers who have physical access to your laptop cannot access the contents of your drive.
+
+To set that up, enter the following commands:
+
+```
+cryptsetup -v luksFormat /dev/sdx3
+```
+
+And if you have set up a home partition, encrypt that too.
+
+```
+cryptsetup -v luksFormat /dev/sdx4
+```
+
+Make sure to unlock them so that they can be formatted later.
+
+```
+cryptsetup open /dev/sdx3 root
+```
+
+And if you have a separate home partition, run the below command:
+```
+cryptsetup open /dev/sdx4 home
+```
+
 ### Format non-swap partitions (so that data can be written/read from it)
 ```
 mkfs.fat -F32 /dev/sdx1 # Done as it needs to be in a universally-recognised file system, so your computer can boot from it.
@@ -344,6 +365,16 @@ swapon /dev/sdx2
 ```
 
 ### Mount Remaining Partitions (so they can be accessed)
+
+If you have set up LUKS encryption, run the below:
+```
+mount /dev/mapper/root /mnt
+mount -m /dev/mapper/home /mnt/home
+mount -m /dev/sdx4 /mnt/home
+```
+
+Otherwise, run the below:
+
 ```
 mount /dev/sdx3 /mnt 
 mount -m /dev/sdx1 /mnt/boot
@@ -582,7 +613,35 @@ passwd
 ## Installling the bootloader <a name="installing-bootloader"></a>
 
 The bootloader is what manages the boot process, and is the PID 0 of your Arch system.\
-If you're on an MBR systems, install GRUB and if you're on an EFI system, install SystemD-Boot.
+If you're on an MBR systems, install GRUB and if you're on an EFI system, install SystemD-Boot.\
+You need to do some extra steps before installing the bootloader if you've encrypted your ROOT/HOME parition(s).
+
+<details>
+ <summary><h3>If you've set up LUKS encryption on your hard drive</h3></summary>
+
+Because you've encrypted your ROOT (and HOME partition, if present), you need to perform some extra steps.
+
+Open and edit your ```/etc/mkinitcpio.conf``` file:
+```
+sudo nano /etc/mkinitcpio.conf
+```
+
+Find the below line:
+```
+HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)
+```
+
+And change it to:
+```
+HOOKS=(base udev autodetect keyboard keymap modconf block encrypt filesystems keyboard fsck)
+```
+
+Save and exit, then recreate the initramfs image by running:
+```
+mkinitcpio -P
+```
+ 
+</details>
 
 <details>
  <summary><h3>Installing and generating config files for GRUB</h3></summary>
@@ -685,11 +744,45 @@ initrd /initramfs-linuz-zen.img
 
 **:warning: - Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.** 
 
+## Enabling Secure Boot
+
+> NOTE: This step is entirely optional, and if you don't care enough to enable secure boot, you can skip it by clicking [here](#creating-users)
+
+Secure Boot is a security standard designed to ensure that a device boots using only trusted software. To enable it, go into your firmware settings and erase all of your secure boot keys. The way on how to do so differs between manufacturers.\
+Once you've done that, install sbctl by running the below command:
+
+```
+sudo pacman -S sbctl
+```
+
+Then create secure boot keys by running the below command:
+```
+sudo sbctl create-keys
+```
+
+Then enroll those keys, alongside Microsoft's, to the UEFI
+```
+sudo enroll-keys -m
+```
+
+Check what files need to be signed by running:
+```
+sbctl verify
+```
+
+And sign those files:
+```
+sbctl sign -s /boot/vmlinuz-linux
+sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
+```
+
+If you have any Linux derivatives installed, go ahead and sign those too.
+
 </details>
 
 ---
 
-### Create a user account
+### Create a user account <a name="creating-users"></a>
 
 Doing this is common sense, as many login managers do not include the root account as one of the login options.\
 To do this, run the below:
@@ -743,11 +836,11 @@ Firstly, to take a look at what network stations you have installed on your comp
 ```
 nmcli device
 ```
-Then, we turn on wifi by using the command:
+Then, turn on wifi by using the command:
 ```
 nmcli radio wifi on
 ```
-And we list local access points by using the command:
+And list local access points by using the command:
 ```
 nmcli device wifi list
 ```
@@ -756,9 +849,10 @@ Select one of the access points listed and connect to it by running the followin
 nmcli device wifi connect [Access Point SSID] password [Access Point Password]
 ```
 
+
 You don't need to check for updates as Arch will have already downloaded the latest version of Arch Linux.
 
-You can stop here if you want to do a server installation or have a desktop-less Arch system for any other reason.
+You can stop here if you want to have a desktop-less Arch system for any reason (this could be for a server install).
 
 ---
 
@@ -878,38 +972,6 @@ makepkg -si
 cd .
 rm -rf yay # To delete the yay folder as it isn't necessary anymore
 ```
-
-### Enabling Secure Boot
-
-Secure Boot is a security standard designed to ensure that a device boots using only trusted software. To enable it, go into your firmware settings and erase all of your secure boot keys. The way on how to do so differs between manufacturers.\
-Once you've done that, install sbctl.
-
-```
-sudo pacman -S sbctl
-```
-
-Then create secure boot keys by running the below command:
-```
-sudo sbctl create-keys
-```
-
-Then enroll those keys, alongside Microsoft's, to the UEFI
-```
-sudo enroll-keys -m
-```
-
-Check what files need to be signed by running:
-```
-sbctl verify
-```
-
-And sign those files:
-```
-sbctl sign -s /boot/vmlinuz-linux
-sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
-```
-
-If you have any Linux derivatives installed, go ahead and sign those too.
 
 ## Maintenance, Performance Tuning & Monitoring
 

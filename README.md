@@ -7,41 +7,42 @@
  - [**Booting into the ArchISO**](#boot-to-archiso)
    - [**Creating the installation medium**](#creating-boot-medium)
    - [**Entering your computer's boot menu**](#entering-boot-menu)
- - [**Connect to the Internet**](#connect-to-the-internet)
+ - [**Connect to the Internet**](#connect-to-internet)
  - [**Disk Partitioning**](#partition-disk)
  - [**Base System Installation**](#base-system-installation)
    - [Update Mirrors](#update-mirrors-using-reflector)
-   - [Base System](https://github.com/XxAcielxX/arch-plasma-install#install-base-system)
-   - [Generate fstab](#generate-fstab)
+   - [Base System](#install-base-system)
+   - [Generate fstab](#genfstab)
  - [**Chroot**](#chroot)
    - [Date & Time](#set-time--date)
-   - [Language](#set-language)
+   - [Locale and Language](#set-locale-and-language)
    - [Hostname & Hosts](#set-hostname)
-   - [Network Manager](#install--enable-networkmanager)
+   - [Enabling Network Manager](#enable-networkmanager)
    - [ROOT Password](#set-root-password)
    - [Installing the Bootloader](#installing-bootloader)
-     - [GRUB](#grub)
-     - [SystemD-Boot](#systemd-boot)
-     - [Making and editing config files (UEFI ONLY)](#making-config-file)
- - [**Boot Freshly Installed System**](#now-boot-into-your-freshly-installed-arch-system)
-   - [Connect to the internet (again)](#reconnect-to-the-internet)
-   - [Add User](#add-new-user)
-   - [Sudo Command](#allow-wheel-group-to-use-sudo-commands)
+     - [Pre-installation steps](#preinstall-steps)
+     - [Installing GRUB (MBR only)](#installing-grub)
+     - [Installing SystemD-Boot (EFI only)](#installing-systemd-boot)
+        -[Enable secure boot](#enable-secure-boot)
+   - [Create users](#create-users)
+   - [Allow sudo commands](#allow-sudo-commands)
  - [**User Login**](#reconnect-to-the-internet)
+   - [Connect to the internet (again)](#reconnect-to-the-internet)
    - [Display Server & GPU Drivers](#xorg--gpu-drivers)
    - [Multilib Repository (32bit)](#multilib)
    - [Display Manager (SDDM)](#install--enable-sddm)
    - [Desktop Environment (KDE Plasma)](#kde-plasma--applications)
    - [Audio Utilities & Bluetooth](#audio-utilities--bluetooth)
-   - [Misc Applications](https://#my-required-applications)
  - [**The Conclusion**](#the-conclusion)
  - [**Extras (optional)**](#extras)
+   - [Misc Applications](#misc-applications)
    - [Yay](#install-yay)
  - [**Maintenance, Performance Tuning & Monitoring**](maintenance-performance-tuning--monitoring)
    - [Paccache](#paccache)
    - [Cockpit](#install-cockpit)
  - [**Changelog**](#changelog)
-</br>
+
+---
 
 # Introduction
 
@@ -125,7 +126,7 @@ Once you've found a keymap that matches your physical keyboard's layout, run the
 loadkeys [keymap]
 ```
 
-### Connect to the internet
+### Connect to the internet <a name="connect-to-internet"></a>
 
 The ArchISO *requires* an internet connection in order to be set up properly.\
 If your computer is connected via Ethernet, you may skip this section by going [here](#test-connectivity).\
@@ -479,7 +480,7 @@ Example:
 reflector -c 'United Kingdom' -a 12 -p https --sort rate --save /etc/pacman.d/mirrorlist
 ```
 
-### Install base system
+### Install base system <a name="install-base-system"></a>
 ```
 pacstrap /mnt base base-devel linux linux-firmware linux-headers nano intel-ucode mtools dosfstools networkmanager
 ```
@@ -500,7 +501,7 @@ modemmanager usb_modeswitch
 - Replace `intel-ucode` with `amd-ucode` if you are using an AMD Processor.
 - If you want to include a derivative of the Linux kernel (e.g. linux-zen, linux-hardened, linux-lts), include that ALONGSIDE the original kernel and headers so if something breaks, you always have that extra option to use the regular Linux kernel. This can be done by appending your chosen Linux derivative (e.g. `linux-zen`) and its headers (e.g. `linux-zen-headers`)
 
-### Generate fstab
+### Generate fstab <a name="genfstab"></a>
 
 The fstab file lists all available disk partitions and other types of file systems and data sources that may not necessarily be disk-based, and indicates how they are to be initialized or otherwise integrated into the larger file system structure. It is *essential* for your system to function.
 
@@ -513,7 +514,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 ---
 
-## Chroot
+## Chroot <a name="chroot"></a>
 
 Chroot essentially takes you inside of the Arch Linux system, so you can perform necessary configuration to it for it to function. This can be done by running:
 
@@ -521,7 +522,7 @@ Chroot essentially takes you inside of the Arch Linux system, so you can perform
 arch-chroot /mnt
 ```
 
-### Set Time & Date
+### Set Time & Date <a name="set-time--date"></a>
 
 The below symbolically links ```/etc/localtime``` to ```/usr/share/zoneinfo/Region/City``` so that your computer knows it is measuring the date and time in the correct timezone.
 
@@ -543,7 +544,8 @@ An example of this would be:
 /usr/share/zoneinfo/Europe/London
 ```
 
-## Set Language
+## Set locale and language <a name="set-locale-and-language"></a>
+
 We will use `en_GB.UTF-8` here but, if you want to set your language, replace `en_GB.UTF-8` with yours in all below instances.
 
 #### Edit locale.gen
@@ -575,7 +577,7 @@ For keyboard users with non US Eng only. Replace `uk` with yours.
 echo "KEYMAP=uk" > /etc/vconsole.conf
 ```
 
-## Set Hostname
+## Set Hostname <a name="set-hostname"></a>
 
 A hostname is what your computer calls itself when talking to other computers. To set a hostname, run the below command:
 
@@ -597,12 +599,13 @@ nano /etc/hosts
 Replace `arch` with hostname of your choice.\
 Save & exit.
 
-### Enable NetworkManager
+### Enable NetworkManager <a name="enable-networkmanager"></a>
+"Enabling" a software puts in a state when you can use it - essentially turning it on.
 ```
 systemctl enable NetworkManager
 ```
 
-### Set ROOT Password
+### Set ROOT Password <a name="set-root-password"></a>
 
 The ROOT account is an account on your computer that can do anything on your computer. Set a password for it as not doing so leaves your system vulnerable to cyberattackers.
 
@@ -617,7 +620,7 @@ If you're on an MBR systems, install GRUB and if you're on an EFI system, instal
 You need to do some extra steps before installing the bootloader if you've encrypted your ROOT/HOME parition(s).
 
 <details>
- <summary><h3>If you've set up LUKS encryption on your hard drive</h3></summary>
+ <summary><h3>If you've set up LUKS encryption on your hard drive<a name="preinstall-steps"></a></h3></summary>
 
 Because you've encrypted your ROOT (and HOME partition, if present), you need to perform some extra steps.
 
@@ -643,8 +646,9 @@ mkinitcpio -P
  
 </details>
 
+<a name="installing-grub"></a>
 <details>
- <summary><h3>Installing and generating config files for GRUB</h3></summary>
+ <summary><h3>Installing GRUB (MBR)</h3></summary>
 "Targets" are CPU architechtures. These are important for grub to know so it can handle the boot proess correctly.\
 Find your CPU architechture from [this site](https://renenyffenegger.ch/notes/Linux/shell/commands/grub-install#grub-install-target) and specify that as the target.
 
@@ -656,8 +660,9 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 </details>
 
+<a name="installing-systemd-boot">
 <details>
- <summary><h3>Installing and configuring SystemD-Boot (UEFI)</h3></summary>
+ <summary><h3>Installing and configuring SystemD-Boot (UEFI)</a></h3></summary>
 
 
 Install SystemD-Boot by running:
@@ -665,7 +670,7 @@ Install SystemD-Boot by running:
 bootctl install
 ```
 
-#### Creating and amending config files <a name="making-config-file"></a>
+#### Creating and amending config files 
 
 Open and edit /boot/loader/loader.conf
 ```
@@ -744,7 +749,7 @@ initrd /initramfs-linuz-zen.img
 
 **:warning: - Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.** 
 
-## Enabling Secure Boot
+## Enabling Secure Boot <a name="enable-secure-boot"></a>
 
 > NOTE: This step is entirely optional, and if you don't care enough to enable secure boot, you can skip it by clicking [here](#creating-users)
 
@@ -782,7 +787,7 @@ If you have any Linux derivatives installed, go ahead and sign those too.
 
 ---
 
-### Create a user account <a name="creating-users"></a>
+### Create a user account <a name="create-users"></a>
 
 Doing this is common sense, as many login managers do not include the root account as one of the login options.\
 To do this, run the below:
@@ -805,7 +810,7 @@ If you do not want a user to use sudo commands , use the below command instead:
 useradd -m [username]
 ```
 
-### Allow Wheel Group to use Sudo Commands
+### Allow Wheel Group to use Sudo Commands <a name="allow-sudo-commands"></a>
 
 You need to do this to actually allow your user to make changes to the system.
 ```
@@ -857,7 +862,7 @@ You can stop here if you want to have a desktop-less Arch system for any reason 
 
 ---
 
-### Xorg & GPU Drivers
+### Xorg & GPU Drivers <a name="xorg--gpu-drivers"></a>
 ```
 sudo pacman -S xorg [xf86-video-your gpu type]
 ```
@@ -886,7 +891,7 @@ sudo pacman -Sy lib32-mesa
 
 Note: The above install will not work if you don't specify ```-Sy``` or type ```sudo pacman -Syy``` beforehand.
 
-### Install & Enable SDDM
+### Install & Enable SDDM <a name="install--enable-sddm"></a>
 ```
 sudo pacman -S sddm
 sudo systemctl enable sddm
@@ -894,7 +899,7 @@ sudo systemctl enable sddm
 
 ```sddm``` is a login manager. It helps you login into your system through a graphical frontend.
 
-### KDE Plasma & Applications
+### KDE Plasma & Applications <a name="kde-plasma--applications"></a>
 ```
 sudo pacman -S plasma konsole dolphin ark kwrite kcalc spectacle krunner partitionmanager packagekit-qt5
 ```
@@ -938,7 +943,9 @@ Now everything is installed and after the final `reboot`, you will land in the S
 - Paccache can be used clean pacman cached packages either manually or in an automated way.
 </br>
 
-### Apps I would personally recommend installing but aren't required
+## Extras <a name="extras"></a>
+
+### Apps I would personally recommend installing but aren't required <a name="misc-applications"></a>
 You can install all the following packages or only the one you want.
 ```
 sudo pacman -S firefox openssh qbittorrent audacious wget screen git neofetch

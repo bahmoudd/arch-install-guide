@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>in</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<blockquote>
+<p>Tested working as of: 2024.08.01</p>
+</blockquote>
+<h1 id="the-ultimate-arch-linux-install-guide-uefi--mbr">The ultimate
+Arch linux install guide (UEFI &amp; MBR)</h1>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#introduction"><strong>Introduction</strong></a></li>
+<li><a href="#boot-to-archiso"><strong>Booting into the
+ArchISO</strong></a>
+<ul>
+<li><a href="#creating-boot-medium"><strong>Creating the installation
+medium</strong></a></li>
+<li><a href="#entering-boot-menu"><strong>Entering your computer’s boot
+menu</strong></a></li>
+</ul></li>
+<li><a href="#connect-to-internet"><strong>Connect to the
+Internet</strong></a></li>
+<li><a href="#partition-disk"><strong>Disk
+Partitioning</strong></a></li>
+<li><a href="#base-system-installation"><strong>Base System
+Installation</strong></a>
+<ul>
+<li><a href="#update-mirrors-using-reflector">Update Mirrors</a></li>
+<li><a href="#install-base-system">Base System</a></li>
+<li><a href="#genfstab">Generate fstab</a></li>
+</ul></li>
+<li><a href="#chroot"><strong>Chroot</strong></a>
+<ul>
+<li><a href="#set-time--date">Date &amp; Time</a></li>
+<li><a href="#set-locale-and-language">Locale and Language</a></li>
+<li><a href="#set-hostname">Hostname &amp; Hosts</a></li>
+<li><a href="#enable-networkmanager">Enabling Network Manager</a></li>
+<li><a href="#set-root-password">ROOT Password</a></li>
+<li><a href="#installing-bootloader">Installing the Bootloader</a>
+<ul>
+<li><a href="#preinstall-steps">Pre-installation steps</a></li>
+<li><a href="#installing-grub">Installing GRUB (MBR only)</a></li>
+<li><a href="#installing-systemd-boot">Installing SystemD-Boot (EFI
+only)</a> -<a href="#enable-secure-boot">Enable secure boot</a></li>
+</ul></li>
+<li><a href="#create-users">Create users</a></li>
+<li><a href="#allow-sudo-commands">Allow sudo commands</a></li>
+</ul></li>
+<li><a href="#reconnect-to-the-internet"><strong>User Login</strong></a>
+<ul>
+<li><a href="#reconnect-to-the-internet">Connect to the internet
+(again)</a></li>
+<li><a href="#xorg--gpu-drivers">Display Server &amp; GPU
+Drivers</a></li>
+<li><a href="#multilib">Multilib Repository (32bit)</a></li>
+<li><a href="#install--enable-sddm">Display Manager (SDDM)</a></li>
+<li><a href="#kde-plasma--applications">Desktop Environment (KDE
+Plasma)</a></li>
+<li><a href="#audio-utilities--bluetooth">Audio Utilities &amp;
+Bluetooth</a></li>
+</ul></li>
+<li><a href="#the-conclusion"><strong>The Conclusion</strong></a></li>
+<li><a href="#extras"><strong>Extras (optional)</strong></a>
+<ul>
+<li><a href="#misc-applications">Misc Applications</a></li>
+<li><a href="#install-yay">Yay</a></li>
+</ul></li>
+<li><a
+href="maintenance-performance-tuning--monitoring"><strong>Maintenance,
+Performance Tuning &amp; Monitoring</strong></a>
+<ul>
+<li><a href="#paccache">Paccache</a></li>
+<li><a href="#install-cockpit">Cockpit</a></li>
+</ul></li>
+<li><a href="#changelog"><strong>Changelog</strong></a></li>
+</ul>
+<hr />
+<h1 id="introduction">Introduction</h1>
+<h2 id="what-is-arch-linux">What is Arch Linux?</h2>
+<p>Arch Linux is an independently-developed rolling-release distribution
+of Linux. This means that there are no major updates that are delivered
+to Arch, unlike Windows. Instead, Arch delivers updates in small,
+frequent amounts, meaning that you have access to the latest drivers,
+firmware and software as soon as it’s available. Since Arch is based off
+the Linux kernel, it’s distributed under the GNU GPLv2 license, meaning
+that anyone can view the kernel, and what makes up Arch, as well as
+being able to modify it any point, so long as the software remains
+open-source.</p>
+<p>Arch Linux is fantastic for its Arch User Repository (AUR) and
+simplicity of design. It is well known for its straightforwardness and
+is relatively easy for the end user to understand directly, rather than
+having to dig through multiple layers of graphical interfaces. The
+package manager - pacman - has no GUI, meaning that everything has to be
+installed through the command line. This may seem a bit scary at first,
+but in this guide, I will go through how to install Arch Linux, and how
+to use its many features.</p>
+<hr />
+<h1 id="booting-into-the-archiso-">Booting into the ArchISO
+<a name="boot-to-archiso"></a></h1>
+<h2 id="creating-the-arch-installation-medium-">Creating the Arch
+installation medium <a name="creating-boot-medium"></a></h2>
+<p>Firstly, get the EFI ISO file from <a
+href="https://archlinux.org/download/">the official Arch Linux
+website</a> or <a href="https://www.archlinux32.org/download/">the
+website for the community-maintained 32-bit Arch Linux OS</a> either
+through torrenting it, or using of the mirrorlinks.<br />
+You’ll need to use software such as <a
+href="https://www.ventoy.net/en/download.html">Ventoy</a>, <a
+href="https://rufus.ie/en/">Rufus</a> or <a
+href="https://etcher.balena.io/#download-etcher">BalenaEtcher</a>. The
+instructions on how to use such software can be found within their
+websites.</p>
+<h2 id="entering-the-boot-menu-">Entering the boot menu
+<a name="entering-boot-menu"></a></h2>
+<p>Once the ISO has been written to a storage medium (that could be a
+USB thumb drive, SD card .etc), you’ll need to go into your computers
+boot options through the firmware interface. To do so, follow the
+instructions below, based on your Operating System.</p>
+<details>
+ <summary><h3>Windows</h3></summary>
+
+<p>On Windows systems, open up the command prompt by hitting the Win and
+searching <code>cmd</code>.<br />
+Make sure you run it as an administrator.<br />
+Once you’ve done that, enter the following command:</p>
+<pre><code>shutdown /r /fw /t 0</code></pre>
+<p>And enter your computer’s boot menu. Once that’s done, select the
+storage medium that contains your ArchISO.<br />
+Then, wait for it to boot before selecting the option containing
+<code>Arch Linux install medium</code> or
+<code>Arch Linux install medium (with speech)</code> if you are visually
+impaired, and have someone reading this guide to you out loud.</p>
+</details>
+
+<details>
+ <summary><h3>MacOS</h3></summary>
+
+<p>On a MacOS system, there is no way through the command line to enter
+the boot menu.<br />
+You can only do so by powering off the system entirely and holding the
+<code>Alt</code> or <code>Option</code> key when powering it on.<br />
+Select the storage medium that contains your ArchISO.<br />
+Then, wait for it to boot before selecting the option containing
+<code>Arch Linux install medium</code> or
+<code>Arch Linux install medium (with speech)</code> if you are visually
+impaired, and have someone reading this guide to you out loud.</p>
+</details>
+
+<details>
+ <summary><h3>Linux</h3></summary>
+
+<p>Assuming you have SystemD installed on your system, run the below
+command:</p>
+<pre><code>sudo systemctl reboot --firmware-setup</code></pre>
+<p>And enter your computer’s boot menu. Once that’s done, select the
+storage medium that contains your ArchISO.<br />
+Then, wait for it to boot before selecting the option containing
+<code>Arch Linux install medium</code> or
+<code>Arch Linux install medium (with speech)</code> if you are visually
+impaired, and have someone reading this guide to you out loud.</p>
+</details>
+
+<hr />
+<h2 id="pre-installation-configuration">Pre-installation
+configuration</h2>
+<p>Now that you’ve booted into the ArchISO, you need to run some
+commands before installing Arch to make it possible to install.</p>
+<h3 id="load-keymaps">Load Keymaps</h3>
+<p>A keymap is how your keyboard is laid out. It defines the keys you
+use and where they are placed on the keyboard. To find a list of all the
+keymaps available for your language/region, run the below command:</p>
+<pre><code>localectl list-keymaps</code></pre>
+<p>To search for a keymap, use the following command, replacing
+<code>[search_term]</code> with the code for your language, country, or
+layout:</p>
+<pre><code>localectl list-keymaps | grep -i [search_term]</code></pre>
+<p>Once you’ve found a keymap that matches your physical keyboard’s
+layout, run the below command.</p>
+<pre><code>loadkeys [keymap]</code></pre>
+<h3 id="connect-to-the-internet-">Connect to the internet
+<a name="connect-to-internet"></a></h3>
+<p>The ArchISO <em>requires</em> an internet connection in order to be
+set up properly.<br />
+If your computer is connected via Ethernet, you may skip this section by
+going <a href="#test-connectivity">here</a>.<br />
+If it isn’t however, you must connect to the internet by reading the
+instructions below.</p>
+<p>Check if your access point is either a Wi-Fi router or mobile
+broadband modem, of which the former is more likely.</p>
+<details>
+ <summary><h3>WiFi Router (iwctl)</h3></summary>
+
+<p>If your access point is a Wi-Fi router, run the below command:</p>
+<pre><code>iwctl</code></pre>
+<p>This will bring up an interactive prompt session and change your
+prompt from:</p>
+<pre><code>root@archiso ~ #</code></pre>
+<p>to:</p>
+<pre><code>[iwd]#</code></pre>
+<p>If you don’t know what your wireless device’s name is, you can list
+them by running:</p>
+<pre><code>device list</code></pre>
+<p>To turn your wireless device and its corresponding adapter on, run
+the below commands:</p>
+<pre><code>device [device-name] set-property Powered on
+adapter [adapter-name] set-property Powered on</code></pre>
+<p>(replacing <code>[device-name]</code> with your device’s name and
+<code>[adapter-name]</code> with its corresponding adapter’s name
+respectively)</p>
+<p>Then, to scan for Wi-Fi networks, run:</p>
+<pre><code>station [device-name] scan</code></pre>
+<p>To list them, run:</p>
+<pre><code>station [device-name] get-networks</code></pre>
+<p>Find your router’s SSID amongst the list shown, and connect to it by
+running:</p>
+<pre><code>station [device-name] connect [your router&#39;s SSID]</code></pre>
+</details>
+
+<details>
+ <summary><h3>Mobile Broadband Modem (mmcli)</h3></summary>
+
+<p>Start and enable <code>ModemManager.service</code>, this is the
+service that allows you to connect to your Mobile Broadband Modem.<br />
+You can do so by running:</p>
+<pre><code>systemctl start ModemManager.service
+systemctl enable ModemManager.service</code></pre>
+<p>You can find a list of modems nearby you by running:</p>
+<pre><code>mmcli -L</code></pre>
+<p>Look for
+<code>/org/freedesktop/ModemManager1/Modem/[modem index]</code> (where
+your modem index is a unique number representing your modem)</p>
+<p>Connect to your modem by running:</p>
+<pre><code>mmcli -m [modem index] --simple-connect=&quot;apn=[your modem&#39;s APN]&quot;</code></pre>
+<p>Your APN is your modem’s Access Point Name and will have been given
+to you by your ISP. If your modem requires a username and password, you
+can specify them like so:</p>
+<pre><code>mmcli -m [modem index] --simple-connect=&quot;apn=[your modem&#39;s APN],user=[username],password=[password]&quot;</code></pre>
+</details>
+
+<h4 id="testing-your-internet-connection-">Testing your internet
+connection <a name="test-connectivity"></a></h4>
+<p><code>ping</code> is a command that sends data to a URL and checks
+that the data has been sent properly. This is normally done to test the
+URL or to test your internet connection, of which you are doing the
+latter.</p>
+<pre><code>ping -c 4 archlinux.org</code></pre>
+<blockquote>
+<p>The <code>-c</code> switch represents the amount of sample data you
+are sending to that URL, in this case, 4.</p>
+</blockquote>
+<h3 id="check-the-system-clock-is-correct">Check the system clock is
+correct</h3>
+<p>Your computer keeps track of time by utilising an internal hardware
+clock.<br />
+To check that it’s in sync with the real world time, run the below
+command:</p>
+<pre><code>timedatectl</code></pre>
+<p>If <code>NTP service</code> does not show <code>active</code>, run
+the below command:</p>
+<pre><code>timedatectl set-ntp true</code></pre>
+<p>As of now, you don’t have to worry about the timezone, just make sure
+that the UTC time it returns matches real-world UTC time</p>
+<hr />
+<h2 id="creating-necessary-partitions-">Creating necessary partitions
+<a name="partition-disk"></a></h2>
+<p><span class="emoji" data-emoji="warning">⚠️</span> - Make sure that
+all of your data on the disk you want to install Arch Linux onto has
+been backed up. If you’ve already done that or you don’t care about the
+data present on it, proceed with this guide. If not, exit out the
+ArchISO and back up your data.</p>
+<p>Run the below command:</p>
+<pre><code>[ -d /sys/firmware/efi ] &amp;&amp; echo UEFI || echo BIOS</code></pre>
+<p>And take note of whether it returns <code>UEFI</code> or
+<code>BIOS</code></p>
+<h3 id="disk-partitioning">Disk Partitioning</h3>
+<details>
+ <summary><h3>UEFI</h3></summary>
+
+<p>Run the below commands to initialise the disk:</p>
+<pre><code>gdisk /dev/sdx</code></pre>
+<blockquote>
+<p>(where sdx refers to the letter of your drive)</p>
+</blockquote>
+<p>The above will open up an interactive prompt session and change the
+prompt from:</p>
+<pre><code>root@archiso ~ #</code></pre>
+<p>to:</p>
+<pre><code>Command (? for help):</code></pre>
+<p>Run:</p>
+<pre><code>x</code></pre>
+<p>which will change your prompt to:</p>
+<pre><code>Expert command (? for help):</code></pre>
+<p>And enter:</p>
+<pre><code>z</code></pre>
+<p>To “zap” the disk (basically, to initialise the disk).<br />
+It will ask you if you want to confirm, enter <code>y</code> and it will
+then if ask you want to “blank out MBR?”, which means it will wipe all
+of the boot code and other critical data necessary for an OS to boot.
+Since you’re no longer booting from your old OS, go ahead and hit
+<code>y</code>.\</p>
+<p>Run gdisk again and follow the below instructions (do not type
+anything where <code>=</code> precedes it, as those are just
+explanations for what each command does):</p>
+<pre><code>n = New Partition
+[simply press enter] = 1st Partition
+[simply press enter] = As First Sector
++1G = As Last sector (BOOT Partition Size)
+ef00 = EFI Partition Type
+
+n = New Partition
+[simply press enter] = 2nd Partition
+[simply press enter] = As First Sector
++16G = As Last sector (SWAP size, or double your RAM, whichever is smaller)
+8200 = Linux Swap</code></pre>
+<p>If you want to create a home partition (separates the data that is
+your system from your basic user apps and configurations), enter the
+below:</p>
+<pre><code>n = New Partition
+[simply press enter] = 3rd Partition
+[simply press enter] = As First Sector
++40G = As Last sector [ROOT Partition Size (you may use 20GiB if you have a small hard drive)]
+[simply press enter] = Linux filesystem
+
+n = New Parition
+[simply press enter] = 4th Partition
+[simply press enter] = As first sector
+[simply press enter] = As last sector [HOME parition size (takes up remaining hard drive space)]
+[simply press enter] = Linux filesystem
+
+w = Write partitions and quit</code></pre>
+<p>If you don’t want to do that, however, enter the below:</p>
+<pre><code>n = New Parition
+[simply press enter] = 3rd Partition
+[simply press enter] = As first sector
+[simply press enter] = As last sector [ROOT parition size (takes up remaining hard drive space)]
+[simply press enter] = Linux filesystem
+
+w = Write partitions and quit</code></pre>
+<h3 id="set-up-luks-encryption-optional">Set up LUKS encryption
+(optional)</h3>
+<blockquote>
+<p>Note: You may skip this step.</p>
+</blockquote>
+<p>LUKS encryption encrypts your root partition (and home partition too,
+if present) so that attackers who have physical access to your laptop
+cannot access the contents of your drive.</p>
+<p>To set that up, enter the following commands:</p>
+<pre><code>cryptsetup -v luksFormat /dev/sdx3</code></pre>
+<p>And if you have set up a home partition, encrypt that too.</p>
+<pre><code>cryptsetup -v luksFormat /dev/sdx4</code></pre>
+<p>Make sure to unlock them so that they can be formatted later.</p>
+<pre><code>cryptsetup open /dev/sdx3 root</code></pre>
+<p>And if you have a separate home partition, run the below command:</p>
+<pre><code>cryptsetup open /dev/sdx4 home</code></pre>
+<h3
+id="format-non-swap-partitions-so-that-data-can-be-writtenread-from-it">Format
+non-swap partitions (so that data can be written/read from it)</h3>
+<pre><code>mkfs.fat -F32 /dev/sdx1 # Done as it needs to be in a universally-recognised file system, so your computer can boot from it.
+mkfs.btrfs /dev/sdx3 # Add -f if your system tells you another filesystem like ext4 is already present
+mkfs.btrfs /dev/sdx4</code></pre>
+<p>Format and turn on swap memory</p>
+<pre><code>mkswap /dev/sdx2
+swapon /dev/sdx2</code></pre>
+<h3 id="mount-remaining-partitions-so-they-can-be-accessed">Mount
+Remaining Partitions (so they can be accessed)</h3>
+<p>If you have set up LUKS encryption, run the below:</p>
+<pre><code>mount /dev/mapper/root /mnt
+mount -m /dev/mapper/home /mnt/home
+mount -m /dev/sdx4 /mnt/home</code></pre>
+<p>Otherwise, run the below:</p>
+<pre><code>mount /dev/sdx3 /mnt 
+mount -m /dev/sdx1 /mnt/boot
+mount -m /dev/sdx4 /mnt/home</code></pre>
+</details>
+
+<details>
+ <summary><h3>MBR</h3></summary>
+
+<p>To initialise the disk you want to install Arch on (“sdx” from now
+on), run the below command:</p>
+<pre><code>sfdisk --delete /dev/sdx</code></pre>
+<p>Then, enter the below (do not type anything where <code>=</code>
+precedes it, as those are just explanations for what each command
+does):</p>
+<pre><code>n = New Partition
+1 = Partition number, MBR only supports 4 partitions
+[simply press enter] = First sector size
++16G = (or double the size of your RAM, whichever is smaller, this is your SWAP size)
+
+t = Change partition type ID
+19 = Linux SWAP</code></pre>
+<p>If you want to create a home partition (separates the data that is
+your system from your basic user apps and configurations), enter the
+below:</p>
+<pre><code>n = New Partition
+2 = Partition number, MBR only supports 4 partitions
+[simply press enter] = First sector size
++20G = (this is your ROOT size)
+
+n = New Partition
+3 = Partition number, MBR only supports 4 partitions
+[simply press enter] = First sector size
+[simply press enter] = (this is your HOME size, takes up the rest of the disk)
+
+x = Enter expert mode
+A = Make a partition bootable
+2 = Make your ROOT partition bootable
+
+w = Write partitions and quit</code></pre>
+<p>Else, just enter the below:</p>
+<pre><code>n = New Partition
+2 = Partition number, MBR only supports 4 partitions
+[simply press enter] = First sector size
+[simply press enter] = (this is your ROOT size, takes up the rest of the disk)
+
+x = Enter expert mode
+A = Make a partition bootable
+2 = Make your ROOT partition bootable
+
+w = Write partitions and quit</code></pre>
+<h3 id="format-non-swap-partitions">Format non-swap partitions</h3>
+<pre><code>mkfs.ext4 /dev/sdx2
+mkfs.ext4 /dev/sdx3 # If you made a home partition</code></pre>
+<p>Format and turn on swap memory</p>
+<pre><code>mkswap /dev/sdx1
+swapon /dev/sdx1</code></pre>
+<h3 id="mount-remaining-partitions">Mount Remaining Partitions</h3>
+<pre><code>mount /dev/sdx2 /mnt 
+mount -m /dev/sdx3 /mnt/home</code></pre>
+</details>
+
+<hr />
+<h1 id="base-system-installation-">Base System Installation
+<a name="base-system-installation"></a></h1>
+<h2
+id="update-mirrors-using-reflector-optional-but-recommended-for-faster-download-speeds-slow-download-speeds-can-time-out-">Update
+Mirrors using Reflector (optional but recommended for faster download
+speeds, slow download speeds can time out)
+<a name="update-mirrors-using-reflector"></a></h2>
+<pre><code>reflector -c County1 -c Country2 -a 12 -p https --sort rate --save /etc/pacman.d/mirrorlist</code></pre>
+<p>A mirror is basically a repository of files located within a specific
+region so that people near that region can download files with minimal
+ping (as ping is how long it takes for the data you requested for
+reaches you).<br />
+A mirrorlist is a list of these mirrors ranked based on their speed
+relative to your computer.<br />
+The <code>-c</code> flag allows you to specify which country you live
+in, this is to reduce ping.<br />
+The <code>-a</code> flag excludes mirrors that haven’t been updated
+within the hour range specifies (in this case, 12 hours)<br />
+The <code>-p</code> flag specifies the protocol you want to download
+packages through. HTTPS is chosen here as it is the fastest and the
+safest.<br />
+<code>--sort</code> sorts the mirrors by how fast they are, relative to
+your computer.<br />
+<code>--save</code> specifies to reflector to save them in
+<code>/etc/pacman.d/mirrorlist</code>, which is where pacman refers to
+when you want to download a package.</p>
+<p>Example:</p>
+<pre><code>reflector -c &#39;United Kingdom&#39; -a 12 -p https --sort rate --save /etc/pacman.d/mirrorlist</code></pre>
+<h3 id="install-base-system-">Install base system
+<a name="install-base-system"></a></h3>
+<pre><code>pacstrap /mnt base base-devel linux linux-firmware linux-headers nano intel-ucode mtools dosfstools networkmanager</code></pre>
+<p><code>base</code> is all the software necessary to make Arch Linux
+work.<br />
+<code>base-devel</code> is software for development purposes only, such
+as GCC or G++.<br />
+<code>linux</code>, <code>linux-headers</code> and
+<code>linux-firmware</code> are the kernel, which, together, act as the
+middleman between the software on your computer and the hardware on your
+computer.<br />
+<code>mtools</code> allows the user to access MS-DOS disks.<br />
+<code>dosfstools</code> allows the user to format MS-DOS disks./
+<code>networkmanager</code> allows the user to connect to the
+internet.\</p>
+<p>If you’re connected to the internet through a Mobile Broadband Modem,
+append the below packages to your command:</p>
+<pre><code>modemmanager usb_modeswitch</code></pre>
+<ul>
+<li>Replace <code>nano</code> with editor of your choice (i.e
+<code>vim</code> or <code>vi</code>). Nano is the most beginner
+friendly</li>
+<li>Replace <code>intel-ucode</code> with <code>amd-ucode</code> if you
+are using an AMD Processor.</li>
+<li>If you want to include a derivative of the Linux kernel (e.g.
+linux-zen, linux-hardened, linux-lts), include that ALONGSIDE the
+original kernel and headers so if something breaks, you always have that
+extra option to use the regular Linux kernel. This can be done by
+appending your chosen Linux derivative (e.g. <code>linux-zen</code>) and
+its headers (e.g. <code>linux-zen-headers</code>)</li>
+</ul>
+<h3 id="generate-fstab-">Generate fstab <a name="genfstab"></a></h3>
+<p>The fstab file lists all available disk partitions and other types of
+file systems and data sources that may not necessarily be disk-based,
+and indicates how they are to be initialized or otherwise integrated
+into the larger file system structure. It is <em>essential</em> for your
+system to function.</p>
+<pre><code>genfstab -U /mnt &gt;&gt; /mnt/etc/fstab</code></pre>
+<blockquote>
+<p>Note: A <code>&gt;</code> will overwrite a file and a
+<code>&gt;&gt;</code> will append to a file. Ensure you don’t confuse
+these with each other, and make sure the commands you type are as how
+this guide has written it before you hit enter.</p>
+</blockquote>
+<hr />
+<h2 id="chroot-">Chroot <a name="chroot"></a></h2>
+<p>Chroot essentially takes you inside of the Arch Linux system, so you
+can perform necessary configuration to it for it to function. This can
+be done by running:</p>
+<pre><code>arch-chroot /mnt</code></pre>
+<h3 id="set-time--date-">Set Time &amp; Date
+<a name="set-time--date"></a></h3>
+<p>The below symbolically links <code>/etc/localtime</code> to
+<code>/usr/share/zoneinfo/Region/City</code> so that your computer knows
+it is measuring the date and time in the correct timezone.</p>
+<pre><code>ln -sf /usr/share/zoneinfo/Region/City /etc/localtime 
+hwclock --systohc # Sync hardware clock with system time</code></pre>
+<p>Replace <code>Region</code> &amp; <code>City</code> according to your
+Time zone. To see what timezones are available, use the following
+commands:</p>
+<pre><code>ls /usr/share/zoneinfo/</code></pre>
+<p>and</p>
+<pre><code>ls /usr/share/zoneinfo/[Region]</code></pre>
+<p>An example of this would be:</p>
+<pre><code>/usr/share/zoneinfo/Europe/London</code></pre>
+<h2 id="set-locale-and-language-">Set locale and language
+<a name="set-locale-and-language"></a></h2>
+<p>We will use <code>en_GB.UTF-8</code> here but, if you want to set
+your language, replace <code>en_GB.UTF-8</code> with yours in all below
+instances.</p>
+<h4 id="edit-localegen">Edit locale.gen</h4>
+<p>A locale customises your system to be tailored more towards a
+specific region.</p>
+<pre><code>nano /etc/locale.gen</code></pre>
+<p>Uncomment the below line (or any line, depending on your region and
+what language your keyboard is in) by removing the hashtag preceeding
+the line</p>
+<pre><code>#en_GB.UTF-8 UTF-8</code></pre>
+<p>save &amp; exit, by hitting Ctrl+W, Enter then Ctrl+X.</p>
+<h3 id="generate-the-locale">Generate The Locale</h3>
+<pre><code>locale-gen</code></pre>
+<h3 id="add-lang-to-localeconf">Add LANG to locale.conf</h3>
+<pre><code>echo LANG=en_GB.UTF-8 &gt; /etc/locale.conf</code></pre>
+<h3 id="add-keymaps-to-vconsole">Add Keymaps to vconsole</h3>
+<p>For keyboard users with non US Eng only. Replace <code>uk</code> with
+yours.</p>
+<pre><code>echo &quot;KEYMAP=uk&quot; &gt; /etc/vconsole.conf</code></pre>
+<h2 id="set-hostname-">Set Hostname <a name="set-hostname"></a></h2>
+<p>A hostname is what your computer calls itself when talking to other
+computers. To set a hostname, run the below command:</p>
+<pre><code>echo arch &gt; /etc/hostname</code></pre>
+<p>Replace <code>arch</code> with hostname of your choice.</p>
+<h3 id="configure-hosts-file">Configure hosts file</h3>
+<pre><code>nano /etc/hosts</code></pre>
+<h4 id="add-these-lines-to-it">Add these lines to it</h4>
+<pre><code>127.0.0.1    localhost
+::1          localhost
+127.0.1.1    arch.localdomain arch</code></pre>
+<p>Replace <code>arch</code> with hostname of your choice.<br />
+Save &amp; exit.</p>
+<h3 id="enable-networkmanager-">Enable NetworkManager
+<a name="enable-networkmanager"></a></h3>
+<p>“Enabling” a software puts in a state when you can use it -
+essentially turning it on.</p>
+<pre><code>systemctl enable NetworkManager</code></pre>
+<h3 id="set-root-password-">Set ROOT Password
+<a name="set-root-password"></a></h3>
+<p>The ROOT account is an account on your computer that can do anything
+on your computer. Set a password for it as not doing so leaves your
+system vulnerable to cyberattackers.</p>
+<pre><code>passwd</code></pre>
+<h2 id="installling-the-bootloader-">Installling the bootloader
+<a name="installing-bootloader"></a></h2>
+<p>The bootloader is what manages the boot process, and is the PID 0 of
+your Arch system.<br />
+If you’re on an MBR systems, install GRUB and if you’re on an EFI
+system, install SystemD-Boot.<br />
+You need to do some extra steps before installing the bootloader if
+you’ve encrypted your ROOT/HOME parition(s).</p>
+<details>
+ <summary><h3>If you've set up LUKS encryption on your hard drive<a name="preinstall-steps"></a></h3></summary>
+
+<p>Because you’ve encrypted your ROOT (and HOME partition, if present),
+you need to perform some extra steps.</p>
+<p>Open and edit your <code>/etc/mkinitcpio.conf</code> file:</p>
+<pre><code>sudo nano /etc/mkinitcpio.conf</code></pre>
+<p>Find the below line:</p>
+<pre><code>HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)</code></pre>
+<p>And change it to:</p>
+<pre><code>HOOKS=(base udev autodetect keyboard keymap modconf block encrypt filesystems keyboard fsck)</code></pre>
+<p>Save and exit, then recreate the initramfs image by running:</p>
+<pre><code>mkinitcpio -P</code></pre>
+</details>
+
+<p><a name="installing-grub"></a></p>
+<details>
+ <summary><h3>Installing GRUB (MBR)</h3></summary>
+"Targets" are CPU architechtures. These are important for grub to know so it can handle the boot proess correctly.\
+Find your CPU architechture from [this site](https://renenyffenegger.ch/notes/Linux/shell/commands/grub-install#grub-install-target) and specify that as the target.
+
+<pre><code>pacman -S grub
+grub-install /dev/[disk name] # You don&#39;t need to specify a target because the default is i386-pc
+grub-mkconfig -o /boot/grub/grub.cfg</code></pre>
+</details>
+
+<a name="installing-systemd-boot">
+<details>
+ <summary><h3>Installing and configuring SystemD-Boot (UEFI)</a></h3></summary>
+
+<p>Install SystemD-Boot by running:</p>
+<pre><code>bootctl install</code></pre>
+<h4 id="creating-and-amending-config-files">Creating and amending config
+files</h4>
+<p>Open and edit /boot/loader/loader.conf</p>
+<pre><code>nano /boot/loader/loader.conf</code></pre>
+<p>Comment out any line beginning with <code>default</code> by putting a
+hashtag at the beginning of the line. And add this line to the bottom of
+the file</p>
+<pre><code>timeout 3
+console-mode keep
+default arch.conf
+editor no</code></pre>
+<p><code>timeout 3</code> stalls your system by 3 seconds before it
+boots so you have time to select an option.<br />
+<code>console-mode keep</code> keeps your console-based SystemD-Boot
+menu to how it was last time.<br />
+<code>default arch.conf</code> is what SystemD-Boot automatically boots
+to when you don’t select an option.<br />
+<code>editor no</code> prevents any edits to be made to the boot options
+within the menu itself.</p>
+<p>Once that’s done, type:</p>
+<pre><code>nano /boot/loader/entries/arch.conf</code></pre>
+<p>And define parameters as follows:</p>
+<pre><code>title    Arch Linux
+linux    /vmlinuz-linux
+initrd   /initramfs-linux.img
+options  root=UUID=&quot;[root partition UUID]&quot; rw</code></pre>
+<p><code>title</code> is what the boot option will display.<br />
+<code>linux</code> refers to the Linux kernel.<br />
+<code>initrd</code> is what your RAM will be formatted to on boot, so
+memory can be stored on to it during uptime.<br />
+<code>options</code> specifies your ROOT partition, and specifies that
+it can be read and written to.</p>
+<p>You can find the root partition’s UUID by typing into the command
+line (not your editor):</p>
+<pre><code>blkid /dev/sdx3</code></pre>
+<p>(Keeping in mind that sdx refers to the drive you want to install
+Arch Linux onto)</p>
+<p>Save and exit.</p>
+<p>We need to make a similar file for the fallback image. To do that,
+type:</p>
+<pre><code>cp /boot/loader/entries/arch.conf /boot/loader/entries/arch-fb.conf</code></pre>
+<p>Edit the file:</p>
+<pre><code>nano /boot/loader/entries/arch-fb.conf</code></pre>
+<p>Change the below lines:</p>
+<pre><code>title Arch Linux
+initrd /initramfs-linux.img</code></pre>
+<p>To (respectively):</p>
+<pre><code>title Arch Linux Fallback
+initrd /initrams-linux-fallback.img</code></pre>
+<p>Do the same for any other LInux derivatives you have installed.<br />
+Example:</p>
+<pre><code>title Arch Linux Zen
+linux /vmlinuz-linux-zen
+initrd /initramfs-linuz-zen.img</code></pre>
+<p><strong><span class="emoji" data-emoji="warning">⚠️</span> - Did you
+follow the above steps EXACTLY? Any mistakes made can and will cause
+your Arch system to fail its boot sequence.</strong></p>
+<h2 id="enabling-secure-boot-">Enabling Secure Boot
+<a name="enable-secure-boot"></a></h2>
+<blockquote>
+<p>NOTE: This step is entirely optional, and if you don’t care enough to
+enable secure boot, you can skip it by clicking <a
+href="#creating-users">here</a></p>
+</blockquote>
+<p>Secure Boot is a security standard designed to ensure that a device
+boots using only trusted software. To enable it, go into your firmware
+settings and erase all of your secure boot keys. The way on how to do so
+differs between manufacturers.<br />
+Once you’ve done that, install sbctl by running the below command:</p>
+<pre><code>sudo pacman -S sbctl</code></pre>
+<p>Then create secure boot keys by running the below command:</p>
+<pre><code>sudo sbctl create-keys</code></pre>
+<p>Then enroll those keys, alongside Microsoft’s, to the UEFI</p>
+<pre><code>sudo enroll-keys -m</code></pre>
+<p>Check what files need to be signed by running:</p>
+<pre><code>sbctl verify</code></pre>
+<p>And sign those files:</p>
+<pre><code>sbctl sign -s /boot/vmlinuz-linux
+sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI</code></pre>
+<p>If you have any Linux derivatives installed, go ahead and sign those
+too.</p>
+</details>
+
+<hr />
+<h3 id="create-a-user-account-">Create a user account
+<a name="create-users"></a></h3>
+<p>Doing this is common sense, as many login managers do not include the
+root account as one of the login options.<br />
+To do this, run the below:</p>
+<pre><code>useradd -mG wheel [username]</code></pre>
+<p>replacing <code>[username]</code> with the username of your choice.
+The <code>-m</code> option creates a user directory for you, where local
+configurations and apps are stored. The <code>-G wheel</code> option
+creates the user as part of the wheel group, which will allow you to
+make changes on the system itself. For example, downloading and
+installing packages, and configuring them.</p>
+<p>Set a password for the user account by running:</p>
+<pre><code>passwd [username]</code></pre>
+<p>Repeat the above process as many times as you want, depending on the
+amount of users you want to add to your system.<br />
+If you do not want a user to use sudo commands , use the below command
+instead:</p>
+<pre><code>useradd -m [username]</code></pre>
+<h3 id="allow-wheel-group-to-use-sudo-commands-">Allow Wheel Group to
+use Sudo Commands <a name="allow-sudo-commands"></a></h3>
+<p>You need to do this to actually allow your user to make changes to
+the system.</p>
+<pre><code>EDITOR=nano visudo</code></pre>
+<p>And find and uncomment the below line by remove the preceeding
+hashtag.</p>
+<pre><code>#%wheel ALL=(ALL) ALL</code></pre>
+<p>Save &amp; exit.</p>
+<h3 id="final-step">Final Step</h3>
+<pre><code>exit
+reboot</code></pre>
+</br>
+
+<hr />
+<h2 id="login-as-your-user-account-">Login as your user account
+<a name="reconnect-to-the-internet"></a></h2>
+<p>If you’ve encrypted your ROOT/HOME partion(s), enter your password to
+access your Arch system.<br />
+You’ll have to reconnect to the internet as we’re using NetworkManager
+instead of iwd, so our connection settings have been lost and you’ll
+have to reconnect.<br />
+If you were connected to the internet through a Mobile Broadband Modem,
+the connection process is the same as before.</p>
+<p>Firstly, to take a look at what network stations you have installed
+on your computer, use the command:</p>
+<pre><code>nmcli device</code></pre>
+<p>Then, turn on wifi by using the command:</p>
+<pre><code>nmcli radio wifi on</code></pre>
+<p>And list local access points by using the command:</p>
+<pre><code>nmcli device wifi list</code></pre>
+<p>Select one of the access points listed and connect to it by running
+the following command:</p>
+<pre><code>nmcli device wifi connect [Access Point SSID] password [Access Point Password]</code></pre>
+<p>You don’t need to check for updates as Arch will have already
+downloaded the latest version of Arch Linux.</p>
+<p>You can stop here if you want to have a desktop-less Arch system for
+any reason (this could be for a server install).</p>
+<hr />
+<h3 id="xorg--gpu-drivers-">Xorg &amp; GPU Drivers
+<a name="xorg--gpu-drivers"></a></h3>
+<pre><code>sudo pacman -S xorg [xf86-video-your gpu type]</code></pre>
+<p><code>xorg</code> is the free and open-source implementation of the X
+Window System (X11) display server. It essentially allows whatever
+applications you want to run to actually draw windows and display/</p>
+<ul>
+<li>For Nvidia GPUs, type <code>nvidia</code> &amp;
+<code>nvidia-settings</code>. For more info/old GPUs, refer to <a
+href="https://wiki.archlinux.org/index.php/NVIDIA">Arch Wiki -
+Nvidia</a>.</li>
+<li>For newer AMD GPUs, type <code>xf86-video-amdgpu</code>.</li>
+<li>For legacy Radeon GPUs like HD 7xxx Series &amp; below, type
+<code>xf86-video-ati</code>.</li>
+<li>For dedicated Intel Graphics, type
+<code>xf86-video-intel</code>.</li>
+</ul>
+<h3
+id="enable-multilib-repo-optional-but-absolutely-recommended-">Enable
+Multilib Repo (optional but absolutely recommended)
+<a name="multilib"></a></h3>
+<p>Multilib allows you to download and run 32-bit software if you’re on
+a 64-bit machine. Of course, if you’re running this on a 32-bit machine,
+you can go ahead and skip this step.</p>
+<p>Edit <code>/etc/pacman.conf</code> &amp; uncomment the below two
+lines.</p>
+<pre><code>#[multilib]
+#Include = /etc/pacman.d/mirrorlist</code></pre>
+<h4 id="mesa-libraries-32bit-optional-but-highly-recommmended">MESA
+Libraries (32bit) (optional but highly recommmended)</h4>
+<p>This package is required by Steam if you play games using Vulkan
+Backend.</p>
+<pre><code>sudo pacman -Sy lib32-mesa</code></pre>
+<p>Note: The above install will not work if you don’t specify
+<code>-Sy</code> or type <code>sudo pacman -Syy</code> beforehand.</p>
+<h3 id="install--enable-sddm-">Install &amp; Enable SDDM
+<a name="install--enable-sddm"></a></h3>
+<pre><code>sudo pacman -S sddm
+sudo systemctl enable sddm</code></pre>
+<p><code>sddm</code> is a login manager. It helps you login into your
+system through a graphical frontend.</p>
+<h3 id="kde-plasma--applications-">KDE Plasma &amp; Applications
+<a name="kde-plasma--applications"></a></h3>
+<pre><code>sudo pacman -S plasma konsole dolphin ark kwrite kcalc spectacle krunner partitionmanager packagekit-qt5</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>Packages</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>plasma</td>
+<td>KDE Plasma Desktop Environment.</td>
+</tr>
+<tr class="even">
+<td>konsole</td>
+<td>KDE Terminal.</td>
+</tr>
+<tr class="odd">
+<td>dolphin</td>
+<td>KDE File Manager.</td>
+</tr>
+<tr class="even">
+<td>ark</td>
+<td>Archiving Tool.</td>
+</tr>
+<tr class="odd">
+<td>kwrite</td>
+<td>Text Editor.</td>
+</tr>
+<tr class="even">
+<td>kcalc</td>
+<td>Scientific Calculator.</td>
+</tr>
+<tr class="odd">
+<td>spectacle</td>
+<td>KDE screenshot capture utility.</td>
+</tr>
+<tr class="even">
+<td>krunner</td>
+<td>KDE Quick drop-down desktop search.</td>
+</tr>
+<tr class="odd">
+<td>partitionmanager</td>
+<td>KDE Disk &amp; Partion Manager.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="audio-utilities--bluetooth-optional-but-recommended-">Audio
+Utilities &amp; Bluetooth (optional but recommended)
+<a name="audio-utilities--bluetooth"></a></h3>
+<pre><code>sudo pacman -S alsa-utils bluez bluez-utils</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>Packages</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>alsa-utils</td>
+<td>This contains (among other utilities) the <code>alsamixer</code> and
+<code>amixer</code> utilities.</td>
+</tr>
+<tr class="even">
+<td>bluez</td>
+<td>Provides the Bluetooth protocol stack.</td>
+</tr>
+<tr class="odd">
+<td>bluez-utils</td>
+<td>Provides the <code>bluetoothctl</code> utility.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="enable-bluetooth">Enable Bluetooth</h4>
+<pre><code>sudo systemctl enable bluetooth.service</code></pre>
+<h3 id="final-reboot">Final Reboot</h3>
+<pre><code>reboot</code></pre>
+</br>
+
+<hr />
+<h1 id="the-conclusion-">The Conclusion
+<a name="the-conclusion"></a></h1>
+<p>Now everything is installed and after the final <code>reboot</code>,
+you will land in the SDDM greeter. You can continue reading for some
+steps to further improve your experience. I recommend you to install
+<code>yay</code> &amp; <code>paccache</code>.</p>
+<ul>
+<li>Yay will provide your packages from AUR (Arch User Repository),
+which are not available in the official repos.</li>
+<li>Paccache can be used clean pacman cached packages either manually or
+in an automated way.</li>
+</ul>
+</br>
+
+<h2 id="extras-">Extras <a name="extras"></a></h2>
+<h3
+id="apps-i-would-personally-recommend-installing-but-arent-required-">Apps
+I would personally recommend installing but aren’t required
+<a name="misc-applications"></a></h3>
+<p>You can install all the following packages or only the one you
+want.</p>
+<pre><code>sudo pacman -S firefox openssh qbittorrent audacious wget screen git neofetch</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>Packages</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>firefox</td>
+<td>Mozilla Firefox Web Browser.</td>
+</tr>
+<tr class="even">
+<td>openssh</td>
+<td>Secure Shell access server.</td>
+</tr>
+<tr class="odd">
+<td>qbittorrent</td>
+<td>Qt-based BitTorrent Client.</td>
+</tr>
+<tr class="even">
+<td>audacious</td>
+<td>Qt-based music player.</td>
+</tr>
+<tr class="odd">
+<td>wget*</td>
+<td>Wget is a free utility for non-interactive download of files from
+the Web.</td>
+</tr>
+<tr class="even">
+<td>screen</td>
+<td>Is a full-screen window manager that multiplexes a physical terminal
+between several processes, typically interactive shells.</td>
+</tr>
+<tr class="odd">
+<td>git*</td>
+<td>Github command-line utility tools. (needed to access the AUR)</td>
+</tr>
+<tr class="even">
+<td>fastfetch</td>
+<td>Fastfetch is a command-line system information tool, that is the
+sucessor to NeoFetch.</td>
+</tr>
+<tr class="odd">
+<td>cups*</td>
+<td>Printer service</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>* - These are some of the more important packages, which a lot of
+programs tend to use. They’re optional but it is highly recommended to
+install both of them.</p>
+</blockquote>
+<h3 id="enable-openssh-daemon-and-cups-printer-service">Enable OpenSSH
+daemon and CUPS printer service</h3>
+<pre><code>sudo systemctl enable sshd.service
+sudo systemctl enable --now cups.service</code></pre>
+<h3 id="install-yay">Install <a
+href="https://github.com/Jguer/yay">Yay</a></h3>
+<p>Yet Another Yogurt - An AUR Helper. A lot of programs written for
+Arch can be founded in the AUR, but be careful of what you download from
+there.</p>
+<pre><code>git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+cd .
+rm -rf yay # To delete the yay folder as it isn&#39;t necessary anymore</code></pre>
+<h2 id="maintenance-performance-tuning--monitoring">Maintenance,
+Performance Tuning &amp; Monitoring</h2>
+<h3 id="paccache">Paccache</h3>
+<p>Pacman Cache Cleaner.</p>
+<p>Install</p>
+<pre><code>sudo pacman -S pacman-contrib</code></pre>
+<p>To manually clean pacman cache, run</p>
+<pre><code>sudo paccache -rk</code></pre>
+<p>Where, <em>k</em> indicates to keep “num” of each package in the
+cache.</p>
+<h4 id="to-automate-paccache-process">To automate paccache process</h4>
+<p>Create a file in <code>/etc/pacman.d/hooks</code></p>
+<pre><code>sudo mkdir /etc/pacman.d/hooks
+sudo nano /etc/pacman.d/hooks/clean_cache.hook</code></pre>
+<p>Add the following lines in it</p>
+<pre><code>[Trigger]
+Operation = Upgrade
+Operation = Install
+Operation = Remove
+Type = Package
+Target = *
+[Action]
+Description = Cleaning pacman cache...
+When = PostTransaction
+Exec = /usr/bin/paccache -rk</code></pre>
+<p>save &amp; exit.</p>
+<h3 id="install-cockpit">Install <a
+href="https://cockpit-project.org/">Cockpit</a></h3>
+<p>A systemd web based user interface for Linux servers, Workstations
+and even Desktops. Can be used to monitor your system stats, performance
+and perform various settings including updating of your system.</p>
+<pre><code>sudo pacman -S cockpit</code></pre>
+<h5 id="enable-cockpit">Enable Cockpit</h5>
+<pre><code>sudo systemctl enable --now cockpit.socket</code></pre>
+<p>Now open your browser and point to it
+<code>your-machine-ip:9000</code> and login with
+<em><strong>root</strong></em> to get full access.</p>
+</br>
+
+<h2 id="changelog">Changelog</h2>
+<ul>
+<li><strong>2024-08-08</strong>
+<ul>
+<li>Initial guide created.</li>
+</ul></li>
+</ul>
+<h4 id="full-and-complete-changelog-click-here">Full and complete
+changelog, <a
+href="https://github.com/Exvix/arch-install-guide/blob/main/CHANGELOG.md">click
+here</a>.</h4>
+</body>
+</html>

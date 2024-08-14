@@ -1,8 +1,9 @@
-> Tested working as of: 2024.08.01
+> Tested working as of release 2024.08.01
 
 # The ultimate Arch linux install guide (UEFI & MBR)
 
 ## Table of Contents
+ - [**Glossary**](#glossary)
  - [**Introduction**](#introduction)
  - [**Booting into the ArchISO**](#boot-to-archiso)
    - [**Creating the installation medium**](#creating-boot-medium)
@@ -23,7 +24,6 @@
      - [Pre-installation steps](#preinstall-steps)
      - [Installing GRUB (MBR only)](#installing-grub)
      - [Installing SystemD-Boot (EFI only)](#installing-systemd-boot)
-        -[Enable secure boot](#enable-secure-boot)
    - [Create users](#create-users)
    - [Allow sudo commands](#allow-sudo-commands)
  - [**User Login**](#reconnect-to-the-internet)
@@ -44,6 +44,18 @@
 
 ---
 
+# Glossary <a name="glossary"></a>
+
+Name            | Description
+----------------| -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+OS              | Operating System, a kind of program that helps a computer to interact with other machines and/or with people.
+Unix-like       | Unix is a computer OS, first developed at Bell Labs. It became very influential within academic circles, leading to large-scale adoption by start-up companies leading Unix to fragment into much smaller, similar but mostly mutually incompatible OSes. Among these are FreeBSD, OpenBSD and MacOS
+Kernel          | The middleman between the OS and the hardware.
+Linux           | A kernel created by Linux Torvalds between 1991 and 1994. Since it wasn't directly derived off of any existing Unix operating system, it's Unix-like and not a Unix OS.
+Bootloader      | A program responsible for starting a machine and the OS saved on its disk.
+Distro          | A distribution of Linux - meaning - an OS based off of the Linux kernel, these include Ubuntu, Debian, Red Hat, Fedora and Arch Linux amongst many others.
+Package Manager | A package manager is a program designed to automate the process of downloading, installing, updating, listing, removing and searching for software (bundled together as an app or "package")
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Introduction
 
 ## What is Arch Linux?
@@ -57,12 +69,12 @@ Arch Linux is fantastic for its Arch User Repository (AUR) and simplicity of des
 
 ## Creating the Arch installation medium <a name="creating-boot-medium"></a>
 
-Firstly, get the EFI ISO file from [the official Arch Linux website](https://archlinux.org/download/) or [the website for the community-maintained 32-bit Arch Linux OS](https://www.archlinux32.org/download/) either through torrenting it, or using of the mirrorlinks.\
+Firstly, get the ISO file from [the official Arch Linux website](https://archlinux.org/download/) or [the website for the community-maintained 32-bit Arch Linux OS](https://www.archlinux32.org/download/) either through torrenting it, or using one of the mirrorlinks.\
 You'll need to use software such as [Ventoy](https://www.ventoy.net/en/download.html), [Rufus](https://rufus.ie/en/) or [BalenaEtcher](https://etcher.balena.io/#download-etcher). The instructions on how to use such software can be found within their websites.
 
 ## Entering the boot menu <a name="entering-boot-menu"></a>
 
-Once the ISO has been written to a storage medium (that could be a USB thumb drive, SD card .etc), you'll need to go into your computers boot options through the firmware interface. To do so, follow the instructions below, based on your Operating System.
+Once the ISO has been written to a storage medium (that could be a USB thumb drive, SD card .etc), you'll need to go into your computers boot options through the firmware interface. To do so, follow the instructions below, based on your current operating system (not the operating system you want to install, which is, obviously, Arch Linux).
 
 <details>
  <summary><h3>Windows</h3></summary>
@@ -276,9 +288,9 @@ And enter:
 z
 ```
 To "zap" the disk (basically, to initialise the disk).\
-It will ask you if you want to confirm, enter ```y``` and it will then if ask you want to "blank out MBR?", which means it will wipe all of the boot code and other critical data necessary for an OS to boot. Since you're no longer booting from your old OS, go ahead and hit ```y```.\
+It will ask you if you want to confirm, enter ```y``` and it will then if ask you want to "blank out MBR?", which means it will wipe all of the boot code and other critical data necessary for an OS to boot. Since you're no longer booting from your old OS, go ahead and hit ```y```.
 
-Run gdisk again and follow the below instructions (do not type anything where ```=``` precedes it, as those are just explanations for what each command does):
+Run gdisk again and enter the below character, as gdisk only uses one-character commands (do not type ```=``` or anything after ```=```, as those are just explanations for what each command does):
 
  ```
 n = New Partition
@@ -325,7 +337,7 @@ w = Write partitions and quit
 
 ### Set up LUKS encryption (optional)
 
-> Note: You may skip this step.
+> Note: You may skip this step. To do so, click [here](#format--mount-partitions)
 
 LUKS encryption encrypts your root partition (and home partition too, if present) so that attackers who have physical access to your laptop cannot access the contents of your drive.
 
@@ -352,7 +364,7 @@ And if you have a separate home partition, run the below command:
 cryptsetup open /dev/sdx4 home
 ```
 
-### Format non-swap partitions (so that data can be written/read from it)
+### Format non-swap partitions (so that data can be written/read from it) <a name="format--mount-partitions"></a>
 ```
 mkfs.fat -F32 /dev/sdx1 # Done as it needs to be in a universally-recognised file system, so your computer can boot from it.
 mkfs.btrfs /dev/sdx3 # Add -f if your system tells you another filesystem like ext4 is already present
@@ -489,7 +501,7 @@ pacstrap /mnt base base-devel linux linux-firmware linux-headers nano intel-ucod
 `base-devel` is software for development purposes only, such as GCC or G++.\
 `linux`, `linux-headers` and `linux-firmware` are the kernel, which, together, act as the middleman between the software on your computer and the hardware on your computer.\
 `mtools` allows the user to access MS-DOS disks.\
-`dosfstools` allows the user to format MS-DOS disks./
+`dosfstools` allows the user to format MS-DOS disks.\
 `networkmanager` allows the user to connect to the internet.\
 
 If you're connected to the internet through a Mobile Broadband Modem, append the below packages to your command:
@@ -579,7 +591,7 @@ echo "KEYMAP=uk" > /etc/vconsole.conf
 
 ## Set Hostname <a name="set-hostname"></a>
 
-A hostname is what your computer calls itself when talking to other computers. To set a hostname, run the below command:
+A hostname is what your computer identifies itself as when talking to other computers. To set a hostname, run the below command:
 
 ```
 echo arch > /etc/hostname
@@ -646,6 +658,8 @@ mkinitcpio -P
  
 </details>
 
+You'll still need to install a bootloader if you've set up LUKS. Go to "Installing and configuring SystemD-Boot" below. 
+
 <a name="installing-grub"></a>
 <details>
  <summary><h3>Installing GRUB (MBR)</h3></summary>
@@ -685,7 +699,7 @@ default arch.conf
 editor no
 ```
 
-```timeout 3``` stalls your system by 3 seconds before it boots so you have time to select an option.\
+```timeout 3``` stalls your system by 3 seconds before it boots so you have time to select an option. This is optional, and if you want an instant boot, you can leave it commented\
 ```console-mode keep``` keeps your console-based SystemD-Boot menu to how it was last time.\
 ```default arch.conf``` is what SystemD-Boot automatically boots to when you don't select an option.\
 ```editor no``` prevents any edits to be made to the boot options within the menu itself.
@@ -697,10 +711,10 @@ nano /boot/loader/entries/arch.conf
 
 And define parameters as follows:
 ```
-title    Arch Linux
-linux    /vmlinuz-linux
-initrd   /initramfs-linux.img
-options  root=UUID="[root partition UUID]" rw
+title Arch Linux
+linux /vmlinuz-linux
+initrd /initramfs-linux.img
+options root=UUID="[root partition UUID]" rw
 ```
 
 ```title``` is what the boot option will display.\
@@ -739,12 +753,13 @@ title Arch Linux Fallback
 initrd /initrams-linux-fallback.img
 ```
 
-Do the same for any other LInux derivatives you have installed.\
+Do the same for any other Linux derivatives you have installed.\
 Example:
 ```
 title Arch Linux Zen
 linux /vmlinuz-linux-zen
 initrd /initramfs-linuz-zen.img
+options root=UUID="[root partition UUID]" rw
 ```
 
 **:warning: - Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.** 
@@ -834,8 +849,8 @@ reboot
 
 ## Login as your user account <a name="reconnect-to-the-internet"></a>
 
-If you've encrypted your ROOT/HOME partion(s), enter your password to access your Arch system.\
-You'll have to reconnect to the internet as we're using NetworkManager instead of iwd, so our connection settings have been lost and you'll have to reconnect.\
+If you've encrypted your ROOT/HOME partition(s), enter your password to access your Arch system.\
+You'll have to reconnect to the internet as we're using network-manager instead of iwd, so our connection settings have been lost and you'll have to reconnect.\
 If you were connected to the internet through a Mobile Broadband Modem, the connection process is the same as before.
 
 Firstly, to take a look at what network stations you have installed on your computer, use the command:
@@ -977,7 +992,7 @@ A lot of programs written for Arch can be founded in the AUR, but be careful of 
 git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
-cd .
+cd ..
 rm -rf yay # To delete the yay folder as it isn't necessary anymore
 ```
 

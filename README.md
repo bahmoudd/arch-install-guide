@@ -1093,7 +1093,7 @@ Now open your browser and point to it `your-machine-ip:9000` and login with ***r
    - Added a html file for any user to render themselves, by downloading it and opening it in their browser
  - **2024-08-18 (v1.2)**
    - Rearranged some sections so the guide makes sense and so that it looks nicer
-   - Skippable sections are now collapsable, instead of lazily having a link you can skip to.
+   - Skippable sections are now collapsible, instead of lazily having a link you can skip to.
    - Appended a few terms to the glossary
    - Minor rewordings
    - Fixed a few typos and grammatical errors

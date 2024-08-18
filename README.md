@@ -21,7 +21,6 @@
    - [Enabling Network Manager](#enable-networkmanager)
    - [ROOT Password](#set-root-password)
    - [Installing the Bootloader](#installing-bootloader)
-     - [Pre-installation steps](#preinstall-steps)
      - [Installing GRUB (MBR only)](#installing-grub)
      - [Installing SystemD-Boot (EFI only)](#installing-systemd-boot)
    - [Create users](#create-users)
@@ -55,6 +54,8 @@ Linux           | A kernel created by Linux Torvalds between 1991 and 1994. Sinc
 Bootloader      | A program responsible for starting a machine and the OS saved on its disk.
 Distro          | A distribution of Linux - meaning - an OS based off of the Linux kernel, these include Ubuntu, Debian, Red Hat, Fedora and Arch Linux amongst many others.
 Package Manager | A package manager is a program designed to automate the process of downloading, installing, updating, listing, removing and searching for software (bundled together as an app or "package")
+Greeter         | A greeter is a graphical login interface, and is often called the login screen. It essentially "greets" the user(s) to the system.
+Shell           | A shell is a text environment where you issue commands and information to your computer. 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Introduction
 
@@ -334,11 +335,8 @@ n = New Parition
 
 w = Write partitions and quit
 ```
-
-### Set up LUKS encryption (optional)
-
-> Note: You may skip this step. To do so, click [here](#format--mount-partitions)
-
+<details>
+ <summary><h4>Encrypt your drive (optional)</h4></summary>
 LUKS encryption encrypts your root partition (and home partition too, if present) so that attackers who have physical access to your laptop cannot access the contents of your drive.
 
 To set that up, enter the following commands:
@@ -363,6 +361,7 @@ And if you have a separate home partition, run the below command:
 ```
 cryptsetup open /dev/sdx4 home
 ```
+</details>
 
 ### Format non-swap partitions (so that data can be written/read from it) <a name="format--mount-partitions"></a>
 ```
@@ -631,8 +630,28 @@ The bootloader is what manages the boot process, and is the PID 0 of your Arch s
 If you're on an MBR systems, install GRUB and if you're on an EFI system, install SystemD-Boot.\
 You need to do some extra steps before installing the bootloader if you've encrypted your ROOT/HOME parition(s).
 
+You'll still need to install a bootloader if you've set up LUKS. Go to "Installing and configuring SystemD-Boot" below. 
+
+<a name="installing-grub"></a>
 <details>
- <summary><h3>If you've set up LUKS encryption on your hard drive<a name="preinstall-steps"></a></h3></summary>
+ <summary><h3>Installing GRUB (MBR)</h3></summary>
+"Targets" are CPU architechtures. These are important for grub to know so it can handle the boot proess correctly.\
+Find your CPU architechture from [this site](https://renenyffenegger.ch/notes/Linux/shell/commands/grub-install#grub-install-target) and specify that as the target.
+
+```
+pacman -S grub
+grub-install /dev/[disk name] # You don't need to specify a target because the default is i386-pc
+grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+</details>
+
+<a name="installing-systemd-boot">
+<details>
+ <summary><h3>Installing and configuring SystemD-Boot (UEFI)</a></h3></summary>
+
+<details>
+ <summary><h4>If you've set up LUKS encryption on your hard drive</h4></summary>
 
 Because you've encrypted your ROOT (and HOME partition, if present), you need to perform some extra steps.
 
@@ -657,27 +676,6 @@ mkinitcpio -P
 ```
  
 </details>
-
-You'll still need to install a bootloader if you've set up LUKS. Go to "Installing and configuring SystemD-Boot" below. 
-
-<a name="installing-grub"></a>
-<details>
- <summary><h3>Installing GRUB (MBR)</h3></summary>
-"Targets" are CPU architechtures. These are important for grub to know so it can handle the boot proess correctly.\
-Find your CPU architechture from [this site](https://renenyffenegger.ch/notes/Linux/shell/commands/grub-install#grub-install-target) and specify that as the target.
-
-```
-pacman -S grub
-grub-install /dev/[disk name] # You don't need to specify a target because the default is i386-pc
-grub-mkconfig -o /boot/grub/grub.cfg
-```
-
-</details>
-
-<a name="installing-systemd-boot">
-<details>
- <summary><h3>Installing and configuring SystemD-Boot (UEFI)</a></h3></summary>
-
 
 Install SystemD-Boot by running:
 ```
@@ -762,11 +760,10 @@ initrd /initramfs-linuz-zen.img
 options root=UUID="[root partition UUID]" rw
 ```
 
-**:warning: - Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.** 
+**❓: - Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.** 
 
-## Enabling Secure Boot <a name="enable-secure-boot"></a>
-
-> NOTE: This step is entirely optional, and if you don't care enough to enable secure boot, you can skip it by clicking [here](#creating-users)
+<details>
+ <summary><h4>Enable secure boot (Optional)<a name="enable-secure-boot"></a></h4></summary>
 
 Secure Boot is a security standard designed to ensure that a device boots using only trusted software. To enable it, go into your firmware settings and erase all of your secure boot keys. The way on how to do so differs between manufacturers.\
 Once you've done that, install sbctl by running the below command:
@@ -800,11 +797,13 @@ If you have any Linux derivatives installed, go ahead and sign those too.
 
 </details>
 
+</details>
+
 ---
 
 ### Create a user account <a name="create-users"></a>
 
-Doing this is common sense, as many login managers do not include the root account as one of the login options.\
+Doing this is common sense, as many greeters do not include the root account as one of the users when logging it.\
 To do this, run the below:
 ```
 useradd -mG wheel [username]
@@ -870,9 +869,7 @@ Select one of the access points listed and connect to it by running the followin
 nmcli device wifi connect [Access Point SSID] password [Access Point Password]
 ```
 
-
-You don't need to check for updates as Arch will have already downloaded the latest version of Arch Linux.
-
+You won't need to check for updates as Arch will have already downloaded the latest version of Arch Linux.
 You can stop here if you want to have a desktop-less Arch system for any reason (this could be for a server install).
 
 ---
@@ -882,7 +879,7 @@ You can stop here if you want to have a desktop-less Arch system for any reason 
 sudo pacman -S xorg [xf86-video-your gpu type]
 ```
 
-```xorg``` is the free and open-source implementation of the X Window System (X11) display server. It essentially allows whatever applications you want to run to actually draw windows and display/
+```xorg``` is the free and open-source implementation of the X Window System (X11) display server. It essentially allows whatever applications you want to run to actually draw windows and display.
 
 - For Nvidia GPUs, type `nvidia` & `nvidia-settings`. For more info/old GPUs, refer to [Arch Wiki - Nvidia](https://wiki.archlinux.org/index.php/NVIDIA).
 - For newer AMD GPUs, type `xf86-video-amdgpu`.
@@ -904,7 +901,7 @@ This package is required by Steam if you play games using Vulkan Backend.
 sudo pacman -Sy lib32-mesa
 ```
 
-Note: The above install will not work if you don't specify ```-Sy``` or type ```sudo pacman -Syy``` beforehand.
+> Note: The above install will not work if you don't specify ```-Sy``` or type ```sudo pacman -Syy``` beforehand.
 
 ### Install & Enable SDDM <a name="install--enable-sddm"></a>
 ```
@@ -968,7 +965,7 @@ sudo pacman -S firefox openssh qbittorrent audacious wget screen git neofetch
 Packages | Description
 --------- | ----------
 firefox | Mozilla Firefox Web Browser.
-openssh | Secure Shell access server.
+openssh | Secure Shell access server, allows you to access remote computers or servers.
 qbittorrent | Qt-based BitTorrent Client.
 audacious | Qt-based music player.
 wget\* | Wget is a free utility for non-interactive download of files from the Web. 
@@ -992,8 +989,43 @@ A lot of programs written for Arch can be founded in the AUR, but be careful of 
 git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
+```
+The below commands delete the yay folder as it isn't necessary anymore
+```
 cd ..
-rm -rf yay # To delete the yay folder as it isn't necessary anymore
+sudo rm -rf yay
+```
+
+### Alternative shells
+
+The shell that comes with your system automatically is bash. However, bash isn't very configurable. To fix that, you can use an alternative shell. Some will be listed below:
+
+Shell   | Description
+------- | ------------
+zsh     | It is fully backwards compatible with bash, and is highly configurable shell. However, it has quite a learning curve.
+fish    | An easy and highly configurable shell. It has features like autosuggestions out of the box. However, if you're used to bash or zsh, it might take some time to learn fish.
+nushell | An incredibly fast shell that centers around using objects and modules. It lacks a lot of features that bash, zsh and fish have, however.
+----------------------
+
+To take a look at what shell you have as default (this will likely be bash), run the below command:
+```
+echo $SHELL
+```
+
+To see what shells you have installed on your system, run the below command:
+```
+chsh -l
+```
+
+Find the shell of your preference within that list and change it accordingly using the below command:
+```
+chsh -s [shell]
+```
+
+> Replacing ```[shell]``` with the shell of your preference. An example can be found below.
+
+```
+chsh -s /bin/zsh
 ```
 
 ## Maintenance, Performance Tuning & Monitoring
@@ -1014,13 +1046,13 @@ Where, *k* indicates to keep "num" of each package in the cache.
 
 #### To automate paccache process
 
-Create a file in `/etc/pacman.d/hooks`
+Create a file in `/etc/pacman.d/hooks` by running the below 
 ```
 sudo mkdir /etc/pacman.d/hooks
 sudo nano /etc/pacman.d/hooks/clean_cache.hook
 ```
 
-Add the following lines in it
+Append the following lines to it
 ```
 [Trigger]
 Operation = Upgrade
@@ -1033,10 +1065,10 @@ Description = Cleaning pacman cache...
 When = PostTransaction
 Exec = /usr/bin/paccache -rk
 ```
-save & exit.
+Save & exit.
 
 ### Install [Cockpit](https://cockpit-project.org/)
-A systemd web based user interface for Linux servers, Workstations and even Desktops. Can be used to monitor your system stats, performance and perform various settings including updating of your system.
+A systemd web based user interface for Linux servers, workstations and even desktops. It can be used to monitor your system stats, performance and perform various settings including updating your system.
 ```
 sudo pacman -S cockpit
 ```
@@ -1051,7 +1083,20 @@ Now open your browser and point to it `your-machine-ip:9000` and login with ***r
 
 ## Changelog
 
- - **2024-08-08**
-   - Initial guide created. 
-
+ - **2024-08-08 (v1.0)**
+   - Initial guide created.
+ - **2024-08-14 (v1.1)**
+   - Fixed broken hyperlinks
+   - Created a glossary
+   - Fixed typos
+   - Improved the guide by adding a few sentences here and there
+   - Added a html file for any user to render themselves, by downloading it and opening it in their browser
+ - **2024-08-18 (v1.2)**
+   - Rearranged some sections so the guide makes sense and so that it looks nicer
+   - Skippable sections are now collapsable, instead of lazily having a link you can skip to.
+   - Appended a few terms to the glossary
+   - Minor rewordings
+   - Fixed a few typos and grammatical errors
+   - Created a section on how to change defaults shells
+   
 #### Full and complete changelog, [click here](https://github.com/Exvix/arch-install-guide/blob/main/CHANGELOG.md).

@@ -1099,4 +1099,4 @@ Now open your browser and point to it `your-machine-ip:9000` and login with ***r
    - Fixed a few typos and grammatical errors
    - Created a section on how to change defaults shells
    
-#### Full and complete changelog, [click here](https://github.com/Exvix/arch-install-guide/blob/main/CHANGELOG.md).
+#### For all the latest changes, [click here](https://github.com/Exvix/arch-install-guide/compare/v1.1...v1.2)

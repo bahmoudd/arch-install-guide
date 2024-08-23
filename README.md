@@ -886,7 +886,7 @@ You can stop here if you want to have a desktop-less Arch system for any reason 
 
 ```X.org``` is the free and open-source implementation of the X Window System (X11) display protocol. However, it is quite old, and it shows. It has multiple issues with it, for example, applications can eavesdrop on each other, animations are laggier and people with multiple monitors or high-density displays (HiDPI) might experience issues.
 
-```wayland``` is a more recent display protocol. Like X.org, it is free and open-source. However, it is much newer, and more efficient. It offers better security, and modern HiDPI and multi-monitor support. However, it breaks compatibility with certain applications, and although there are compatibility layers such as xorg-xwayland and qt5-wayland, they aren't perfect.
+```Wayland``` is a more recent display protocol. Like X.org, it is free and open-source. However, it is much newer, and more efficient. It offers better security, and modern HiDPI and multi-monitor support. However, it breaks compatibility with certain applications, and although there are compatibility layers such as xorg-xwayland and qt5-wayland, they aren't perfect.
 
 Pick the display protocol of your choice, and select one by clicking on the headers of either of the collapsable sections.
 
@@ -960,7 +960,7 @@ Stacking window managers are just your vanilla desktop environment. You use your
 Tiling window managers, however, have a steeper learning curve than stacking window managers. You use your keyboard to tile and arrange windows on your screen.
 
 Use a tiling window manager if you use vim, neovim or emacs. Use a stacking window manager if you use nano.\
-For a list of notable window managers and how to install them, go to ```window-managers.md```, by clicking [here](window-managers.md)
+For a list of notable window managers and how to install them, go to ```window-managers.md```, by clicking [here](https://github.com/Exvix/arch-install-guide/blob/main/window-managers.md)
 
 ### Audio Utilities & Bluetooth (optional but recommended) <a name="audio-utilities--bluetooth"></a>
 ```

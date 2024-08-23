@@ -30,7 +30,7 @@
    - [Display Server & GPU Drivers](#xorg--gpu-drivers)
    - [Multilib Repository (32bit)](#multilib)
    - [Display Manager (SDDM)](#install--enable-sddm)
-   - [Desktop Environment (KDE Plasma)](#kde-plasma--applications)
+   - [Installing a Desktop Environment](#installing-de)
    - [Audio Utilities & Bluetooth](#audio-utilities--bluetooth)
  - [**The Conclusion**](#the-conclusion)
  - [**Extras (optional)**](#extras)
@@ -48,10 +48,10 @@
 Name            | Description
 ----------------| -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 OS              | Operating System, a kind of program that helps a computer to interact with other machines and/or with people.
-Unix-like       | Unix is a computer OS, first developed at Bell Labs. It became very influential within academic circles, leading to large-scale adoption by start-up companies leading Unix to fragment into much smaller, similar but mostly mutually incompatible OSes. Among these are FreeBSD, OpenBSD and MacOS
+Unix            | Unix is a computer OS, first developed at Bell Labs. It became very influential within academic circles, leading to large-scale adoption by start-up companies leading Unix to fragment into much smaller, similar but mostly mutually incompatible OSes. Among these are FreeBSD, OpenBSD and MacOS.
+Unix-like       | Any Operating System not derived off of any Unix system, but behaves like one.
 Kernel          | The middleman between the OS and the hardware.
-Linux           | A kernel created by Linux Torvalds between 1991 and 1994. Since it wasn't directly derived off of any existing Unix operating system, it's Unix-like and not a Unix OS.
-Bootloader      | A program responsible for starting a machine and the OS saved on its disk.
+Linux           | A Unix-like kernel created by Linux Torvalds in 1991.
 Distro          | A distribution of Linux - meaning - an OS based off of the Linux kernel, these include Ubuntu, Debian, Red Hat, Fedora and Arch Linux amongst many others.
 Package Manager | A package manager is a program designed to automate the process of downloading, installing, updating, listing, removing and searching for software (bundled together as an app or "package")
 Greeter         | A greeter is a graphical login interface, and is often called the login screen. It essentially "greets" the user(s) to the system.
@@ -63,6 +63,12 @@ Shell           | A shell is a text environment where you issue commands and inf
 Arch Linux is an independently-developed rolling-release distribution of Linux. This means that there are no major updates that are delivered to Arch, unlike Windows. Instead, Arch delivers updates in small, frequent amounts, meaning that you have access to the latest drivers, firmware and software as soon as it's available. Since Arch is based off the Linux kernel, it's distributed under the GNU GPLv2 license, meaning that anyone can view the kernel, and what makes up Arch, as well as being able to modify it any point, so long as the software remains open-source.
 
 Arch Linux is fantastic for its Arch User Repository (AUR) and simplicity of design. It is well known for its straightforwardness and is relatively easy for the end user to understand directly, rather than having to dig through multiple layers of graphical interfaces. The package manager - pacman - has no GUI, meaning that everything has to be installed through the command line. This may seem a bit scary at first, but in this guide, I will go through how to install Arch Linux, and how to use its many features.
+
+## A few notes before you continue with the guide
+
+- Anything within square brackets, e.g. ```[text]``` means you should substitute with what's between those square brackets. For example, ```[Root Partition UUID]``` means you have to put the UUID of your partition in place of the square brackets and the text within them.
+- Any collapsable sections with small text are optional, and can be skipped. For example.
+- Any text after hashtags explain the command you are running and are not to be included when you type in the command.
 
 ---
 
@@ -501,7 +507,7 @@ pacstrap /mnt base base-devel linux linux-firmware linux-headers nano intel-ucod
 `linux`, `linux-headers` and `linux-firmware` are the kernel, which, together, act as the middleman between the software on your computer and the hardware on your computer.\
 `mtools` allows the user to access MS-DOS disks.\
 `dosfstools` allows the user to format MS-DOS disks.\
-`networkmanager` allows the user to connect to the internet.\
+`networkmanager` allows the user to connect to the internet.
 
 If you're connected to the internet through a Mobile Broadband Modem, append the below packages to your command:
 ```
@@ -874,12 +880,47 @@ You can stop here if you want to have a desktop-less Arch system for any reason 
 
 ---
 
-### Xorg & GPU Drivers <a name="xorg--gpu-drivers"></a>
+### Display protocols & GPU Drivers <a name="xorg--gpu-drivers"></a>
+
+#### Display protocols
+
+```X.org``` is the free and open-source implementation of the X Window System (X11) display protocol. However, it is quite old, and it shows. It has multiple issues with it, for example, applications can eavesdrop on each other, animations are laggier and people with multiple monitors or high-density displays (HiDPI) might experience issues.
+
+```wayland``` is a more recent display protocol. Like X.org, it is free and open-source. However, it is much newer, and more efficient. It offers better security, and modern HiDPI and multi-monitor support. However, it breaks compatibility with certain applications, and although there are compatibility layers such as xorg-xwayland and qt5-wayland, they aren't perfect.
+
+Pick the display protocol of your choice, and select one by clicking on the headers of either of the collapsable sections.
+
+<details>
+ <summary><h3>X.org</h3></summary>
+ 
+ To install X.org, run the below command:
+ ```
+ sudo pacman -S xorg
+ ```
+</details>
+
+<details>
+ <summary><h3>Wayland</h3></summary>
+ 
+To install Wayland, run the below command:
 ```
-sudo pacman -S xorg [xf86-video-your gpu type]
+sudo pacman -S --needed wayland xorg-xwayland qt5-wayland xorg-xlsclients
 ```
 
-```xorg``` is the free and open-source implementation of the X Window System (X11) display server. It essentially allows whatever applications you want to run to actually draw windows and display.
+```xorg-xwayland``` is a compatibility layer that allows you to run X11 applications on Wayland.
+```qt5-wayland``` allows you to run Qt5 apps on Wayland.
+```xorg-xlsclients``` lists any apps running on the ```xorg-xwayland``` compatibility layer running on the current display.
+
+</details>
+
+#### GPU drivers
+
+GPU drivers allow your computer to utilise your GPU and massively increase performance during games, if you have a good GPU that is.\
+To install your GPU drivers, run the below command:
+
+```
+sudo pacman -S [GPU driver]
+```
 
 - For Nvidia GPUs, type `nvidia` & `nvidia-settings`. For more info/old GPUs, refer to [Arch Wiki - Nvidia](https://wiki.archlinux.org/index.php/NVIDIA).
 - For newer AMD GPUs, type `xf86-video-amdgpu`.
@@ -911,31 +952,29 @@ sudo systemctl enable sddm
 
 ```sddm``` is a login manager. It helps you login into your system through a graphical frontend.
 
-### KDE Plasma & Applications <a name="kde-plasma--applications"></a>
-```
-sudo pacman -S plasma konsole dolphin ark kwrite kcalc spectacle krunner partitionmanager packagekit-qt5
-```
-Packages         | Description
----------------- | ------------------------------------
-plasma           | KDE Plasma Desktop Environment.
-konsole          | KDE Terminal.
-dolphin          | KDE File Manager.
-ark              | Archiving Tool.
-kwrite           | Text Editor.
-kcalc            | Scientific Calculator.
-spectacle        | KDE screenshot capture utility.
-krunner          | KDE Quick drop-down desktop search.
-partitionmanager | KDE Disk & Partion Manager.
+### Installing a desktop environment <a name="installing-de"></a>
+
+A desktop environment, at its most simplest form, just arranges how your apps and other graphical UI elements are arranged on the screen. Some are more customisable than others.\
+There are two main types of Desktop Environments: stacking and tiling.\
+Stacking window managers are just your vanilla desktop environment. You use your mouse to stack and arrange windows on your screen.\
+Tiling window managers, however, have a steeper learning curve than stacking window managers. You use your keyboard to tile and arrange windows on your screen.
+
+Use a tiling window manager if you use vim, neovim or emacs. Use a stacking window manager if you use nano.\
+For a list of notable window managers and how to install them, go to ```desktop-enviroments.md```, by clicking [here]()
 
 ### Audio Utilities & Bluetooth (optional but recommended) <a name="audio-utilities--bluetooth"></a>
 ```
-sudo pacman -S alsa-utils bluez bluez-utils
+sudo pacman -S alsa-utils bluez bluez-utils pipewire wireplumber pipewire-alsa pipewire-pulse
 ```
-Packages    | Description
------------ | -----------------------------------------
-alsa-utils  | This contains (among other utilities) the `alsamixer` and `amixer` utilities.
-bluez       | Provides the Bluetooth protocol stack.
-bluez-utils | Provides the `bluetoothctl` utility.
+Packages       | Description
+-------------- | -----------------------------------------
+alsa-utils     | This contains (among other utilities) the `alsamixer` and `amixer` utilities.
+bluez          | Provides the Bluetooth protocol stack.
+bluez-utils    | Provides the `bluetoothctl` utility.
+pipewire       | Low-latency software for multimedia processing and sharing
+wireplumbler   | Policy and session manager for pipewire
+pipewire-alsa  | Provides soundcard drivers
+pipewire-pulse | A general sound server intended as a middle-man between your soundcard and applications.
 
 #### Enable Bluetooth
 ```

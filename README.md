@@ -67,7 +67,6 @@ Arch Linux is fantastic for its Arch User Repository (AUR) and simplicity of des
 ## A few notes before you continue with the guide
 
 - Anything within square brackets, e.g. ```[text]``` means you should substitute with what's between those square brackets. For example, ```[Root Partition UUID]``` means you have to put the UUID of your partition in place of the square brackets and the text within them.
-- Any collapsable sections with small text are optional, and can be skipped. For example.
 - Any text after hashtags explain the command you are running and are not to be included when you type in the command.
 
 ---

@@ -1122,14 +1122,6 @@ Now open your browser and point to it `your-machine-ip:9000` and login with ***r
 
 ## Changelog
 
- - **2024-08-08 (v1.0)**
-   - Initial guide created.
- - **2024-08-14 (v1.1)**
-   - Fixed broken hyperlinks
-   - Created a glossary
-   - Fixed typos
-   - Improved the guide by adding a few sentences here and there
-   - Added a html file for any user to render themselves, by downloading it and opening it in their browser
  - **2024-08-18 (v1.2)**
    - Rearranged some sections so the guide makes sense and so that it looks nicer
    - Skippable sections are now collapsible, instead of lazily having a link you can skip to.
@@ -1137,5 +1129,15 @@ Now open your browser and point to it `your-machine-ip:9000` and login with ***r
    - Minor rewordings
    - Fixed a few typos and grammatical errors
    - Created a section on how to change defaults shells
+ - **2024-08-23 (v1.3)**
+   - Fixed broken newlines
+   - Added section explaining a few practices within the file.
+   - Reworded some parts of the glossary
+   - Display protocol and GPU drivers are two different sections now
+   - X.org and Wayland are within their own collapsible sections
+   - Added some text for pipewire
+   - Desktop environments are their own file now
+
+**Full Changelog**: https://github.com/Exvix/arch-install-guide/compare/v1.2...v1.3
    
-#### For all the latest changes, [click here](https://github.com/Exvix/arch-install-guide/compare/v1.1...v1.2)
+#### For all the latest changes, [click here](https://github.com/Exvix/arch-install-guide/compare/v1.2...v1.3)

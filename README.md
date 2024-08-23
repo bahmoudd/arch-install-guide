@@ -960,7 +960,7 @@ Stacking window managers are just your vanilla desktop environment. You use your
 Tiling window managers, however, have a steeper learning curve than stacking window managers. You use your keyboard to tile and arrange windows on your screen.
 
 Use a tiling window manager if you use vim, neovim or emacs. Use a stacking window manager if you use nano.\
-For a list of notable window managers and how to install them, go to ```desktop-enviroments.md```, by clicking [here]()
+For a list of notable window managers and how to install them, go to ```window-managers.md```, by clicking [here](window-managers.md)
 
 ### Audio Utilities & Bluetooth (optional but recommended) <a name="audio-utilities--bluetooth"></a>
 ```

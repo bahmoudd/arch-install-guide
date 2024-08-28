@@ -53,6 +53,7 @@ Unix-like       | Any Operating System not derived off of any Unix system, but b
 Kernel          | The middleman between the OS and the hardware.
 Linux           | A Unix-like kernel created by Linux Torvalds in 1991.
 Distro          | A distribution of Linux - meaning - an OS based off of the Linux kernel, these include Ubuntu, Debian, Red Hat, Fedora and Arch Linux amongst many others.
+Bootloader      | A piece of software designed to load the necessary files that start your computer.
 Package Manager | A package manager is a program designed to automate the process of downloading, installing, updating, listing, removing and searching for software (bundled together as an app or "package")
 Greeter         | A greeter is a graphical login interface, and is often called the login screen. It essentially "greets" the user(s) to the system.
 Shell           | A shell is a text environment where you issue commands and information to your computer. 
@@ -498,15 +499,16 @@ reflector -c 'United Kingdom' -a 12 -p https --sort rate --save /etc/pacman.d/mi
 
 ### Install base system <a name="install-base-system"></a>
 ```
-pacstrap /mnt base base-devel linux linux-firmware linux-headers nano intel-ucode mtools dosfstools networkmanager
+pacstrap -K /mnt base base-devel linux linux-firmware linux-headers nano intel-ucode mtools dosfstools networkmanager btrfs-progs
 ```
 
 `base` is all the software necessary to make Arch Linux work.\
-`base-devel` is software for development purposes only, such as GCC or G++.\
+`base-devel` is software for development purposes only, such as GCC or G++, this is necessary if you want to build any software from the source code (which many packages require).\
 `linux`, `linux-headers` and `linux-firmware` are the kernel, which, together, act as the middleman between the software on your computer and the hardware on your computer.\
 `mtools` allows the user to access MS-DOS disks.\
 `dosfstools` allows the user to format MS-DOS disks.\
-`networkmanager` allows the user to connect to the internet.
+`networkmanager` allows the user to connect to the internet.\
+`btrfs-progs` allows userspace utilities for your disk to run.
 
 If you're connected to the internet through a Mobile Broadband Modem, append the below packages to your command:
 ```
@@ -532,7 +534,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 ## Chroot <a name="chroot"></a>
 
-Chroot essentially takes you inside of the Arch Linux system, so you can perform necessary configuration to it for it to function. This can be done by running:
+Chroot essentially takes you inside of the Arch Linux system, so you can perform necessary configuration to it for it to function. This can be done by running the below command:
 
 ```
 arch-chroot /mnt
@@ -575,7 +577,7 @@ Uncomment the below line (or any line, depending on your region and what languag
 ```
 #en_GB.UTF-8 UTF-8
 ```
-save & exit, by hitting Ctrl+W, Enter then Ctrl+X.
+save & exit, by hitting Ctrl+W, Enter, then Ctrl+X.
 
 ### Generate The Locale
 ```
@@ -595,7 +597,7 @@ echo "KEYMAP=uk" > /etc/vconsole.conf
 
 ## Set Hostname <a name="set-hostname"></a>
 
-A hostname is what your computer identifies itself as when talking to other computers. To set a hostname, run the below command:
+A hostname is what your computer identifies itself as when talking to other computers. Set a hostname as shown below:
 
 ```
 echo arch > /etc/hostname
@@ -612,7 +614,7 @@ nano /etc/hosts
 ::1          localhost
 127.0.1.1    arch.localdomain arch
 ```
-Replace `arch` with hostname of your choice.\
+Replace `arch` with the hostname of your choice. Make sure it matches the hostname in ```/etc/hostname```\
 Save & exit.
 
 ### Enable NetworkManager <a name="enable-networkmanager"></a>
@@ -623,7 +625,7 @@ systemctl enable NetworkManager
 
 ### Set ROOT Password <a name="set-root-password"></a>
 
-The ROOT account is an account on your computer that can do anything on your computer. Set a password for it as not doing so leaves your system vulnerable to cyberattackers.
+The ROOT account is an account on your computer that can do anything on your computer. Set a password for it as not doing so leaves your system vulnerable to cybercriminals.
 
 ```
 passwd
@@ -675,14 +677,14 @@ And change it to:
 HOOKS=(base udev autodetect keyboard keymap modconf block encrypt filesystems keyboard fsck)
 ```
 
-Save and exit, then recreate the initramfs image by running:
+Save and exit, then recreate the initramfs image:
 ```
 mkinitcpio -P
 ```
  
 </details>
 
-Install SystemD-Boot by running:
+Install SystemD-Boot:
 ```
 bootctl install
 ```
@@ -702,7 +704,7 @@ default arch.conf
 editor no
 ```
 
-```timeout 3``` stalls your system by 3 seconds before it boots so you have time to select an option. This is optional, and if you want an instant boot, you can leave it commented\
+```timeout 3``` stalls your system by 3 seconds before it boots so you have time to select an option. This is optional, and if you want an instant boot, you can leave it commented.\
 ```console-mode keep``` keeps your console-based SystemD-Boot menu to how it was last time.\
 ```default arch.conf``` is what SystemD-Boot automatically boots to when you don't select an option.\
 ```editor no``` prevents any edits to be made to the boot options within the menu itself.
@@ -887,7 +889,7 @@ You can stop here if you want to have a desktop-less Arch system for any reason 
 
 ```Wayland``` is a more recent display protocol. Like X.org, it is free and open-source. However, it is much newer, and more efficient. It offers better security, and modern HiDPI and multi-monitor support. However, it breaks compatibility with certain applications, and although there are compatibility layers such as xorg-xwayland and qt5-wayland, they aren't perfect.
 
-Pick the display protocol of your choice, and select one by clicking on the headers of either of the collapsable sections.
+Pick the display protocol of your choice, and install it by clicking on the headers of either of the collapsable sections below.
 
 <details>
  <summary><h3>X.org</h3></summary>
@@ -903,11 +905,12 @@ Pick the display protocol of your choice, and select one by clicking on the head
  
 To install Wayland, run the below command:
 ```
-sudo pacman -S --needed wayland xorg-xwayland qt5-wayland xorg-xlsclients
+sudo pacman -S --needed wayland xorg-xwayland qt5-wayland qt6-wayland xorg-xlsclients
 ```
 
-```xorg-xwayland``` is a compatibility layer that allows you to run X11 applications on Wayland.
-```qt5-wayland``` allows you to run Qt5 apps on Wayland.
+```xorg-xwayland``` is a compatibility layer that allows you to run X11 applications on Wayland.\
+```qt5-wayland``` allows you to run Qt5 apps on Wayland.\
+```qt6-wayland``` allows you to run Qt6 apps on Wayland.\
 ```xorg-xlsclients``` lists any apps running on the ```xorg-xwayland``` compatibility layer running on the current display.
 
 </details>
@@ -915,7 +918,7 @@ sudo pacman -S --needed wayland xorg-xwayland qt5-wayland xorg-xlsclients
 #### GPU drivers
 
 GPU drivers allow your computer to utilise your GPU and massively increase performance during games, if you have a good GPU that is.\
-To install your GPU drivers, run the below command:
+Install your GPU drivers as shown below:
 
 ```
 sudo pacman -S [GPU driver]
@@ -935,13 +938,50 @@ Edit `/etc/pacman.conf` & uncomment the below two lines.
 #Include = /etc/pacman.d/mirrorlist
 ```
 
-#### MESA Libraries (32bit) (optional but highly recommmended)
-This package is required by Steam if you play games using Vulkan Backend.
+### Integrating the AUR with pacman (optional but it's a good quality-of-life feature)
+
+> Note: It's better to use this method over yay as the packages are pre-built binaries (in simpler terms, it's faster to download)
+
+Chaotic-AUR is a method for retrieving packages in the AUR (packages made by the community that aren't any of the official repos, which are core, extra and multilib). It's better to use the Chaotic-AUR than other AUR helpers as the packages are pre-built binaries, meaning, your computer doesn't have to take its sweet time to create an app from the source code, as is common with helpers such as yay or paru. This is recommended if you're impatient and/or have a slow PC
+
+Retrieve the keyring for the Chaotic-AUR from the Ubuntu keyserver:
 ```
-sudo pacman -Sy lib32-mesa
+sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 ```
 
-> Note: The above install will not work if you don't specify ```-Sy``` or type ```sudo pacman -Syy``` beforehand.
+Sign it locally:
+```
+sudo pacman-key --lsign-key 3056513887B78AEB
+```
+
+Then download both the keyring and mirrorlist:
+```
+sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+```
+
+And synchronise your computer with both multilib and Chaotic-AUR:
+```
+sudo pacman -Syy
+```
+
+<details>
+ <summary><h4>Use powerpill to download from all mirrors simultaneously (optional and highly recommended if you live in a third-world country)</h4></summary>
+
+
+Download powerpill:
+```                                                                                                                                                    
+sudo pacman -S powerpill
+```
+
+Initialise it as follows:
+```
+sudo powerpill -Su
+```
+
+Then follow the instructions on screen.
+</details>
+
 
 ### Install & Enable SDDM <a name="install--enable-sddm"></a>
 ```
@@ -998,19 +1038,21 @@ Now everything is installed and after the final `reboot`, you will land in the S
 ### Apps I would personally recommend installing but aren't required <a name="misc-applications"></a>
 You can install all the following packages or only the one you want.
 ```
-sudo pacman -S firefox openssh qbittorrent audacious wget screen git neofetch
+sudo pacman -S firefox openssh qbittorrent audacious wget screen git fastfetch lib32-mesa
 ```
-Packages | Description
---------- | ----------
-firefox | Mozilla Firefox Web Browser.
-openssh | Secure Shell access server, allows you to access remote computers or servers.
+Packages    | Description
+----------- | ----------
+firefox     | Mozilla Firefox Web Browser.
+openssh     | Secure Shell access server, allows you to access remote computers or servers.
 qbittorrent | Qt-based BitTorrent Client.
-audacious | Qt-based music player.
-wget\* | Wget is a free utility for non-interactive download of files from the Web. 
-screen | Is a full-screen window manager that multiplexes a physical terminal between several processes, typically interactive shells.
-git\*| Github command-line utility tools. (needed to access the AUR) 
-fastfetch | Fastfetch is a command-line system information tool, that is the sucessor to NeoFetch.
-cups\*| Printer service
+audacious   | Qt-based music player.
+wget\*      | Wget is a free utility for non-interactive download of files from the Web. 
+screen      | Is a full-screen window manager that multiplexes a physical terminal between several processes, typically interactive shells.
+git\*       | Github command-line utility tools. (needed to access the AUR) 
+fastfetch   | Fastfetch is a command-line system information tool, that is the sucessor to NeoFetch.
+cups\*      | Printer service
+lib32-mesa\*| Optional dependency for Steam game using the Vulkan backend 
+
 
 > \* - These are some of the more important packages, which a lot of programs tend to use. They're optional but it is highly recommended to install both of them.
 
@@ -1021,7 +1063,7 @@ sudo systemctl enable --now cups.service
 ```
 
 ### Install [Yay](https://github.com/Jguer/yay)
-Yet Another Yogurt - An AUR Helper.
+Yet Another Yogurt - An AUR Helper - install this if you don't want to integrate the AUR into pacman.
 A lot of programs written for Arch can be founded in the AUR, but be careful of what you download from there.
 ```
 git clone https://aur.archlinux.org/yay.git
@@ -1064,6 +1106,41 @@ chsh -s [shell]
 
 ```
 chsh -s /bin/zsh
+```
+
+### Aptpac
+
+> Note: You should only use this if you're new to Arch Linux or have jumped ship from Debian or its derivatives (like Ubuntu) to Arch.
+
+Install cmake:
+```
+sudo pacman -S cmake
+```
+
+Download the aptpac source code:
+```
+git clone https://github.com/Itai-Nelken/aptpac
+```
+
+Change directory into it:
+```
+cd ./aptpac/C-edition
+```
+
+Make the ```build``` directory, so it can be built and run, then change directory into it:
+```
+mkdir build && cd build
+```
+
+Then build the source code:
+```
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make
+```
+
+And finally, move it to ```/usr/local/bin``` so it can be run easily as a command:
+```
+sudo make install
 ```
 
 ## Maintenance, Performance Tuning & Monitoring
@@ -1117,26 +1194,18 @@ sudo systemctl enable --now cockpit.socket
 ```
 Now open your browser and point to it `your-machine-ip:9000` and login with ***root*** to get full access.
 
-</br>
+---
 
-## Changelog
+## Latest changes 
 
- - **2024-08-18 (v1.2)**
-   - Rearranged some sections so the guide makes sense and so that it looks nicer
-   - Skippable sections are now collapsible, instead of lazily having a link you can skip to.
-   - Appended a few terms to the glossary
-   - Minor rewordings
-   - Fixed a few typos and grammatical errors
-   - Created a section on how to change defaults shells
- - **2024-08-23 (v1.3)**
-   - Fixed broken newlines
-   - Added section explaining a few practices within the file.
-   - Reworded some parts of the glossary
-   - Display protocol and GPU drivers are two different sections now
-   - X.org and Wayland are within their own collapsible sections
-   - Added some text for pipewire
-   - Desktop environments are their own file now
+ - **2024-08-28 (v1.4)**
+   - Undid a mistake I made where I accidentally deleted the glossary entry for bootloader
+   - Added section for Chaotic-AUR
+   - Added Enlightenment as part of the `window-managers.md` file
+   - Removed i3WM section in `window-managers.md` in favour of Sway.
+   - Removed BSPWM section in `window-managers.md` in  favour of river.
+   - Added aptpac section in [Extras](#extras).
+   - Added an additional package when running `pacstrap`
+   - Re-wordings and fixed some grammatical typos
 
-**Full Changelog**: https://github.com/Exvix/arch-install-guide/compare/v1.2...v1.3
-   
-#### For all the latest changes, [click here](https://github.com/Exvix/arch-install-guide/compare/v1.2...v1.3)
+**Full Changelog**: https://github.com/Exvix/arch-install-guide/compare/v1.3...v1.4

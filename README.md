@@ -1207,5 +1207,6 @@ Now open your browser and point to it `your-machine-ip:9000` and login with ***r
    - Added aptpac section in [Extras](#extras).
    - Added an additional package when running `pacstrap`
    - Re-wordings and fixed some grammatical typos
+   - End section of guide now only shows the latest changes
 
-**Full Changelog**: https://github.com/Exvix/arch-install-guide/compare/v1.3...v1.4
+**Full Changelog**: https://github.com/Exvix/arch-install-guide/releases

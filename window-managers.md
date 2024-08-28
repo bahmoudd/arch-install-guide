@@ -30,15 +30,15 @@ sudo pacman -S plasma konsole dolphin ark kwrite kcalc spectacle krunner partiti
 
 Packages         | Description
 ---------------- | ------------------------------------
-plasma           | KDE Plasma Desktop Environment.
-konsole          | KDE Terminal.
-dolphin          | KDE File Manager.
+plasma           | KDE Plasma window manager.
+konsole          | KDE terminal.
+dolphin          | KDE file manager.
 ark              | Archiving Tool.
-kwrite           | Text Editor.
-kcalc            | Scientific Calculator.
+kwrite           | Text editor.
+kcalc            | Scientific calculator.
 spectacle        | KDE screenshot capture utility.
-krunner          | KDE Quick drop-down desktop search.
-partitionmanager | KDE Disk & Partion Manager.
+krunner          | KDE quick drop-down desktop search.
+partitionmanager | KDE disk & partition Manager.
 </details>
 
 <details>
@@ -52,6 +52,29 @@ sudo pacman -S gnome gnome-extra
 ```
 
 ```gnome-extra``` is for a more integrated desktop experience, and includes a bundle of apps to facilitate that.
+</details>
+
+<details>
+  <summary><h4>Enlightenment</h4></summary>
+
+![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/enlightenment.png)
+
+Install Enlightenment, as shown below:
+```
+sudo pacman -S enlightenment ecrire ephoto evisum rage terminology
+```
+
+The packages that aren't `enlightenment` provide a more integrated desktop environment.
+
+Packages         | Description
+---------------- | ------------------------------------
+enlightenment    | Enlightenment window manager
+terminology      | Enlightenment terminal
+ecrire           | Enlightenment text editor
+evisum           | Enlightenment process viewer, similar to Task Manager on Windows
+ephoto           | Enlightenment photo viewer
+rage             | Enlightenment video viewer
+
 </details>
 
 > Note: Wayland support on LXQt and XFCE is a bit shaky.
@@ -96,7 +119,7 @@ sudo pacman -S hyprland
 ```
 </details>
 
-> Note: None of the below support Wayland.
+> Note: Awesome does not support Wayland.
 
 <details>
   <summary><h4>Awesome</h4></summary>
@@ -121,38 +144,25 @@ cp /etc/xdg/awesome/rc.lua ~/.config/awesome/rc.lua
 </details>
 
 <details>
-  <summary><h4>i3WM</h4></summary>
+  <summary><h4>Sway</h4></summary>
 
-![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/xfce.png)
+![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/Sway_1.4_Window_Manager.png)
 
-To install i3WM, use the below command:
+Install Sway, as shown below:
 ```
-sudo pacman -S i3
-```
-
-Press enter when prompted for the different packages available.\
-Append ```exec i3``` to your ```~/.xinitrc``` file by running the below line:
-
-```
-echo 'exec i3' >> ~/.xinitrc
+sudo pacman -S sway swaylock swaybg swayidle
 ```
 
 </details>
 
 <details>
-  <summary><h4>BSPWM</h4></summary>
+  <summary><h4>river</h4></summary>
 
-![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/bspwm.png)
+![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/river.jpg)
 
-To install BSPWM, use the below command:
+To install river, use the below command:
 ```
-sudo pacman -S bspwm
-```
-
-Append ```exec bspwm``` to your ```~/.xinitrc``` file by running the below line:
-
-```
-echo 'exec bspwm' >> ~/.xinitrc
+sudo pacman -S river
 ```
 
 </details>

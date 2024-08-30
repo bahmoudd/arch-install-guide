@@ -5,6 +5,7 @@
 ## Table of Contents
  - [**Glossary**](#glossary)
  - [**Introduction**](#introduction)
+ - [**Re-sizing your C:\ drive to allow for dualbooting)**](#resize-c-drive)
  - [**Booting into the ArchISO**](#boot-to-archiso)
    - [**Creating the installation medium**](#creating-boot-medium)
    - [**Entering your computer's boot menu**](#entering-boot-menu)
@@ -21,17 +22,20 @@
    - [Enabling Network Manager](#enable-networkmanager)
    - [ROOT Password](#set-root-password)
    - [Installing the Bootloader](#installing-bootloader)
-     - [Installing GRUB (MBR only)](#installing-grub)
-     - [Installing SystemD-Boot (EFI only)](#installing-systemd-boot)
+     - [Adding hooks for encrypted drives](#initcpio-hooks-for-luks)
+     - [Unify Kernel Images (optional)](#uki)
+     - [Installing GRUB](#installing-grub)
+     - [Installing SystemD-Boot](#installing-systemd-boot)
    - [Create users](#create-users)
    - [Allow sudo commands](#allow-sudo-commands)
  - [**User Login**](#reconnect-to-the-internet)
    - [Connect to the internet (again)](#reconnect-to-the-internet)
    - [Display Server & GPU Drivers](#xorg--gpu-drivers)
-   - [Multilib Repository (32bit)](#multilib)
-   - [Display Manager (SDDM)](#install--enable-sddm)
+   - [Multilib Repository (32-bit support on 64-bit systems)](#multilib)
+   - [Display Manager](#install--enable-dm)
    - [Installing a Desktop Environment](#installing-de)
    - [Audio Utilities & Bluetooth](#audio-utilities--bluetooth)
+   - [Adding the Windows Boot Manager as a boot option in GRUB](#add-windows-bootmgr)
  - [**The Conclusion**](#the-conclusion)
  - [**Extras (optional)**](#extras)
    - [Misc Applications](#misc-applications)
@@ -57,6 +61,7 @@ Bootloader      | A piece of software designed to load the necessary files that 
 Package Manager | A package manager is a program designed to automate the process of downloading, installing, updating, listing, removing and searching for software (bundled together as an app or "package")
 Greeter         | A greeter is a graphical login interface, and is often called the login screen. It essentially "greets" the user(s) to the system.
 Shell           | A shell is a text environment where you issue commands and information to your computer. 
+Comment         | Some text that Arch Linux ignores automatically. Comments begin with the hashtag. To comment something out, put a hastaf before it, and to uncomment something, remove the hashtag preceeding it
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Introduction
 
@@ -67,17 +72,30 @@ Arch Linux is fantastic for its Arch User Repository (AUR) and simplicity of des
 
 ## A few notes before you continue with the guide
 
-- Anything within square brackets, e.g. ```[text]``` means you should substitute with what's between those square brackets. For example, ```[Root Partition UUID]``` means you have to put the UUID of your partition in place of the square brackets and the text within them.
-- Any text after hashtags explain the command you are running and are not to be included when you type in the command.
+- `[...]` means that there are lines present between whatever is shown
+- Anything else within square brackets, e.g. ```[text]``` means you should substitute with what's between those square brackets. For example, ```[Root Partition UUID]``` means you have to put the UUID of your root partition in place of the square brackets.
+- Any text after hashtags or equals signs explain the command you are running and are not to be included when you type in the command.
 
 ---
 
-# Booting into the ArchISO <a name="boot-to-archiso"></a>
+# Are you dual-booting this? <a name="resize-c-drive"></a>
+
+If you plan on dual-booting Windows and Arch Linux, hit `Win+R` on your keyboard and type into the Run prompt:
+```
+diskmgmt.exe
+```
+
+This will bring up disk management. From here, you can resize your `C:\` partition to dual-boot it with Arch Linux.\
+Find your `C:\` partition and right-click on it.\
+Click on `Shrink Volume` and right beside `Enter the amount of space to shrink in MB`, enter the amount of drive space you'd like to allocate to Arch.\
+I recommend shrinking your `C:\` partition to half of its original space.
 
 ## Creating the Arch installation medium <a name="creating-boot-medium"></a>
 
 Firstly, get the ISO file from [the official Arch Linux website](https://archlinux.org/download/) or [the website for the community-maintained 32-bit Arch Linux OS](https://www.archlinux32.org/download/) either through torrenting it, or using one of the mirrorlinks.\
 You'll need to use software such as [Ventoy](https://www.ventoy.net/en/download.html), [Rufus](https://rufus.ie/en/) or [BalenaEtcher](https://etcher.balena.io/#download-etcher). The instructions on how to use such software can be found within their websites.
+
+# Booting into the ArchISO <a name="boot-to-archiso"></a>
 
 ## Entering the boot menu <a name="entering-boot-menu"></a>
 
@@ -265,6 +283,8 @@ And take note of whether it returns ```UEFI``` or ```BIOS```
 <details>
  <summary><h3>UEFI</h3></summary>
 
+> Note: If you're dual-booting, skip down to "Creating Partitions"
+
 Run the below commands to initialise the disk:
 ```
 gdisk /dev/sdx
@@ -297,7 +317,9 @@ z
 To "zap" the disk (basically, to initialise the disk).\
 It will ask you if you want to confirm, enter ```y``` and it will then if ask you want to "blank out MBR?", which means it will wipe all of the boot code and other critical data necessary for an OS to boot. Since you're no longer booting from your old OS, go ahead and hit ```y```.
 
-Run gdisk again and enter the below character, as gdisk only uses one-character commands (do not type ```=``` or anything after ```=```, as those are just explanations for what each command does):
+#### Creating Partitions
+
+Run gdisk again and enter the below characters, as gdisk only uses one-character commands:
 
  ```
 n = New Partition
@@ -341,6 +363,16 @@ n = New Parition
 
 w = Write partitions and quit
 ```
+
+From here on out, whatever partition number the guide tells you to make changes to, add 3 to that number, so you don't accidentally make changes to your Windows OS.\
+(The below is not a command, do not enter this into the Arch ISO)
+```
+BOOT Partition: /dev/sdx1 -> /dev/sdx4
+SWAP Partition: /dev/sdx2 -> /dev/sdx5
+ROOT Partition: /dev/sdx3 -> /dev/sdx6
+HOME Partition: /dev/sdx4 -> /dev/sdx7
+```
+
 <details>
  <summary><h4>Encrypt your drive (optional)</h4></summary>
 LUKS encryption encrypts your root partition (and home partition too, if present) so that attackers who have physical access to your laptop cannot access the contents of your drive.
@@ -637,25 +669,106 @@ The bootloader is what manages the boot process, and is the PID 0 of your Arch s
 If you're on an MBR systems, install GRUB and if you're on an EFI system, install SystemD-Boot.\
 You need to do some extra steps before installing the bootloader if you've encrypted your ROOT/HOME parition(s).
 
-You'll still need to install a bootloader if you've set up LUKS. Go to "Installing and configuring SystemD-Boot" below. 
+<a name="initcpio-hooks-for-luks"></a>
+<details>
+ <summary><h3>Enabling password prompt on boot to unencrypt your drive</h3></summary>
+
+Edit the mkinitcpio.conf file:
+```
+nano /etc/mkinitcpio.conf
+```
+
+Find and comment out any line beginning with `hooks` and add the following line to your `mkinitcpio.conf` file:
+```
+HOOKS=(base systemd autodetect modconf kms keyboard sd-vconsole sd-encrypt consolefont block filesystems fsck)
+```
+
+Save and quit.
+
+Regenerate the cpio as shown below:
+```
+mkinitcpio -P
+```
+</details>
+
+<a name="uki"></a>
+<details>
+ <summary><h3>Unify your kernel images (optional)</h3></summary>
+
+Make mkinitcpio quiet so your screen isn't filled with a bunch of useless garbage:
+```
+echo "quiet rw" > /etc/kernel/cmdline
+```
+
+Create the `/efi/EFI/Linux` directory, which is where your kernel images will be stored:
+```
+mkdir -p /efi/EFI/Linux
+```
+
+Edit the `/etc/mkinitcpio.d/linux.preset` file as shown below:
+```
+nano /etc/mkinitcpio.d/linux.preset
+```
+
+Uncomment the below lines:
+```
+ALL_config="/etc/mkinitcpio.conf"
+[...]
+default_uki="/efi/EFI/Linux/arch-linux.efi"
+default_options="--splash /usr/share/systemd/bootctl/splash-arch.bmp"
+[...]
+fallback_uki="/efi/EFI/Linux/arch-linux-fallback.efi"
+```
+
+Save and quit.
+
+
+And comment out the below lines:
+```
+default_image="/boot/initramfs-linux.img"
+[...]
+fallback_image="/boot/initramfs-linux-fallback.img"
+```
+
+Regenerate the cpio as shown below:
+```
+mkinitcpio -P
+```
+
+</details>
+
+You'll still need to install a bootloader if you've set up LUKS and/or unified your kernel images. Go to one of the collapsable bootloader sections below. 
 
 <a name="installing-grub"></a>
 <details>
- <summary><h3>Installing GRUB (MBR)</h3></summary>
+ <summary><h3>Installing GRUB (MBR or if you're dual-booting)</h3></summary>
 "Targets" are CPU architechtures. These are important for grub to know so it can handle the boot proess correctly.\
 Find your CPU architechture from [this site](https://renenyffenegger.ch/notes/Linux/shell/commands/grub-install#grub-install-target) and specify that as the target.
 
 ```
 pacman -S grub
-grub-install /dev/[disk name] # You don't need to specify a target because the default is i386-pc
+grub-install /dev/sdx # The default is i386-pc, otherwise known as 32-bit x86
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
+You can specify a CPU architechture as shown below:
+```
+grub-install /dev/sdx --target=[Your CPU's architecture]
+```
+
+An example of this is (assuming you're using a 64-bit x86-64 CPU, like most modern CPUS do)
+```
+grub-install /dev/sdx --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+```
+
+GRUB needs to know your EFI directory so it can boot your system properly, which is what `--efi-directory` specifies.\
+`--bootloader-id` makes GRUB known to your UEFI firmware.
+
 </details>
 
-<a name="installing-systemd-boot">
+<a name="installing-systemd-boot"></a>
 <details>
- <summary><h3>Installing and configuring SystemD-Boot (UEFI)</a></h3></summary>
+ <summary><h3>Installing and configuring SystemD-Boot (UEFI)</h3></summary>
 
 <details>
  <summary><h4>If you've set up LUKS encryption on your hard drive</h4></summary>
@@ -690,6 +803,8 @@ bootctl install
 ```
 
 #### Creating and amending config files 
+
+> Note: You may skip this entire section if you've unified your kernel images
 
 Open and edit /boot/loader/loader.conf
 ```
@@ -794,11 +909,20 @@ Check what files need to be signed by running:
 sbctl verify
 ```
 
-And sign those files:
+And sign those files. If you haven't unified your kernel images, sign your boot files as shown below:
 ```
-sbctl sign -s /boot/vmlinuz-linux
-sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
+sudo sbctl sign -s /boot/vmlinuz-linux
+sudo sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
 ```
+
+And if you have, sign them as shown below:
+```
+sudo sbctl sign -s -o /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+sudo sbctl sign -s /efi/EFI/BOOT/BOOTX64.EFI
+sudo sbctl sign -s /efi/EFI/Linux/arch-linux.efi
+sudo sbctl sign -s /efi/EFI/Linux/arch-linux-fallback.efi
+```
+
 
 If you have any Linux derivatives installed, go ahead and sign those too.
 
@@ -838,7 +962,7 @@ You need to do this to actually allow your user to make changes to the system.
 EDITOR=nano visudo
 ```
 
-And find and uncomment the below line by remove the preceeding hashtag.
+And find and uncomment the below line.
 ```
 #%wheel ALL=(ALL) ALL
 ```
@@ -938,7 +1062,7 @@ Edit `/etc/pacman.conf` & uncomment the below two lines.
 #Include = /etc/pacman.d/mirrorlist
 ```
 
-### Integrating the AUR with pacman (optional but it's a good quality-of-life feature)
+### Integrating the AUR with pacman (optional but a good quality-of-life feature)
 
 > Note: It's better to use this method over yay as the packages are pre-built binaries (in simpler terms, it's faster to download)
 
@@ -983,13 +1107,19 @@ Then follow the instructions on screen.
 </details>
 
 
-### Install & Enable SDDM <a name="install--enable-sddm"></a>
+### Install & Enable A Login Manager <a name="install--enable-dm"></a>
+
+If you want to use GNOME as your login manager, install and enable GDM as shown below:
+```
+sudo pacman -S gdm
+sudo systemctl enable gdm.service
+```
+
+If you want to use any other window manager, install and enable SDDM as shown below:
 ```
 sudo pacman -S sddm
 sudo systemctl enable sddm
 ```
-
-```sddm``` is a login manager. It helps you login into your system through a graphical frontend.
 
 ### Installing a desktop environment <a name="installing-de"></a>
 
@@ -1023,6 +1153,27 @@ sudo systemctl enable bluetooth.service
 ### Final Reboot
 ```
 reboot
+```
+
+## Are you dual-booting Arch Linux and Windows? <a name="add-windows-bootmgr"></a>
+
+If so, you still have more steps to complete, you need to add the Windows Boot Manager as one of the boot options to GRUB.\
+To do so, go into your system's UEFI firmware interface and move `GRUB` above the Windows Boot Manager, which differs depending on manufacturer.
+
+Install OS-Prober:
+```
+sudo pacman -S os-prober
+```
+
+Uncomment the below line:
+```
+#GRUB_DISABLE_OS_PROBER=FALSE
+```
+Save and exit.
+
+Then recreate your `/boot/grub/grub.cfg` file as shown below:
+```
+sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
 </br>
 
@@ -1198,15 +1349,12 @@ Now open your browser and point to it `your-machine-ip:9000` and login with ***r
 
 ## Latest changes 
 
- - **2024-08-28 (v1.4)**
-   - Undid a mistake I made where I accidentally deleted the glossary entry for bootloader
-   - Added section for Chaotic-AUR
-   - Added Enlightenment as part of the `window-managers.md` file
-   - Removed i3WM section in `window-managers.md` in favour of Sway.
-   - Removed BSPWM section in `window-managers.md` in  favour of river.
-   - Added aptpac section in [Extras](#extras).
-   - Added an additional package when running `pacstrap`
-   - Re-wordings and fixed some grammatical typos
-   - End section of guide now only shows the latest changes
+ - **2024-08-30**
+   - Added section on how to create hooks for encrypted drives
+   - Added section on how to unify kernel images
+   - Added some bits on how to dual-boot Windows and Arch Linux
+   - Added some bits on how to install GDM
+   - Reworded a table-of-contents entry so it makes sense
+   - Added "comment" as a table-of-contents entry
 
 **Full Changelog**: https://github.com/Exvix/arch-install-guide/releases

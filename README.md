@@ -1376,12 +1376,9 @@ Now open your browser and point to it `your-machine-ip:9000` and login with ***r
 
 ## Latest changes 
 
- - **2024-08-30**
-   - Added section on how to create hooks for encrypted drives
-   - Added section on how to unify kernel images
-   - Added some bits on how to dual-boot Windows and Arch Linux
-   - Added some bits on how to install GDM
-   - Reworded a table-of-contents entry so it makes sense
-   - Added "comment" as a table-of-contents entry
+ - **2024-08-30 patch 1**
+   - Added section for `doas`
+   - Moved `sbctl` section out of the `SystemD-Boot` section
+   - Minor rewordings
 
 **Full Changelog**: https://github.com/Exvix/arch-install-guide/releases

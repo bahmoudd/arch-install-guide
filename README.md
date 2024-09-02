@@ -737,7 +737,8 @@ mkinitcpio -P
 
 </details>
 
-You'll still need to install a bootloader if you've set up LUKS and/or unified your kernel images. Go to one of the collapsable bootloader sections below. 
+You'll still need to install a bootloader if you've set up LUKS and/or unified your kernel images. Go to one of the collapsable bootloader sections below.\
+If you set up LUKS, go to "Installing and configuring SystemD-Boot (UEFI)" below.
 
 <a name="installing-grub"></a>
 <details>
@@ -884,8 +885,10 @@ options root=UUID="[root partition UUID]" rw
 
 **❓: - Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.** 
 
+</details>
+
 <details>
- <summary><h4>Enable secure boot (Optional)<a name="enable-secure-boot"></a></h4></summary>
+ <summary><h4>Enable secure boot (optional)<a name="enable-secure-boot"></a></h4></summary>
 
 Secure Boot is a security standard designed to ensure that a device boots using only trusted software. To enable it, go into your firmware settings and erase all of your secure boot keys. The way on how to do so differs between manufacturers.\
 Once you've done that, install sbctl by running the below command:
@@ -923,10 +926,7 @@ sudo sbctl sign -s /efi/EFI/Linux/arch-linux.efi
 sudo sbctl sign -s /efi/EFI/Linux/arch-linux-fallback.efi
 ```
 
-
-If you have any Linux derivatives installed, go ahead and sign those too.
-
-</details>
+If you have any forks of the linux kernel installed (e.g. Linux Zen, Linux Hardened .etc), go ahead and sign those too.
 
 </details>
 
@@ -1292,6 +1292,33 @@ make
 And finally, move it to ```/usr/local/bin``` so it can be run easily as a command:
 ```
 sudo make install
+```
+
+### Replacing sudo with doas
+
+Sudo has many issues with it. Firstly, it has a lot of features that only IT administrators would use (that many would consider bloat), and it has quite an old and messy codebase, leading it vulnerable to cybercriminals to attack your system, and is definitely no stranger to having bugs that have existed for over 5 years.\
+If the only thing you ever use sudo for is for making changes to your system, such as `sudo pacman` or `sudo systemctl`, then it would make more sense to use `doas`.
+
+Opendoas is an implentation of doas for Linux. Install it, as shown below:
+```
+sudo pacman -S opendoas
+```
+
+Then, allow any member of the `wheel` group to run `doas` commands, as shown below:
+```
+sudo echo 'permit :wheel' >> /etc/doas.conf
+```
+
+And change its owner and permissions for the sake of cybersecurity:
+```
+sudo chown -c root:root /etc/doas.conf
+sudo chmod -c 0400 /etc/doas.conf
+```
+
+Now you're ready to use doas on your system. Its configuration and usage is similar to that of `sudo`, but do go and check its manpage.
+```
+man doas.conf # For configuration
+man doas # For usage
 ```
 
 ## Maintenance, Performance Tuning & Monitoring

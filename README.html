@@ -562,7 +562,7 @@ fallback_image=&quot;/boot/initramfs-linux-fallback.img&quot;
 </code></pre>
 </details>
 
-<p>You&#39;ll still need to install a bootloader if you&#39;ve set up LUKS and/or unified your kernel images. Go to one of the collapsable bootloader sections below. </p>
+<p>You&#39;ll still need to install a bootloader if you&#39;ve set up LUKS and/or unified your kernel images. Go to one of the collapsable bootloader sections below.<br>If you set up LUKS, go to &quot;Installing and configuring SystemD-Boot (UEFI)&quot; below.</p>
 <p><a name="installing-grub"></a></p>
 <details>
  <summary><h3>Installing GRUB (MBR or if you're dual-booting)</h3></summary>
@@ -658,8 +658,10 @@ initrd /initramfs-linuz-zen.img
 options root=UUID=&quot;[root partition UUID]&quot; rw
 </code></pre>
 <p><strong>❓: - Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.</strong> </p>
+</details>
+
 <details>
- <summary><h4>Enable secure boot (Optional)<a name="enable-secure-boot"></a></h4></summary>
+ <summary><h4>Enable secure boot (optional)<a name="enable-secure-boot"></a></h4></summary>
 
 <p>Secure Boot is a security standard designed to ensure that a device boots using only trusted software. To enable it, go into your firmware settings and erase all of your secure boot keys. The way on how to do so differs between manufacturers.<br>Once you&#39;ve done that, install sbctl by running the below command:</p>
 <pre><code>sudo pacman -S sbctl
@@ -683,9 +685,7 @@ sudo sbctl sign -s /efi/EFI/BOOT/BOOTX64.EFI
 sudo sbctl sign -s /efi/EFI/Linux/arch-linux.efi
 sudo sbctl sign -s /efi/EFI/Linux/arch-linux-fallback.efi
 </code></pre>
-<p>If you have any Linux derivatives installed, go ahead and sign those too.</p>
-</details>
-
+<p>If you have any forks of the linux kernel installed (e.g. Linux Zen, Linux Hardened .etc), go ahead and sign those too.</p>
 </details>
 
 <hr>
@@ -1013,6 +1013,22 @@ make
 <p>And finally, move it to <code>/usr/local/bin</code> so it can be run easily as a command:</p>
 <pre><code>sudo make install
 </code></pre>
+<h3 id="replacing-sudo-with-doas">Replacing sudo with doas</h3>
+<p>Sudo has many issues with it. Firstly, it has a lot of features that only IT administrators would use (that many would consider bloat), and it has quite an old and messy codebase, leading it vulnerable to cybercriminals to attack your system, and is definitely no stranger to having bugs that have existed for over 5 years.<br>If the only thing you ever use sudo for is for making changes to your system, such as <code>sudo pacman</code> or <code>sudo systemctl</code>, then it would make more sense to use <code>doas</code>.</p>
+<p>Opendoas is an implentation of doas for Linux. Install it, as shown below:</p>
+<pre><code>sudo pacman -S opendoas
+</code></pre>
+<p>Then, allow any member of the <code>wheel</code> group to run <code>doas</code> commands, as shown below:</p>
+<pre><code>sudo echo &#39;permit :wheel&#39; &gt;&gt; /etc/doas.conf
+</code></pre>
+<p>And change its owner and permissions for the sake of cybersecurity:</p>
+<pre><code>sudo chown -c root:root /etc/doas.conf
+sudo chmod -c 0400 /etc/doas.conf
+</code></pre>
+<p>Now you&#39;re ready to use doas on your system. Its configuration and usage is similar to that of <code>sudo</code>, but do go and check its manpage.</p>
+<pre><code>man doas.conf # For configuration
+man doas # For usage
+</code></pre>
 <h2 id="maintenance-performance-tuning--monitoring">Maintenance, Performance Tuning &amp; Monitoring</h2>
 <h3 id="paccache">Paccache</h3>
 <p>Pacman Cache Cleaner.</p>
@@ -1052,13 +1068,10 @@ Exec = /usr/bin/paccache -rk
 <hr>
 <h2 id="latest-changes">Latest changes</h2>
 <ul>
-<li><strong>2024-08-30</strong><ul>
-<li>Added section on how to create hooks for encrypted drives</li>
-<li>Added section on how to unify kernel images</li>
-<li>Added some bits on how to dual-boot Windows and Arch Linux</li>
-<li>Added some bits on how to install GDM</li>
-<li>Reworded a table-of-contents entry so it makes sense</li>
-<li>Added &quot;comment&quot; as a table-of-contents entry</li>
+<li><strong>2024-08-30 patch 1</strong><ul>
+<li>Added section for <code>doas</code></li>
+<li>Moved <code>sbctl</code> section out of the <code>SystemD-Boot</code> section</li>
+<li>Minor rewordings</li>
 </ul>
 </li>
 </ul>

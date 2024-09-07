@@ -509,7 +509,7 @@ mount -m /dev/sdx3 /mnt/home
 
 ---
 
-# Base System Installation <a name="base-system-installation"></a>
+# Base System Installation <div id="base-system-installation"/>
 
 ## Update Mirrors using Reflector (optional but recommended for faster download speeds, slow download speeds can time out) <a name="update-mirrors-using-reflector"></a>
 ```

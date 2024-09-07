@@ -5,7 +5,7 @@
 ## Table of Contents
  - [**Glossary**](#glossary)
  - [**Introduction**](#introduction)
- - [**Re-sizing your C:\ drive to allow for dualbooting)**](#resize-c-drive)
+ - [**Re-sizing your C:\ drive to allow for dualbooting**](#resize-c-drive)
  - [**Booting into the ArchISO**](#boot-to-archiso)
    - [**Creating the installation medium**](#creating-boot-medium)
    - [**Entering your computer's boot menu**](#entering-boot-menu)
@@ -40,6 +40,9 @@
  - [**Extras (optional)**](#extras)
    - [Misc Applications](#misc-applications)
    - [Yay](#install-yay)
+   - [Alternative Shells](#alternative-shells)
+   - [Aptpac](#aptpac)
+   - [Replacing sudo with doas](#open-doas)
  - [**Maintenance, Performance Tuning & Monitoring**](maintenance-performance-tuning--monitoring)
    - [Paccache](#paccache)
    - [Cockpit](#install-cockpit)
@@ -80,6 +83,9 @@ Arch Linux is fantastic for its Arch User Repository (AUR) and simplicity of des
 
 # Are you dual-booting this? <a name="resize-c-drive"></a>
 
+> [!NOTE]
+> You cannot dual-boot Windows and Arch Linux if you're an MBR system, as MBR only allows a maximum of 4 partitions per disk
+
 If you plan on dual-booting Windows and Arch Linux, hit `Win+R` on your keyboard and type into the Run prompt:
 ```
 diskmgmt.exe
@@ -106,7 +112,7 @@ Once the ISO has been written to a storage medium (that could be a USB thumb dri
 
  
  On Windows systems, open up the command prompt by hitting the Win and searching ```cmd```.\
- Make sure you run it as an administrator.\
+ Make sure you run it as administrator.\
  Once you've done that, enter the following command:
  ```
  shutdown /r /fw /t 0
@@ -221,7 +227,7 @@ Check if your access point is either a Wi-Fi router or mobile broadband modem, o
  systemctl start ModemManager.service
  systemctl enable ModemManager.service
  ```
- You can find a list of modems nearby you by running:
+ You can find a list of modems near you by running:
  ```
  mmcli -L
  ```
@@ -269,7 +275,10 @@ As of now, you don't have to worry about the timezone, just make sure that the U
 
 ## Creating necessary partitions <a name="partition-disk"></a>
 
-:warning: - Make sure that all of your data on the disk you want to install Arch Linux onto has been backed up. If you've already done that or you don't care about the data present on it, proceed with this guide. If not, exit out the ArchISO and back up your data.
+> [!CAUTION]
+> Make sure that all of your data on the disk you want to install Arch Linux onto has been backed up.\
+> If you've already done that or you don't care about the data present on it, proceed with this guide.\
+> If not, exit out of the ArchISO and back up your data.
 
 Run the below command:
 ```
@@ -283,7 +292,8 @@ And take note of whether it returns ```UEFI``` or ```BIOS```
 <details>
  <summary><h3>UEFI</h3></summary>
 
-> Note: If you're dual-booting, skip down to "Creating Partitions"
+> [!NOTE]
+> If you're dual-booting, skip down to "Creating Partitions"
 
 Run the below commands to initialise the disk:
 ```
@@ -364,7 +374,7 @@ n = New Parition
 w = Write partitions and quit
 ```
 
-From here on out, whatever partition number the guide tells you to make changes to, add 3 to that number, so you don't accidentally make changes to your Windows OS.\
+From here on out, if you're dual-booting, whatever partition number the guide tells you to make changes to, add 3 to that number, so you don't accidentally make changes to your Windows OS.\
 (The below is not a command, do not enter this into the Arch ISO)
 ```
 BOOT Partition: /dev/sdx1 -> /dev/sdx4
@@ -403,7 +413,7 @@ cryptsetup open /dev/sdx4 home
 
 ### Format non-swap partitions (so that data can be written/read from it) <a name="format--mount-partitions"></a>
 ```
-mkfs.fat -F32 /dev/sdx1 # Done as it needs to be in a universally-recognised file system, so your computer can boot from it.
+mkfs.fat -F32 /dev/sdx1 # It needs to be in a universally-recognised file system, so your computer can boot from it.
 mkfs.btrfs /dev/sdx3 # Add -f if your system tells you another filesystem like ext4 is already present
 mkfs.btrfs /dev/sdx4
 ```
@@ -458,7 +468,7 @@ If you want to create a home partition (separates the data that is your system f
 n = New Partition
 2 = Partition number, MBR only supports 4 partitions
 [simply press enter] = First sector size
-+20G = (this is your ROOT size)
++20G = (this is your ROOT size. If you have a disk with 128GB or more, use 40GB instead)
 
 n = New Partition
 3 = Partition number, MBR only supports 4 partitions
@@ -509,7 +519,7 @@ mount -m /dev/sdx3 /mnt/home
 
 ---
 
-# Base System Installation <div id="base-system-installation"/>
+# Base System Installation <a name="base-system-installation"></a>
 
 ## Update Mirrors using Reflector (optional but recommended for faster download speeds, slow download speeds can time out) <a name="update-mirrors-using-reflector"></a>
 ```
@@ -559,7 +569,8 @@ The fstab file lists all available disk partitions and other types of file syste
 genfstab -U /mnt >> /mnt/etc/fstab
 ```
 
-> Note: A ```>``` will overwrite a file and a ```>>``` will append to a file. Ensure you don't confuse these with each other, and make sure the commands you type are as how this guide has written it before you hit enter.
+> [!NOTE]
+> A ```>``` will overwrite a file and a ```>>``` will append to a file. Ensure you don't confuse these with each other, and make sure the commands you type are as how this guide has written it before you hit enter.
 
 
 ---
@@ -581,7 +592,8 @@ ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
 hwclock --systohc # Sync hardware clock with system time
 ```
 
-Replace `Region` & `City` according to your Time zone. To see what timezones are available, use the following commands:
+Replace `Region` & `City` according to your timezone.\
+To see what timezones are available, use the following commands:
 ```
 ls /usr/share/zoneinfo/
 ```
@@ -605,13 +617,17 @@ A locale customises your system to be tailored more towards a specific region.
 ```
 nano /etc/locale.gen
 ```
-Uncomment the below line (or any line, depending on your region and what language your keyboard is in) by removing the hashtag preceeding the line
+
+Find your locale from the list given.
+
+An example (for those living in the UK) is shown below:
 ```
 #en_GB.UTF-8 UTF-8
 ```
-save & exit, by hitting Ctrl+W, Enter, then Ctrl+X.
 
-### Generate The Locale
+Save & exit, by hitting Ctrl+W, Enter, then Ctrl+X.
+
+Then, generate your locales as shown below:
 ```
 locale-gen
 ```
@@ -640,17 +656,18 @@ Replace `arch` with hostname of your choice.
 ```
 nano /etc/hosts
 ```
-#### Add these lines to it
+
+Add the below lines to it
 ```
 127.0.0.1    localhost
 ::1          localhost
 127.0.1.1    arch.localdomain arch
 ```
-Replace `arch` with the hostname of your choice. Make sure it matches the hostname in ```/etc/hostname```\
+Replace `arch` with the hostname of your choice. Make sure it matches the hostname in ```/etc/hostname```.\
 Save & exit.
 
 ### Enable NetworkManager <a name="enable-networkmanager"></a>
-"Enabling" a software puts in a state when you can use it - essentially turning it on.
+"Enabling" a software puts in a state when you can use it - essentially turning it on so you can use it.
 ```
 systemctl enable NetworkManager
 ```
@@ -737,9 +754,6 @@ mkinitcpio -P
 
 </details>
 
-You'll still need to install a bootloader if you've set up LUKS and/or unified your kernel images. Go to one of the collapsable bootloader sections below.\
-If you set up LUKS, go to "Installing and configuring SystemD-Boot (UEFI)" below.
-
 <a name="installing-grub"></a>
 <details>
  <summary><h3>Installing GRUB (MBR or if you're dual-booting)</h3></summary>
@@ -770,33 +784,6 @@ GRUB needs to know your EFI directory so it can boot your system properly, which
 <a name="installing-systemd-boot"></a>
 <details>
  <summary><h3>Installing and configuring SystemD-Boot (UEFI)</h3></summary>
-
-<details>
- <summary><h4>If you've set up LUKS encryption on your hard drive</h4></summary>
-
-Because you've encrypted your ROOT (and HOME partition, if present), you need to perform some extra steps.
-
-Open and edit your ```/etc/mkinitcpio.conf``` file:
-```
-sudo nano /etc/mkinitcpio.conf
-```
-
-Find the below line:
-```
-HOOKS=(base udev autodetect modconf block filesystems keyboard fsck)
-```
-
-And change it to:
-```
-HOOKS=(base udev autodetect keyboard keymap modconf block encrypt filesystems keyboard fsck)
-```
-
-Save and exit, then recreate the initramfs image:
-```
-mkinitcpio -P
-```
- 
-</details>
 
 Install SystemD-Boot:
 ```
@@ -883,7 +870,7 @@ initrd /initramfs-linuz-zen.img
 options root=UUID="[root partition UUID]" rw
 ```
 
-**❓: - Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.** 
+> **Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.** 
 
 </details>
 
@@ -1011,7 +998,7 @@ You can stop here if you want to have a desktop-less Arch system for any reason 
 
 ```X.org``` is the free and open-source implementation of the X Window System (X11) display protocol. However, it is quite old, and it shows. It has multiple issues with it, for example, applications can eavesdrop on each other, animations are laggier and people with multiple monitors or high-density displays (HiDPI) might experience issues.
 
-```Wayland``` is a more recent display protocol. Like X.org, it is free and open-source. However, it is much newer, and more efficient. It offers better security, and modern HiDPI and multi-monitor support. However, it breaks compatibility with certain applications, and although there are compatibility layers such as xorg-xwayland and qt5-wayland, they aren't perfect.
+```Wayland``` is a more recent display protocol. Like X.org, it is free and open-source. However, it is much newer, and more efficient. It offers better security, and modern HiDPI and multi-monitor support. However, it breaks compatibility with certain applications, and although there are compatibility layers such as xorg-xwayland and qt5-wayland, they aren't *perfect* but are incredibly good at what they do.
 
 Pick the display protocol of your choice, and install it by clicking on the headers of either of the collapsable sections below.
 
@@ -1064,7 +1051,8 @@ Edit `/etc/pacman.conf` & uncomment the below two lines.
 
 ### Integrating the AUR with pacman (optional but a good quality-of-life feature)
 
-> Note: It's better to use this method over yay as the packages are pre-built binaries (in simpler terms, it's faster to download)
+> [!NOTE]
+> It's better to use this method over yay as the packages are pre-built binaries (in simpler terms, it's faster to download)
 
 Chaotic-AUR is a method for retrieving packages in the AUR (packages made by the community that aren't any of the official repos, which are core, extra and multilib). It's better to use the Chaotic-AUR than other AUR helpers as the packages are pre-built binaries, meaning, your computer doesn't have to take its sweet time to create an app from the source code, as is common with helpers such as yay or paru. This is recommended if you're impatient and/or have a slow PC
 
@@ -1084,7 +1072,13 @@ sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.ta
 sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 ```
 
-And synchronise your computer with both multilib and Chaotic-AUR:
+Edit `/etc/pacman.conf` & add the below two lines.
+```
+[chaotic-aur]
+Include = /etc/pacman.d/chaotic-mirrorlist
+```
+
+And synchronise pacman with both the multilib and the chaotic AUR repositories:
 ```
 sudo pacman -Syy
 ```
@@ -1109,7 +1103,7 @@ Then follow the instructions on screen.
 
 ### Install & Enable A Login Manager <a name="install--enable-dm"></a>
 
-If you want to use GNOME as your login manager, install and enable GDM as shown below:
+If you want to use GNOME as your desktop environment, install and enable GDM as shown below:
 ```
 sudo pacman -S gdm
 sudo systemctl enable gdm.service
@@ -1160,9 +1154,14 @@ reboot
 If so, you still have more steps to complete, you need to add the Windows Boot Manager as one of the boot options to GRUB.\
 To do so, go into your system's UEFI firmware interface and move `GRUB` above the Windows Boot Manager, which differs depending on manufacturer.
 
-Install OS-Prober:
+Install os-prober:
 ```
 sudo pacman -S os-prober
+```
+
+Edit the `/etc/default/grub` file:
+```
+sudo nano /etc/default/grub
 ```
 
 Uncomment the below line:
@@ -1215,7 +1214,6 @@ sudo systemctl enable --now cups.service
 
 ### Install [Yay](https://github.com/Jguer/yay)
 Yet Another Yogurt - An AUR Helper - install this if you don't want to integrate the AUR into pacman.
-A lot of programs written for Arch can be founded in the AUR, but be careful of what you download from there.
 ```
 git clone https://aur.archlinux.org/yay.git
 cd yay
@@ -1227,7 +1225,7 @@ cd ..
 sudo rm -rf yay
 ```
 
-### Alternative shells
+### Alternative shells <a name="alternative-shells"></a>
 
 The shell that comes with your system automatically is bash. However, bash isn't very configurable. To fix that, you can use an alternative shell. Some will be listed below:
 
@@ -1256,10 +1254,10 @@ chsh -s [shell]
 > Replacing ```[shell]``` with the shell of your preference. An example can be found below.
 
 ```
-chsh -s /bin/zsh
+chsh -s /usr/bin/zsh
 ```
 
-### Aptpac
+### Aptpac <a name="aptpac"></a>
 
 > Note: You should only use this if you're new to Arch Linux or have jumped ship from Debian or its derivatives (like Ubuntu) to Arch.
 
@@ -1268,14 +1266,9 @@ Install cmake:
 sudo pacman -S cmake
 ```
 
-Download the aptpac source code:
+Download the aptpac source code and change directory into it:
 ```
-git clone https://github.com/Itai-Nelken/aptpac
-```
-
-Change directory into it:
-```
-cd ./aptpac/C-edition
+git clone https://github.com/Itai-Nelken/aptpac && cd ./aptpac/C-edition
 ```
 
 Make the ```build``` directory, so it can be built and run, then change directory into it:
@@ -1285,8 +1278,7 @@ mkdir build && cd build
 
 Then build the source code:
 ```
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make
+cmake -DCMAKE_BUILD_TYPE=Release .. && make
 ```
 
 And finally, move it to ```/usr/local/bin``` so it can be run easily as a command:
@@ -1294,7 +1286,7 @@ And finally, move it to ```/usr/local/bin``` so it can be run easily as a comman
 sudo make install
 ```
 
-### Replacing sudo with doas
+### Replacing sudo with doas <a name="open-doas"></a>
 
 Sudo has many issues with it. Firstly, it has a lot of features that only IT administrators would use (that many would consider bloat), and it has quite an old and messy codebase, leading it vulnerable to cybercriminals to attack your system, and is definitely no stranger to having bugs that have existed for over 5 years.\
 If the only thing you ever use sudo for is for making changes to your system, such as `sudo pacman` or `sudo systemctl`, then it would make more sense to use `doas`.
@@ -1370,15 +1362,15 @@ sudo pacman -S cockpit
 ```
 sudo systemctl enable --now cockpit.socket
 ```
-Now open your browser and point to it `your-machine-ip:9000` and login with ***root*** to get full access.
+Now open your browser and type `your-machine-ip:9000` into the searchbar and login with ***root*** to get full access.
 
 ---
 
 ## Latest changes 
 
- - **2024-08-30 patch 1**
-   - Added section for `doas`
-   - Moved `sbctl` section out of the `SystemD-Boot` section
-   - Minor rewordings
+ - **Minor release 2024-09-07**
+   - Aesthetic changes
+   - Fixed typos
+   - Added some sentences to specific sections I rushed so they make sense
 
-**Full Changelog**: https://github.com/Exvix/arch-install-guide/releases
+**Full Changelog**: https://github.com/bahmoudd/arch-install-guide/releases

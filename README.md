@@ -5,52 +5,50 @@
 ## Table of Contents
  - [**Glossary**](#glossary)
  - [**Introduction**](#introduction)
- - [**Re-sizing your C:\ drive to allow for dualbooting**](#resize-c-drive)
- - [**Booting into the ArchISO**](#boot-to-archiso)
-   - [**Creating the installation medium**](#creating-boot-medium)
-   - [**Entering your computer's boot menu**](#entering-boot-menu)
- - [**Connect to the Internet**](#connect-to-internet)
- - [**Disk Partitioning**](#partition-disk)
+ - [**Re-sizing your C:\ drive to allow for dualbooting**](#dualbooting-arch-linux-and-windows)
+ - [**Booting into the ArchISO**](#booting-into-the-archiso)
+   - [**Creating the installation medium**](#creating-the-arch-installation-medium)
+   - [**Entering your computer's boot menu**](#entering-the-boot-menu)
+ - [**Connect to the Internet**](#connect-to-the-internet)
+   - [**Testing your internet connection**](#testing-your-internet-connection)
+ - [**Disk Partitioning**](#creating-necessary-partitions)
  - [**Base System Installation**](#base-system-installation)
    - [Update Mirrors](#update-mirrors-using-reflector)
-   - [Base System](#install-base-system)
-   - [Generate fstab](#genfstab)
+   - [Installing Base System](#install-base-system)
+   - [Generate fstab](#generate-fstab)
  - [**Chroot**](#chroot)
-   - [Date & Time](#set-time--date)
+   - [Date & Time](#set-time-and-date)
    - [Locale and Language](#set-locale-and-language)
    - [Hostname & Hosts](#set-hostname)
    - [Enabling Network Manager](#enable-networkmanager)
    - [ROOT Password](#set-root-password)
-   - [Installing the Bootloader](#installing-bootloader)
-     - [Adding hooks for encrypted drives](#initcpio-hooks-for-luks)
-     - [Unify Kernel Images (optional)](#uki)
-     - [Installing GRUB](#installing-grub)
-     - [Installing SystemD-Boot](#installing-systemd-boot)
-   - [Create users](#create-users)
-   - [Allow sudo commands](#allow-sudo-commands)
- - [**User Login**](#reconnect-to-the-internet)
-   - [Connect to the internet (again)](#reconnect-to-the-internet)
-   - [Display Server & GPU Drivers](#xorg--gpu-drivers)
-   - [Multilib Repository (32-bit support on 64-bit systems)](#multilib)
-   - [Display Manager](#install--enable-dm)
-   - [Installing a Desktop Environment](#installing-de)
-   - [Audio Utilities & Bluetooth](#audio-utilities--bluetooth)
-   - [Adding the Windows Boot Manager as a boot option in GRUB](#add-windows-bootmgr)
+   - [Installing the Bootloader](#installing-the-bootloader)
+   - [Create users](#create-a-user-account)
+   - [Allow sudo commands](#allow-wheel-group-to-use-sudo-commands)
+ - [**User Login**](#login-as-your-user-account)
+   - [Connect to the internet (again)](#login-as-your-user-account)
+   - [Display Server & GPU Drivers](#display-protocols-and-gpu-drivers)
+   - [Multilib Repository (32-bit support on 64-bit systems)](#enable-multilib-repo)
+   - [Integrating the AUR into pacman](#integrating-the-aur-into-pacman)
+   - [Login Manager](#install-and-enable-a-login-manager)
+   - [Installing a Desktop Environment](#installing-a-desktop-environment)
+   - [Audio Utilities & Bluetooth](#audio-utilities-and-bluetooth)
+   - [Adding the Windows Boot Manager as a boot option in GRUB](#adding-the-windows-boot-manager-to-the-grub-boot-menu)
  - [**The Conclusion**](#the-conclusion)
  - [**Extras (optional)**](#extras)
-   - [Misc Applications](#misc-applications)
+   - [Misc Applications](#apps-i-would-personally-recommend-installing-but-aren't-required)
    - [Yay](#install-yay)
    - [Alternative Shells](#alternative-shells)
    - [Aptpac](#aptpac)
-   - [Replacing sudo with doas](#open-doas)
- - [**Maintenance, Performance Tuning & Monitoring**](maintenance-performance-tuning--monitoring)
+   - [Replacing sudo with doas](#replacing-sudo-with-doas)
+ - [**Maintenance, Performance Tuning & Monitoring**](#maintenance-performance-tuning-and-monitoring)
    - [Paccache](#paccache)
    - [Cockpit](#install-cockpit)
  - [**Latest changes**](#latest-changes)
 
 ---
 
-# Glossary <a name="glossary"></a>
+# Glossary
 
 Name            | Description
 ----------------| -------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -81,10 +79,10 @@ Arch Linux is fantastic for its Arch User Repository (AUR) and simplicity of des
 
 ---
 
-# Are you dual-booting this? <a name="resize-c-drive"></a>
+<details>
+ <summary><h4>Dualbooting Arch Linux and Windows</h4></summary>
 
-> [!NOTE]
-> You cannot dual-boot Windows and Arch Linux if you're an MBR system, as MBR only allows a maximum of 4 partitions per disk
+> Note: You cannot dual-boot Windows and Arch Linux if you're an MBR system, as MBR only allows a maximum of 4 partitions per disk
 
 If you plan on dual-booting Windows and Arch Linux, hit `Win+R` on your keyboard and type into the Run prompt:
 ```
@@ -94,16 +92,18 @@ diskmgmt.exe
 This will bring up disk management. From here, you can resize your `C:\` partition to dual-boot it with Arch Linux.\
 Find your `C:\` partition and right-click on it.\
 Click on `Shrink Volume` and right beside `Enter the amount of space to shrink in MB`, enter the amount of drive space you'd like to allocate to Arch.\
-I recommend shrinking your `C:\` partition to half of its original space.
+I recommend shrinking your `C:\` partition to half of its original size.
 
-## Creating the Arch installation medium <a name="creating-boot-medium"></a>
+</details>
+
+## Creating the Arch installation medium
 
 Firstly, get the ISO file from [the official Arch Linux website](https://archlinux.org/download/) or [the website for the community-maintained 32-bit Arch Linux OS](https://www.archlinux32.org/download/) either through torrenting it, or using one of the mirrorlinks.\
 You'll need to use software such as [Ventoy](https://www.ventoy.net/en/download.html), [Rufus](https://rufus.ie/en/) or [BalenaEtcher](https://etcher.balena.io/#download-etcher). The instructions on how to use such software can be found within their websites.
 
-# Booting into the ArchISO <a name="boot-to-archiso"></a>
+# Booting into the ArchISO
 
-## Entering the boot menu <a name="entering-boot-menu"></a>
+## Entering the boot menu
 
 Once the ISO has been written to a storage medium (that could be a USB thumb drive, SD card .etc), you'll need to go into your computers boot options through the firmware interface. To do so, follow the instructions below, based on your current operating system (not the operating system you want to install, which is, obviously, Arch Linux).
 
@@ -169,7 +169,7 @@ Once you've found a keymap that matches your physical keyboard's layout, run the
 loadkeys [keymap]
 ```
 
-### Connect to the internet <a name="connect-to-internet"></a>
+### Connect to the internet
 
 The ArchISO *requires* an internet connection in order to be set up properly.\
 If your computer is connected via Ethernet, you may skip this section by going [here](#test-connectivity).\
@@ -247,7 +247,7 @@ Check if your access point is either a Wi-Fi router or mobile broadband modem, o
  
 </details>
 
-#### Testing your internet connection <a name="test-connectivity"></a>
+#### Testing your internet connection
 ```ping``` is a command that sends data to a URL and checks that the data has been sent properly. This is normally done to test the URL or to test your internet connection, of which you are doing the latter.
 ```
 ping -c 4 archlinux.org
@@ -273,7 +273,7 @@ As of now, you don't have to worry about the timezone, just make sure that the U
 
 ---
 
-## Creating necessary partitions <a name="partition-disk"></a>
+## Creating necessary partitions
 
 > [!CAUTION]
 > Make sure that all of your data on the disk you want to install Arch Linux onto has been backed up.\
@@ -519,9 +519,13 @@ mount -m /dev/sdx3 /mnt/home
 
 ---
 
-# Base System Installation <a name="base-system-installation"></a>
+# Base System Installation
 
-## Update Mirrors using Reflector (optional but recommended for faster download speeds, slow download speeds can time out) <a name="update-mirrors-using-reflector"></a>
+## Update Mirrors using Reflector
+
+> [!NOTE]
+> This is highly recommended for faster download speeds. Slower download speeds can time out.
+
 ```
 reflector -c County1 -c Country2 -a 12 -p https --sort rate --save /etc/pacman.d/mirrorlist
 ```
@@ -539,7 +543,7 @@ Example:
 reflector -c 'United Kingdom' -a 12 -p https --sort rate --save /etc/pacman.d/mirrorlist
 ```
 
-### Install base system <a name="install-base-system"></a>
+### Install base system
 ```
 pacstrap -K /mnt base base-devel linux linux-firmware linux-headers nano intel-ucode mtools dosfstools networkmanager btrfs-progs
 ```
@@ -561,7 +565,7 @@ modemmanager usb_modeswitch
 - Replace `intel-ucode` with `amd-ucode` if you are using an AMD Processor.
 - If you want to include a derivative of the Linux kernel (e.g. linux-zen, linux-hardened, linux-lts), include that ALONGSIDE the original kernel and headers so if something breaks, you always have that extra option to use the regular Linux kernel. This can be done by appending your chosen Linux derivative (e.g. `linux-zen`) and its headers (e.g. `linux-zen-headers`)
 
-### Generate fstab <a name="genfstab"></a>
+### Generate fstab
 
 The fstab file lists all available disk partitions and other types of file systems and data sources that may not necessarily be disk-based, and indicates how they are to be initialized or otherwise integrated into the larger file system structure. It is *essential* for your system to function.
 
@@ -583,7 +587,7 @@ Chroot essentially takes you inside of the Arch Linux system, so you can perform
 arch-chroot /mnt
 ```
 
-### Set Time & Date <a name="set-time--date"></a>
+### Set Time and Date
 
 The below symbolically links ```/etc/localtime``` to ```/usr/share/zoneinfo/Region/City``` so that your computer knows it is measuring the date and time in the correct timezone.
 
@@ -606,7 +610,7 @@ An example of this would be:
 /usr/share/zoneinfo/Europe/London
 ```
 
-## Set locale and language <a name="set-locale-and-language"></a>
+## Set locale and language
 
 We will use `en_GB.UTF-8` here but, if you want to set your language, replace `en_GB.UTF-8` with yours in all below instances.
 
@@ -643,7 +647,7 @@ For keyboard users with non US Eng only. Replace `uk` with yours.
 echo "KEYMAP=uk" > /etc/vconsole.conf
 ```
 
-## Set Hostname <a name="set-hostname"></a>
+## Set Hostname
 
 A hostname is what your computer identifies itself as when talking to other computers. Set a hostname as shown below:
 
@@ -666,13 +670,13 @@ Add the below lines to it
 Replace `arch` with the hostname of your choice. Make sure it matches the hostname in ```/etc/hostname```.\
 Save & exit.
 
-### Enable NetworkManager <a name="enable-networkmanager"></a>
+### Enable NetworkManager
 "Enabling" a software puts in a state when you can use it - essentially turning it on so you can use it.
 ```
 systemctl enable NetworkManager
 ```
 
-### Set ROOT Password <a name="set-root-password"></a>
+### Set ROOT Password
 
 The ROOT account is an account on your computer that can do anything on your computer. Set a password for it as not doing so leaves your system vulnerable to cybercriminals.
 
@@ -680,13 +684,12 @@ The ROOT account is an account on your computer that can do anything on your com
 passwd
 ```
 
-## Installling the bootloader <a name="installing-bootloader"></a>
+## Installling the bootloader
 
 The bootloader is what manages the boot process, and is the PID 0 of your Arch system.\
 If you're on an MBR systems, install GRUB and if you're on an EFI system, install SystemD-Boot.\
 You need to do some extra steps before installing the bootloader if you've encrypted your ROOT/HOME parition(s).
 
-<a name="initcpio-hooks-for-luks"></a>
 <details>
  <summary><h4>Enabling password prompt on boot to unencrypt your drive (do this if you've used LUKS to encrypt your drive, duh!)</h4></summary>
 
@@ -708,7 +711,6 @@ mkinitcpio -P
 ```
 </details>
 
-<a name="uki"></a>
 <details>
  <summary><h4>Unify your kernel images (optional)</h4></summary>
 
@@ -754,7 +756,6 @@ mkinitcpio -P
 
 </details>
 
-<a name="installing-grub"></a>
 <details>
  <summary><h3>Installing GRUB (MBR or if you're dual-booting)</h3></summary>
  
@@ -782,7 +783,7 @@ GRUB needs to know your EFI directory so it can boot your system properly, which
 
 </details>
 
-<a name="installing-systemd-boot"></a>
+
 <details>
  <summary><h3>Installing and configuring SystemD-Boot (UEFI)</h3></summary>
 
@@ -876,7 +877,7 @@ options root=UUID="[root partition UUID]" rw
 </details>
 
 <details>
- <summary><h4>Enable secure boot (optional)<a name="enable-secure-boot"></a></h4></summary>
+ <summary><h4>Enable secure boot (optional)</h4></summary>
 
 Secure Boot is a security standard designed to ensure that a device boots using only trusted software. To enable it, go into your firmware settings and erase all of your secure boot keys. The way on how to do so differs between manufacturers.\
 Once you've done that, install sbctl by running the below command:
@@ -920,7 +921,7 @@ If you have any forks of the linux kernel installed (e.g. Linux Zen, Linux Harde
 
 ---
 
-### Create a user account <a name="create-users"></a>
+### Create a user account
 
 Doing this is common sense, as many greeters do not include the root account as one of the users when logging it.\
 To do this, run the below:
@@ -943,7 +944,7 @@ If you do not want a user to use sudo commands , use the below command instead:
 useradd -m [username]
 ```
 
-### Allow Wheel Group to use Sudo Commands <a name="allow-sudo-commands"></a>
+### Allow Wheel Group to use Sudo Commands
 
 You need to do this to actually allow your user to make changes to the system.
 ```
@@ -965,7 +966,7 @@ reboot
 
 ---
 
-## Login as your user account <a name="reconnect-to-the-internet"></a>
+## Login as your user account
 
 If you've encrypted your ROOT/HOME partition(s), enter your password to access your Arch system.\
 You'll have to reconnect to the internet as we're using network-manager instead of iwd, so our connection settings have been lost and you'll have to reconnect.\
@@ -993,7 +994,7 @@ You can stop here if you want to have a desktop-less Arch system for any reason 
 
 ---
 
-### Display protocols & GPU Drivers <a name="xorg--gpu-drivers"></a>
+### Display protocols & GPU Drivers
 
 #### Display protocols
 
@@ -1041,8 +1042,11 @@ sudo pacman -S [GPU driver]
 - For legacy Radeon GPUs like HD 7xxx Series & below, type `xf86-video-ati`.
 - For dedicated Intel Graphics, type `xf86-video-intel`.
 
-### Enable Multilib Repo (optional but absolutely recommended) <a name="multilib"></a>
-Multilib allows you to download and run 32-bit software if you're on a 64-bit machine. Of course, if you're running this on a 32-bit machine, you can go ahead and skip this step.
+### Enable Multilib Repo 
+
+> [!NOTE]
+> This is optional but highly recommended. This is done so you can download 32-bit software on a 64-bit machine.\
+> Of course, if you're on a 32-bit machine, you can skip this section.
 
 Edit `/etc/pacman.conf` & uncomment the below two lines.
 ```
@@ -1050,7 +1054,7 @@ Edit `/etc/pacman.conf` & uncomment the below two lines.
 #Include = /etc/pacman.d/mirrorlist
 ```
 
-### Integrating the AUR with pacman (optional but a good quality-of-life feature)
+### Integrating the AUR into pacman
 
 > [!NOTE]
 > It's better to use this method over yay as the packages are pre-built binaries (in simpler terms, it's faster to download)
@@ -1102,7 +1106,7 @@ Then follow the instructions on screen.
 </details>
 
 
-### Install & Enable A Login Manager <a name="install--enable-dm"></a>
+### Install and Enable a Login Manager
 
 If you want to use GNOME as your desktop environment, install and enable GDM as shown below:
 ```
@@ -1116,7 +1120,7 @@ sudo pacman -S sddm
 sudo systemctl enable sddm
 ```
 
-### Installing a desktop environment <a name="installing-de"></a>
+### Installing a desktop environment
 
 A desktop environment, at its most simplest form, just arranges how your apps and other graphical UI elements are arranged on the screen. Some are more customisable than others.\
 There are two main types of Desktop Environments: stacking and tiling.\
@@ -1126,7 +1130,11 @@ Tiling window managers, however, have a steeper learning curve than stacking win
 Use a tiling window manager if you use vim, neovim or emacs. Use a stacking window manager if you use nano.\
 For a list of notable window managers and how to install them, go to ```window-managers.md```, by clicking [here](https://github.com/Exvix/arch-install-guide/blob/main/window-managers.md)
 
-### Audio Utilities & Bluetooth (optional but recommended) <a name="audio-utilities--bluetooth"></a>
+### Audio Utilities & Bluetooth
+
+> [!NOTE]
+> This is optional but highly recommended.
+
 ```
 sudo pacman -S alsa-utils bluez bluez-utils pipewire wireplumber pipewire-alsa pipewire-pulse
 ```
@@ -1150,8 +1158,9 @@ sudo systemctl enable bluetooth.service
 reboot
 ```
 
-## Are you dual-booting Arch Linux and Windows? <a name="add-windows-bootmgr"></a>
+## Adding the Windows Boot Manager to the GRUB Boot Menu
 
+Are you dual-booting Windows and Arch Linux?\
 If so, you still have more steps to complete, you need to add the Windows Boot Manager as one of the boot options to GRUB.\
 To do so, go into your system's UEFI firmware interface and move `GRUB` above the Windows Boot Manager, which differs depending on manufacturer.
 
@@ -1178,15 +1187,15 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 </br>
 
 ---
-# The Conclusion <a name="the-conclusion"></a>
-Now everything is installed and after the final `reboot`, you will land in the SDDM greeter. You can continue reading for some steps to further improve your experience. I recommend you to install `yay` & `paccache`.
+# The Conclusion
+Now everything is installed and after the final `reboot`, you will land in the SDDM or GDM greeter. You can continue reading for some steps to further improve your experience. I recommend you to install `yay` & `paccache`.
 - Yay will provide your packages from AUR (Arch User Repository), which are not available in the official repos.
 - Paccache can be used clean pacman cached packages either manually or in an automated way.
 </br>
 
-## Extras <a name="extras"></a>
+## Extras
 
-### Apps I would personally recommend installing but aren't required <a name="misc-applications"></a>
+### Apps I would personally recommend installing but aren't required
 You can install all the following packages or only the one you want.
 ```
 sudo pacman -S firefox openssh qbittorrent audacious wget screen git fastfetch lib32-mesa
@@ -1213,7 +1222,8 @@ sudo systemctl enable sshd.service
 sudo systemctl enable --now cups.service
 ```
 
-### Install [Yay](https://github.com/Jguer/yay)
+### Install YAY
+
 Yet Another Yogurt - An AUR Helper - install this if you don't want to integrate the AUR into pacman.
 ```
 git clone https://aur.archlinux.org/yay.git
@@ -1226,7 +1236,7 @@ cd ..
 sudo rm -rf yay
 ```
 
-### Alternative shells <a name="alternative-shells"></a>
+### Alternative shells
 
 The shell that comes with your system automatically is bash. However, bash isn't very configurable. To fix that, you can use an alternative shell. Some will be listed below:
 
@@ -1258,7 +1268,7 @@ chsh -s [shell]
 chsh -s /usr/bin/zsh
 ```
 
-### Aptpac <a name="aptpac"></a>
+### Aptpac
 
 > Note: You should only use this if you're new to Arch Linux or have jumped ship from Debian or its derivatives (like Ubuntu) to Arch.
 
@@ -1287,7 +1297,7 @@ And finally, move it to ```/usr/local/bin``` so it can be run easily as a comman
 sudo make install
 ```
 
-### Replacing sudo with doas <a name="open-doas"></a>
+### Replacing sudo with doas
 
 Sudo has many issues with it. Firstly, it has a lot of features that only IT administrators would use (that many would consider bloat), and it has quite an old and messy codebase, leading it vulnerable to cybercriminals to attack your system, and is definitely no stranger to having bugs that have existed for over 5 years.\
 If the only thing you ever use sudo for is for making changes to your system, such as `sudo pacman` or `sudo systemctl`, then it would make more sense to use `doas`.
@@ -1353,13 +1363,15 @@ Exec = /usr/bin/paccache -rk
 ```
 Save & exit.
 
-### Install [Cockpit](https://cockpit-project.org/)
-A systemd web based user interface for Linux servers, workstations and even desktops. It can be used to monitor your system stats, performance and perform various settings including updating your system.
+### Install Cockpit
+
+A systemd web-based user interface for Linux servers, workstations and even desktops. It can be used to monitor your system stats, performance and perform various settings including updating your system.
 ```
 sudo pacman -S cockpit
 ```
 
-##### Enable Cockpit
+Enable cockpit as shown below:
+
 ```
 sudo systemctl enable --now cockpit.socket
 ```
@@ -1369,9 +1381,8 @@ Now open your browser and type `your-machine-ip:9000` into the searchbar and log
 
 ## Latest changes 
 
- - **Minor release 2024-09-07**
-   - Aesthetic changes
-   - Fixed typos
-   - Added some sentences to specific sections I rushed so they make sense
+ - **Minor release 2024-09-11**
+   - Fixed more typos and markdown formatting errors
+   - Made the table-of-contents mobile-friendly!
 
 **Full Changelog**: https://github.com/bahmoudd/arch-install-guide/releases

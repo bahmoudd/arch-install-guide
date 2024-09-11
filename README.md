@@ -46,7 +46,7 @@
  - [**Maintenance, Performance Tuning & Monitoring**](maintenance-performance-tuning--monitoring)
    - [Paccache](#paccache)
    - [Cockpit](#install-cockpit)
- - [**Changelog**](#changelog)
+ - [**Latest changes**](#latest-changes)
 
 ---
 
@@ -688,7 +688,7 @@ You need to do some extra steps before installing the bootloader if you've encry
 
 <a name="initcpio-hooks-for-luks"></a>
 <details>
- <summary><h3>Enabling password prompt on boot to unencrypt your drive</h3></summary>
+ <summary><h4>Enabling password prompt on boot to unencrypt your drive (do this if you've used LUKS to encrypt your drive, duh!)</h4></summary>
 
 Edit the mkinitcpio.conf file:
 ```
@@ -710,7 +710,7 @@ mkinitcpio -P
 
 <a name="uki"></a>
 <details>
- <summary><h3>Unify your kernel images (optional)</h3></summary>
+ <summary><h4>Unify your kernel images (optional)</h4></summary>
 
 Make mkinitcpio quiet so your screen isn't filled with a bunch of useless garbage:
 ```
@@ -757,7 +757,8 @@ mkinitcpio -P
 <a name="installing-grub"></a>
 <details>
  <summary><h3>Installing GRUB (MBR or if you're dual-booting)</h3></summary>
-"Targets" are CPU architechtures. These are important for grub to know so it can handle the boot proess correctly.\
+ 
+"Targets" are CPU architechtures. These are important for grub to know so it can handle the boot process correctly.\
 Find your CPU architechture from [this site](https://renenyffenegger.ch/notes/Linux/shell/commands/grub-install#grub-install-target) and specify that as the target.
 
 ```

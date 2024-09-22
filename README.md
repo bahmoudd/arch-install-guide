@@ -684,7 +684,7 @@ The ROOT account is an account on your computer that can do anything on your com
 passwd
 ```
 
-## Installling the bootloader
+## Installing the bootloader
 
 The bootloader is what manages the boot process, and is the PID 0 of your Arch system.\
 If you're on an MBR systems, install GRUB and if you're on an EFI system, install SystemD-Boot.\

@@ -1,4 +1,4 @@
-> Tested working as of release 2024.09.01
+> Tested working as of release 2024.10.01
 
 # The ultimate Arch linux install guide (UEFI & MBR)
 
@@ -1429,7 +1429,7 @@ Now open your browser and type `your-machine-ip:9000` into the searchbar and log
 
  - **Release 2024-10-06**
    - Fixed a broken ToC item
-   - Updated guide version number
+   - Updated ISO version number
    - Added a few items to guide explanatory notes
    - Added a few entries to the glossary
    - Made the guide more generic to make it easier for readers with NVMe drives on their PCs

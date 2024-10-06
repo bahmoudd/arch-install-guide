@@ -63,6 +63,11 @@ Package Manager | A package manager is a program designed to automate the proces
 Greeter         | A greeter is a graphical login interface, and is often called the login screen. It essentially "greets" the user(s) to the system.
 Shell           | A shell is a text environment where you issue commands and information to your computer. 
 Comment         | Some text that Arch Linux ignores automatically. Comments begin with the hashtag. To comment something out, put a hastaf before it, and to uncomment something, remove the hashtag preceeding it
+Parition        | Sections of a disk that keep different types of data separate
+Boot partition  | A partition that tells your firmware interface that your OS supports and runs on UEFI
+Root partition  | A partition which stores your OS
+Swap partition  | Acts a sort-of secondary RAM on your computer. It essentially works the same as the pagefile.sys on Windows. It's used for hibernation and is used when RAM is insufficient. You should have swap regardless of how good your computer is because some software only uses swap.
+Home partition  | Where your accounts and local data is stored. This is kept separate from the root partition to keep it secure.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Introduction
 
@@ -76,6 +81,11 @@ Arch Linux is fantastic for its Arch User Repository (AUR) and simplicity of des
 - `[...]` means that there are lines present between whatever is shown
 - Anything else within square brackets, e.g. ```[text]``` means you should substitute with what's between those square brackets. For example, ```[Root Partition UUID]``` means you have to put the UUID of your root partition in place of the square brackets.
 - Any text after hashtags or equals signs explain the command you are running and are not to be included when you type in the command.
+- `[your drive]` is the drive that contains your entire OS
+- `[boot]` means your boot partition. It will look like the following 3: `/dev/vdx1`, `/dev/sdx1` or `/dev/nvmexn1p1`, or the following 2 if you're dual-booting: `/dev/sdx5`, `/dev/nvmexn1p5`
+- `[swap]` means your swap partition. It will look like the following 3: `/dev/vdx2`, `/dev/sdx2` or `/dev/nvmexn1p2`, or the following 2 if you're dual-booting: `/dev/sdx6`, `/dev/nvmexn1p6`
+- `[root]` means your root partition. It will look like the following 3: `/dev/vdx3`, `/dev/sdx3` or `/dev/nvmexn1p3`, or the following 2 if you're dual-booting: `/dev/sdx7`, `/dev/nvmexn1p7`
+- `[home]` means your home partition. It will look like the following 3: `/dev/vdx4`, `/dev/sdx4` or `/dev/nvmexn1p4`, or the following 2 if you're dual-booting: `/dev/sdx8`, `/dev/nvmexn1p8`
 
 ---
 
@@ -148,7 +158,14 @@ Once the ISO has been written to a storage medium (that could be a USB thumb dri
 
 ## Pre-installation configuration
 
-Now that you've booted into the ArchISO, you need to run some commands before installing Arch to make it possible to install.
+Now that you've booted into the ArchISO, we can go ahead and begin installing Arch.
+
+### Load font (for HiDPI monitors)
+If you have a HiDPI monitor, it may be in your best interest to change the terminal font to a larger one since the text may be small and difficult to read.\
+Load a larger terminal font as shown below:
+```
+setfont ter-132b
+```
 
 ### Load Keymaps
 
@@ -232,7 +249,7 @@ Check if your access point is either a Wi-Fi router or mobile broadband modem, o
  mmcli -L
  ```
  Look for ```/org/freedesktop/ModemManager1/Modem/[modem index]```
- (where your modem index is a unique number representing your modem)
+ (where your modem index is the unique number representing your modem)
 
  Connect to your modem by running:
  ```
@@ -297,9 +314,8 @@ And take note of whether it returns ```UEFI``` or ```BIOS```
 
 Run the below commands to initialise the disk:
 ```
-gdisk /dev/sdx
+gdisk /dev/[your drive]
 ```
-> (where sdx refers to the letter of your drive)
 
 The above will open up an interactive prompt session and change the prompt from:
 ```
@@ -374,15 +390,6 @@ n = New Parition
 w = Write partitions and quit
 ```
 
-From here on out, if you're dual-booting, whatever partition number the guide tells you to make changes to, add 3 to that number, so you don't accidentally make changes to your Windows OS.\
-(The below is not a command, do not enter this into the Arch ISO)
-```
-BOOT Partition: /dev/sdx1 -> /dev/sdx4
-SWAP Partition: /dev/sdx2 -> /dev/sdx5
-ROOT Partition: /dev/sdx3 -> /dev/sdx6
-HOME Partition: /dev/sdx4 -> /dev/sdx7
-```
-
 <details>
  <summary><h4>Encrypt your drive (optional)</h4></summary>
 LUKS encryption encrypts your root partition (and home partition too, if present) so that attackers who have physical access to your laptop cannot access the contents of your drive.
@@ -390,38 +397,38 @@ LUKS encryption encrypts your root partition (and home partition too, if present
 To set that up, enter the following commands:
 
 ```
-cryptsetup -v luksFormat /dev/sdx3
+cryptsetup -v luksFormat [root]
 ```
 
 And if you have set up a home partition, encrypt that too.
 
 ```
-cryptsetup -v luksFormat /dev/sdx4
+cryptsetup -v luksFormat [home]
 ```
 
 Make sure to unlock them so that they can be formatted later.
 
 ```
-cryptsetup open /dev/sdx3 root
+cryptsetup open [root] root
 ```
 
 And if you have a separate home partition, run the below command:
 ```
-cryptsetup open /dev/sdx4 home
+cryptsetup open [home] home
 ```
 </details>
 
-### Format non-swap partitions (so that data can be written/read from it) <a name="format--mount-partitions"></a>
+### Format non-swap partitions (so that data can be written/read from it)
 ```
-mkfs.fat -F32 /dev/sdx1 # It needs to be in a universally-recognised file system, so your computer can boot from it.
-mkfs.btrfs /dev/sdx3 # Add -f if your system tells you another filesystem like ext4 is already present
-mkfs.btrfs /dev/sdx4
+mkfs.fat -F32 [boot] # It needs to be in a universally-recognised file system, so your computer can boot from it.
+mkfs.btrfs [root] # Add -f if your system tells you another filesystem like ext4 is already present
+mkfs.btrfs [home]
 ```
 
 Format and turn on swap memory
 ```
-mkswap /dev/sdx2
-swapon /dev/sdx2
+mkswap [swap]
+swapon [swap]
 ```
 
 ### Mount Remaining Partitions (so they can be accessed)
@@ -430,15 +437,15 @@ If you have set up LUKS encryption, run the below:
 ```
 mount /dev/mapper/root /mnt
 mount -m /dev/mapper/home /mnt/home
-mount -m /dev/sdx4 /mnt/home
+mount -m [home] /mnt/home
 ```
 
 Otherwise, run the below:
 
 ```
-mount /dev/sdx3 /mnt 
-mount -m /dev/sdx1 /mnt/boot
-mount -m /dev/sdx4 /mnt/home
+mount [root] /mnt 
+mount -m [boot] /mnt/boot
+mount -m [home] /mnt/home
 ```
 
 </details>
@@ -448,7 +455,7 @@ mount -m /dev/sdx4 /mnt/home
 
 To initialise the disk you want to install Arch on ("sdx" from now on), run the below command:
 ```
-sfdisk --delete /dev/sdx
+sfdisk --delete [your drive]
 ```
 
 Then, enter the below (do not type anything where ```=``` precedes it, as those are just explanations for what each command does):
@@ -505,14 +512,14 @@ mkfs.ext4 /dev/sdx3 # If you made a home partition
 
 Format and turn on swap memory
 ```
-mkswap /dev/sdx1
-swapon /dev/sdx1
+mkswap [swap]
+swapon [swap]
 ```
 
 ### Mount Remaining Partitions
 ```
-mount /dev/sdx2 /mnt 
-mount -m /dev/sdx3 /mnt/home
+mount [root] /mnt 
+mount -m [home] /mnt/home
 ```
 
 </details>
@@ -642,7 +649,7 @@ echo LANG=en_GB.UTF-8 > /etc/locale.conf
 ```
 
 ### Add Keymaps to vconsole
-For keyboard users with non US Eng only. Replace `uk` with yours.
+For keyboard users with non-US English only. Replace `uk` with yours.
 ```
 echo "KEYMAP=uk" > /etc/vconsole.conf
 ```
@@ -671,7 +678,7 @@ Replace `arch` with the hostname of your choice. Make sure it matches the hostna
 Save & exit.
 
 ### Enable NetworkManager
-"Enabling" a software puts in a state when you can use it - essentially turning it on so you can use it.
+"Enabling" a piece of software essentially turns it on so you can use it.
 ```
 systemctl enable NetworkManager
 ```
@@ -764,18 +771,18 @@ Find your CPU architechture from [this site](https://renenyffenegger.ch/notes/Li
 
 ```
 pacman -S grub
-grub-install /dev/sdx # The default is i386-pc, otherwise known as 32-bit x86
+grub-install [your drive] # The default is i386-pc, otherwise known as 32-bit x86
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
 You can specify a CPU architechture as shown below:
 ```
-grub-install /dev/sdx --target=[Your CPU's architecture]
+grub-install [your drive] --target=[Your CPU's architecture]
 ```
 
 An example of this is (assuming you're using a 64-bit x86-64 CPU, like most modern CPUS do)
 ```
-grub-install /dev/sdx --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-install [your drive] --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 ```
 
 GRUB needs to know your EFI directory so it can boot your system properly, which is what `--efi-directory` specifies.\
@@ -785,23 +792,48 @@ GRUB needs to know your EFI directory so it can boot your system properly, which
 
 
 <details>
- <summary><h3>Installing and configuring SystemD-Boot (UEFI)</h3></summary>
+ <summary><h3>Installing and configuring SystemD-Boot (UEFI or if you want Arch Linux to work with Windows 11)</h3></summary>
 
 Install SystemD-Boot:
 ```
 bootctl install
 ```
 
+<details>
+ <summary><h4>Making Windows 11 a boot option</h4></summary>
+
+Create a temporary folder for the Windows 11 EFI to be written to
+```
+mkdir /tmp/win_boot
+```
+
+And mount your Windows boot partition (/dev/sdx1 or /dev/nvmexn1p1) to that folder:
+```
+mount /dev/[windows boot partition] /tmp/win_boot
+```
+
+Copy the EFi files to `/boot/EFI`
+```
+cp /tmp/win_boot/EFI/Microsoft /boot/EFI
+```
+</details>
+
 #### Creating and amending config files 
 
 > Note: You may skip this entire section if you've unified your kernel images
 
-Open and edit /boot/loader/loader.conf
+
+Change directory into `/boot/loader`
 ```
-nano /boot/loader/loader.conf
+cd /boot/loader
 ```
-Comment out any line beginning with ```default``` by putting a hashtag at the beginning of the line.
-And add this line to the bottom of the file
+
+Edit /boot/loader/loader.conf
+```
+nano loader.conf
+```
+Comment out any line beginning with ```default``` by putting a hashtag at the beginning of the line.\
+And add these lines to the bottom of the file:
 ```
 timeout 3
 console-mode keep
@@ -812,11 +844,16 @@ editor no
 ```timeout 3``` stalls your system by 3 seconds before it boots so you have time to select an option. This is optional, and if you want an instant boot, you can leave it commented.\
 ```console-mode keep``` keeps your console-based SystemD-Boot menu to how it was last time.\
 ```default arch.conf``` is what SystemD-Boot automatically boots to when you don't select an option.\
-```editor no``` prevents any edits to be made to the boot options within the menu itself.
+```editor no``` prevents any edits to be made to the boot options from within the menu itself.
+
+Change directory into the `entries` folder, as shown below:
+```
+cd entries
+```
 
 Once that's done, type:
 ```
-nano /boot/loader/entries/arch.conf
+nano arch.conf
 ```
 
 And define parameters as follows:
@@ -834,7 +871,7 @@ options root=UUID="[root partition UUID]" rw
 
 You can find the root partition's UUID by typing into the command line (not your editor):
 ```
-blkid /dev/sdx3
+blkid [root] -s UUID
 ```
 
 (Keeping in mind that sdx refers to the drive you want to install Arch Linux onto)
@@ -883,17 +920,17 @@ Secure Boot is a security standard designed to ensure that a device boots using 
 Once you've done that, install sbctl by running the below command:
 
 ```
-sudo pacman -S sbctl
+pacman -S sbctl
 ```
 
 Then create secure boot keys by running the below command:
 ```
-sudo sbctl create-keys
+sbctl create-keys
 ```
 
 Then enroll those keys, alongside Microsoft's, to the UEFI
 ```
-sudo enroll-keys -m
+sbctl enroll-keys -m
 ```
 
 Check what files need to be signed by running:
@@ -903,8 +940,8 @@ sbctl verify
 
 And sign those files. If you haven't unified your kernel images, sign your boot files as shown below:
 ```
-sudo sbctl sign -s /boot/vmlinuz-linux
-sudo sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
+sbctl sign -s /boot/vmlinuz-linux
+sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
 ```
 
 And if you have, sign them as shown below:
@@ -913,6 +950,13 @@ sudo sbctl sign -s -o /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/
 sudo sbctl sign -s /efi/EFI/BOOT/BOOTX64.EFI
 sudo sbctl sign -s /efi/EFI/Linux/arch-linux.efi
 sudo sbctl sign -s /efi/EFI/Linux/arch-linux-fallback.efi
+```
+
+Sign the Windows EFI files, if you're dual-booting:
+```
+sbctl sign -s /boot/efi/Microsoft/Boot/bootmgfw.efi
+sbctl sign -s /boot/efi/Microsoft/Boot/bootmgr.efi
+sbctl sign -s /boot/efi/Microsoft/Boot/memtest.efi
 ```
 
 If you have any forks of the linux kernel installed (e.g. Linux Zen, Linux Hardened .etc), go ahead and sign those too.
@@ -974,22 +1018,22 @@ If you were connected to the internet through a Mobile Broadband Modem, the conn
 
 Firstly, to take a look at what network stations you have installed on your computer, use the command:
 ```
-nmcli device
+nmcli d
 ```
 Then, turn on wifi by using the command:
 ```
-nmcli radio wifi on
+nmcli r wifi on
 ```
 And list local access points by using the command:
 ```
-nmcli device wifi list
+nmcli d wifi list
 ```
 Select one of the access points listed and connect to it by running the following command:
 ```
-nmcli device wifi connect [Access Point SSID] password [Access Point Password]
+nmcli d wifi connect [Access Point SSID] password [Access Point Password]
 ```
 
-You won't need to check for updates as Arch will have already downloaded the latest version of Arch Linux.
+You won't need to check for updates as Arch will have already downloaded the latest version of Arch Linux.\
 You can stop here if you want to have a desktop-less Arch system for any reason (this could be for a server install).
 
 ---
@@ -998,7 +1042,7 @@ You can stop here if you want to have a desktop-less Arch system for any reason 
 
 #### Display protocols
 
-```X.org``` is the free and open-source implementation of the X Window System (X11) display protocol. However, it is quite old, and it shows. It has multiple issues with it, for example, applications can eavesdrop on each other, animations are laggier and people with multiple monitors or high-density displays (HiDPI) might experience issues.
+```X.org``` is the free and open-source implementation of the X Window System (X11) display protocol. However, it is quite old, and it shows. It has multiple issues with it, for example, applications can eavesdrop on each other, animations are laggier and people with multiple monitors or high-density displays (HiDPI) might experience issues. KDE Plasma, for example, has a problem with overlapping applications on the System Tray on X11.
 
 ```Wayland``` is a more recent display protocol. Like X.org, it is free and open-source. However, it is much newer, and more efficient. It offers better security, and modern HiDPI and multi-monitor support. However, it breaks compatibility with certain applications, and although there are compatibility layers such as xorg-xwayland and qt5-wayland, they aren't *perfect* but are incredibly good at what they do.
 
@@ -1127,7 +1171,9 @@ There are two main types of Desktop Environments: stacking and tiling.\
 Stacking window managers are just your vanilla desktop environment. You use your mouse to stack and arrange windows on your screen.\
 Tiling window managers, however, have a steeper learning curve than stacking window managers. You use your keyboard to tile and arrange windows on your screen.
 
-Use a tiling window manager if you use vim, neovim or emacs. Use a stacking window manager if you use nano.\
+Use a tiling window manager if you use vim, neovim or emacs.\
+Use a stacking window manager if you use nano.
+
 For a list of notable window managers and how to install them, go to ```window-managers.md```, by clicking [here](https://github.com/Exvix/arch-install-guide/blob/main/window-managers.md)
 
 ### Audio Utilities & Bluetooth
@@ -1381,8 +1427,12 @@ Now open your browser and type `your-machine-ip:9000` into the searchbar and log
 
 ## Latest changes 
 
- - **Minor release 2024-09-11**
-   - Fixed more typos and markdown formatting errors
-   - Made the table-of-contents mobile-friendly!
+ - **Release 2024-10-06**
+   - Fixed a broken ToC item
+   - Updated guide version number
+   - Added a few items to guide explanatory notes
+   - Added a few entries to the glossary
+   - Made the guide more generic to make it easier for readers with NVMe drives on their PCs
+   - Added a few instructions on how to dual-boot with SystemD-Boot 
 
 **Full Changelog**: https://github.com/bahmoudd/arch-install-guide/releases

@@ -786,7 +786,7 @@ mkinitcpio -P
 </details>
 
 <details>
- <summary><h3>Installing GRUB (MBR or if you're dual-booting)</h3></summary>
+ <summary><h3>Installing GRUB (mainly for MBR systems)</h3></summary>
  
 "Targets" are CPU architechtures. These are important for grub to know so it can handle the boot process correctly.\
 Find your CPU architechture from [this site](https://renenyffenegger.ch/notes/Linux/shell/commands/grub-install#grub-install-target) and specify that as the target.
@@ -1211,34 +1211,6 @@ sudo systemctl enable bluetooth.service
 ```
 reboot
 ```
-
-## Adding the Windows Boot Manager to the GRUB Boot Menu
-
-Are you dual-booting Windows and Arch Linux?\
-If so, you still have more steps to complete, you need to add the Windows Boot Manager as one of the boot options to GRUB.\
-To do so, go into your system's UEFI firmware interface and move `GRUB` above the Windows Boot Manager, which differs depending on manufacturer.
-
-Install os-prober:
-```
-sudo pacman -S os-prober
-```
-
-Edit the `/etc/default/grub` file:
-```
-sudo nano /etc/default/grub
-```
-
-Uncomment the below line:
-```
-#GRUB_DISABLE_OS_PROBER=FALSE
-```
-Save and exit.
-
-Then recreate your `/boot/grub/grub.cfg` file as shown below:
-```
-sudo grub-mkconfig -o /boot/grub/grub.cfg
-```
-</br>
 
 ---
 # The Conclusion

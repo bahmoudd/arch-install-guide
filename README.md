@@ -837,7 +837,7 @@ cd /boot/loader
 ```
 
 Edit /boot/loader/loader.conf\
-(if you're dual-booting, this is /efi/loader/loader.conf)
+(if you're dual-booting, this is `/efi/loader/loader.conf` instead)
 
 ```
 nano loader.conf
@@ -852,7 +852,7 @@ default @saved
 
 ```timeout 3``` stalls your system by 10 seconds before it boots so you have time to select an option. This is optional, and if you want an instant boot, you can leave it commented.\
 ```console-mode keep``` keeps your console-based SystemD-Boot menu to how it was last time.\
-```default @saved``` is what SystemD-Boot automatically boots to when you don't select an option. It remembers your last boot option and sets that as the default automatically\
+```default @saved``` is what SystemD-Boot automatically boots to when you don't select an option. It remembers your last boot option and sets that as the default automatically.
 
 Change directory into the `entries` folder, as shown below:\
 (Note: If you're dual-booting, cd into `/boot/loader/entries` instead of `/efi/loader/entries`)

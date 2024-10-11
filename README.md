@@ -352,7 +352,21 @@ n = New Partition
 [simply press enter] = 1st Partition
 [simply press enter] = As First Sector
 +1G = As Last sector (BOOT Partition Size)
-ef00 = EFI Partition Type
+ef00 = EFI System Partition
+```
+
+Or if you're dual-booting:
+
+```
+n = New Partition
+[simply press enter] = 1st Partition
+[simply press enter] = As First Sector
++1G = As Last sector (BOOT Partition Size)
+ea00 = XBOOTLDR Partition
+```
+
+Regardless, you should make a SWAP partition:
+```
 
 n = New Partition
 [simply press enter] = 2nd Partition
@@ -447,6 +461,14 @@ mount [root] /mnt
 mount -m [boot] /mnt/boot
 mount -m [home] /mnt/home
 ```
+
+If you're dual-booting:
+```
+mount -m [windows boot partition] /efi
+```
+
+>[!NOTE]
+>Your Windows Boot Partition is either /dev/sda1 or /dev/nvme0n1p1
 
 </details>
 
@@ -799,24 +821,10 @@ Install SystemD-Boot:
 bootctl install
 ```
 
-<details>
- <summary><h4>Making Windows 11 a boot option</h4></summary>
-
-Create a temporary folder for the Windows 11 EFI to be written to
+Or if you're dual-booting:
 ```
-mkdir /tmp/win_boot
+bootctl install --esp-path=/efi --boot-path=/boot
 ```
-
-And mount your Windows boot partition (/dev/sdx1 or /dev/nvmexn1p1) to that folder:
-```
-mount /dev/[windows boot partition] /tmp/win_boot
-```
-
-Copy the EFi files to `/boot/EFI`
-```
-cp /tmp/win_boot/EFI/Microsoft /boot/EFI
-```
-</details>
 
 #### Creating and amending config files 
 
@@ -828,25 +836,26 @@ Change directory into `/boot/loader`
 cd /boot/loader
 ```
 
-Edit /boot/loader/loader.conf
+Edit /boot/loader/loader.conf\
+(if you're dual-booting, this is /efi/loader/loader.conf)
+
 ```
 nano loader.conf
 ```
 Comment out any line beginning with ```default``` by putting a hashtag at the beginning of the line.\
 And add these lines to the bottom of the file:
 ```
-timeout 3
+timeout 10
 console-mode keep
-default arch.conf
-editor no
+default @saved
 ```
 
-```timeout 3``` stalls your system by 3 seconds before it boots so you have time to select an option. This is optional, and if you want an instant boot, you can leave it commented.\
+```timeout 3``` stalls your system by 10 seconds before it boots so you have time to select an option. This is optional, and if you want an instant boot, you can leave it commented.\
 ```console-mode keep``` keeps your console-based SystemD-Boot menu to how it was last time.\
-```default arch.conf``` is what SystemD-Boot automatically boots to when you don't select an option.\
-```editor no``` prevents any edits to be made to the boot options from within the menu itself.
+```default @saved``` is what SystemD-Boot automatically boots to when you don't select an option. It remembers your last boot option and sets that as the default automatically\
 
-Change directory into the `entries` folder, as shown below:
+Change directory into the `entries` folder, as shown below:\
+(Note: If you're dual-booting, cd into `/boot/loader/entries` instead of `/efi/loader/entries`)
 ```
 cd entries
 ```
@@ -874,8 +883,6 @@ You can find the root partition's UUID by typing into the command line (not your
 blkid [root] -s UUID
 ```
 
-(Keeping in mind that sdx refers to the drive you want to install Arch Linux onto)
-
 Save and exit.
 
 We need to make a similar file for the fallback image. To do that, type:
@@ -896,7 +903,7 @@ initrd /initramfs-linux.img
 
 To (respectively):
 ```
-title Arch Linux Fallback
+title Arch Linux (fallback initramfs)
 initrd /initrams-linux-fallback.img
 ```
 
@@ -942,6 +949,7 @@ And sign those files. If you haven't unified your kernel images, sign your boot 
 ```
 sbctl sign -s /boot/vmlinuz-linux
 sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
+sbctl sign -s /usr/lib/systemd/boot/efi/systemd-bootx64.efi
 ```
 
 And if you have, sign them as shown below:

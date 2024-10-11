@@ -33,7 +33,6 @@
    - [Login Manager](#install-and-enable-a-login-manager)
    - [Installing a Desktop Environment](#installing-a-desktop-environment)
    - [Audio Utilities & Bluetooth](#audio-utilities-and-bluetooth)
-   - [Adding the Windows Boot Manager as a boot option in GRUB](#adding-the-windows-boot-manager-to-the-grub-boot-menu)
  - [**The Conclusion**](#the-conclusion)
  - [**Extras (optional)**](#extras)
    - [Misc Applications](#apps-i-would-personally-recommend-installing-but-aren't-required)

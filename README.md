@@ -1183,7 +1183,7 @@ Use a stacking window manager if you use nano.
 
 For a list of notable window managers and how to install them, go to ```window-managers.md```, by clicking [here](https://github.com/Exvix/arch-install-guide/blob/main/window-managers.md)
 
-### Audio Utilities & Bluetooth
+### Audio Utilities and Bluetooth
 
 > [!NOTE]
 > This is optional but highly recommended.

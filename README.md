@@ -35,7 +35,8 @@
    - [Audio Utilities & Bluetooth](#audio-utilities-and-bluetooth)
  - [**The Conclusion**](#the-conclusion)
  - [**Extras (optional)**](#extras)
-   - [Misc Applications](#apps-i-would-personally-recommend-installing-but-aren't-required)
+   - [Enabling secure boot](#enabling-secure-boot)
+   - [Cool apps](#cool-apps)
    - [Yay](#install-yay)
    - [Alternative Shells](#alternative-shells)
    - [Aptpac](#aptpac)
@@ -81,10 +82,6 @@ Arch Linux is fantastic for its Arch User Repository (AUR) and simplicity of des
 - Anything else within square brackets, e.g. ```[text]``` means you should substitute with what's between those square brackets. For example, ```[Root Partition UUID]``` means you have to put the UUID of your root partition in place of the square brackets.
 - Any text after hashtags or equals signs explain the command you are running and are not to be included when you type in the command.
 - `[your drive]` is the drive that contains your entire OS
-- `[boot]` means your boot partition. It will look like the following 3: `/dev/vdx1`, `/dev/sdx1` or `/dev/nvmexn1p1`, or the following 2 if you're dual-booting: `/dev/sdx5`, `/dev/nvmexn1p5`
-- `[swap]` means your swap partition. It will look like the following 3: `/dev/vdx2`, `/dev/sdx2` or `/dev/nvmexn1p2`, or the following 2 if you're dual-booting: `/dev/sdx6`, `/dev/nvmexn1p6`
-- `[root]` means your root partition. It will look like the following 3: `/dev/vdx3`, `/dev/sdx3` or `/dev/nvmexn1p3`, or the following 2 if you're dual-booting: `/dev/sdx7`, `/dev/nvmexn1p7`
-- `[home]` means your home partition. It will look like the following 3: `/dev/vdx4`, `/dev/sdx4` or `/dev/nvmexn1p4`, or the following 2 if you're dual-booting: `/dev/sdx8`, `/dev/nvmexn1p8`
 
 ---
 
@@ -308,8 +305,7 @@ And take note of whether it returns ```UEFI``` or ```BIOS```
 <details>
  <summary><h3>UEFI</h3></summary>
 
-> [!NOTE]
-> If you're dual-booting, skip down to "Creating Partitions"
+> Note: If you're dual-booting, skip down to "Creating Partitions"
 
 Run the below commands to initialise the disk:
 ```
@@ -352,6 +348,10 @@ n = New Partition
 [simply press enter] = As First Sector
 +1G = As Last sector (BOOT Partition Size)
 ef00 = EFI System Partition
+
+c = Change partition label
+1 = Change boot partition's label
+boot = Set the boot partition label to be "boot"
 ```
 
 Or if you're dual-booting:
@@ -362,6 +362,10 @@ n = New Partition
 [simply press enter] = As First Sector
 +1G = As Last sector (BOOT Partition Size)
 ea00 = XBOOTLDR Partition
+
+c = Change partition label
+5 = Change boot partition's label
+boot = Set the boot partition label to be "boot"
 ```
 
 Regardless, you should make a SWAP partition:
@@ -372,6 +376,10 @@ n = New Partition
 [simply press enter] = As First Sector
 +16G = As Last sector (SWAP size, or double your RAM, whichever is smaller)
 8200 = Linux Swap
+
+c = Change partition label
+2 = Change swap partition's label (if you're dual-booting, this will be 6 instead)
+swap = Set the boot partition label to be "swap"
 ```
 
 If you want to create a home partition (separates the data that is your system from your basic user apps and configurations), enter the below:
@@ -383,11 +391,19 @@ n = New Partition
 +40G = As Last sector [ROOT Partition Size (you may use 20GiB if you have a small hard drive)]
 [simply press enter] = Linux filesystem
 
+c = Change partition label
+3 = Change boot partition's label (if you're dual-booting, this will be 7 instead)
+root = Set the boot partition label to be "root"
+
 n = New Parition
 [simply press enter] = 4th Partition
 [simply press enter] = As first sector
 [simply press enter] = As last sector [HOME parition size (takes up remaining hard drive space)]
 [simply press enter] = Linux filesystem
+
+c = Change partition label
+4 = Change boot partition's label (if you're dual-booting, this will be 8 instead)
+home = Set the boot partition label to be "home"
 
 w = Write partitions and quit
 ```
@@ -400,6 +416,10 @@ n = New Parition
 [simply press enter] = As last sector [ROOT parition size (takes up remaining hard drive space)]
 [simply press enter] = Linux filesystem
 
+c = Change partition label
+3 = Change boot partition's label (if you're dual-booting, this will be 7 instead)
+root = Set the boot partition label to be "root"
+
 w = Write partitions and quit
 ```
 
@@ -410,38 +430,38 @@ LUKS encryption encrypts your root partition (and home partition too, if present
 To set that up, enter the following commands:
 
 ```
-cryptsetup -v luksFormat [root]
+cryptsetup -v luksFormat /dev/disk/by-partlabel/root
 ```
 
 And if you have set up a home partition, encrypt that too.
 
 ```
-cryptsetup -v luksFormat [home]
+cryptsetup -v luksFormat /dev/disk/by-partlabel/home
 ```
 
 Make sure to unlock them so that they can be formatted later.
 
 ```
-cryptsetup open [root] root
+cryptsetup open /dev/disk/by-partlabel/root root
 ```
 
 And if you have a separate home partition, run the below command:
 ```
-cryptsetup open [home] home
+cryptsetup open /dev/disk/by-partlabel/home home
 ```
 </details>
 
 ### Format non-swap partitions (so that data can be written/read from it)
 ```
-mkfs.fat -F32 [boot] # It needs to be in a universally-recognised file system, so your computer can boot from it.
-mkfs.btrfs [root] # Add -f if your system tells you another filesystem like ext4 is already present
-mkfs.btrfs [home]
+mkfs.fat -F32 /dev/disk/by-partlabel/boot # It needs to be in a universally-recognised file system, so your computer can boot from it.
+mkfs.btrfs /dev/disk/by-partlabel/root # Add -f if your system tells you another filesystem like ext4 is already present
+mkfs.btrfs /dev/disk/by-partlabel/home
 ```
 
 Format and turn on swap memory
 ```
-mkswap [swap]
-swapon [swap]
+mkswap /dev/disk/by-partlabel/swap
+swapon /dev/disk/by-partlabel/swap
 ```
 
 ### Mount Remaining Partitions (so they can be accessed)
@@ -450,15 +470,15 @@ If you have set up LUKS encryption, run the below:
 ```
 mount /dev/mapper/root /mnt
 mount -m /dev/mapper/home /mnt/home
-mount -m [home] /mnt/home
+mount -m /dev/disk/by-partlabel/home /mnt/home
 ```
 
 Otherwise, run the below:
 
 ```
-mount [root] /mnt 
-mount -m [boot] /mnt/boot
-mount -m [home] /mnt/home
+mount /dev/disk/by-partlabel/root /mnt 
+mount -m /dev/disk/by-partlabel/boot /mnt/boot
+mount -m /dev/disk/by-partlabel/home /mnt/home
 ```
 
 If you're dual-booting:
@@ -466,8 +486,7 @@ If you're dual-booting:
 mount -m [windows boot partition] /efi
 ```
 
->[!NOTE]
->Your Windows Boot Partition is either /dev/sda1 or /dev/nvme0n1p1
+> Note: Your Windows Boot Partition is either /dev/sda1 or /dev/nvme0n1p1
 
 </details>
 
@@ -527,20 +546,20 @@ w = Write partitions and quit
 
 ### Format non-swap partitions
 ```
-mkfs.ext4 /dev/sdx2
-mkfs.ext4 /dev/sdx3 # If you made a home partition
+mkfs.ext4 -L root /dev/sdx2 
+mkfs.ext4 -L home /dev/sdx3 # If you made a home partition
 ```
 
 Format and turn on swap memory
 ```
-mkswap [swap]
-swapon [swap]
+mkswap -L swap /dev/disk/by-partlabel/swap
+swapon /dev/disk/by-partlabel/swap
 ```
 
 ### Mount Remaining Partitions
 ```
-mount [root] /mnt 
-mount -m [home] /mnt/home
+mount /dev/disk/by-partlabel/root /mnt 
+mount -m /dev/disk/by-partlabel/home /mnt/home
 ```
 
 </details>
@@ -666,7 +685,7 @@ locale-gen
 
 ### Add LANG to locale.conf
 ```
-echo LANG=en_GB.UTF-8 > /etc/locale.conf
+echo 'LANG=en_GB.UTF-8' > /etc/locale.conf
 ```
 
 ### Add Keymaps to vconsole
@@ -719,7 +738,10 @@ If you're on an MBR systems, install GRUB and if you're on an EFI system, instal
 You need to do some extra steps before installing the bootloader if you've encrypted your ROOT/HOME parition(s).
 
 <details>
- <summary><h4>Enabling password prompt on boot to unencrypt your drive (do this if you've used LUKS to encrypt your drive, duh!)</h4></summary>
+ <summary><h3>Reconfigure the mkinitcpio.conf file (only do this if you're using LUKS and/or want to unify your kernel images)</h3></summary>
+
+<details>
+ <summary><h5>Enabling password prompt on boot to unencrypt your drive</h5></summary>
 
 Edit the mkinitcpio.conf file:
 ```
@@ -740,7 +762,7 @@ mkinitcpio -P
 </details>
 
 <details>
- <summary><h4>Unify your kernel images (optional)</h4></summary>
+ <summary><h5>Unify your kernel images (optional)</h5></summary>
 
 Make mkinitcpio quiet so your screen isn't filled with a bunch of useless garbage:
 ```
@@ -782,6 +804,7 @@ Regenerate the cpio as shown below:
 mkinitcpio -P
 ```
 
+</details>
 </details>
 
 <details>
@@ -849,7 +872,7 @@ console-mode keep
 default @saved
 ```
 
-```timeout 3``` stalls your system by 10 seconds before it boots so you have time to select an option. This is optional, and if you want an instant boot, you can leave it commented.\
+```timeout 10``` stalls your system by 10 seconds before it boots so you have time to select an option. This is optional, and if you want an instant boot, you can leave it commented.\
 ```console-mode keep``` keeps your console-based SystemD-Boot menu to how it was last time.\
 ```default @saved``` is what SystemD-Boot automatically boots to when you don't select an option. It remembers your last boot option and sets that as the default automatically.
 
@@ -879,7 +902,7 @@ options root=UUID="[root partition UUID]" rw
 
 You can find the root partition's UUID by typing into the command line (not your editor):
 ```
-blkid [root] -s UUID
+blkid /dev/disk/by-partlabel/root -s UUID
 ```
 
 Save and exit.
@@ -916,57 +939,6 @@ options root=UUID="[root partition UUID]" rw
 ```
 
 > **Did you follow the above steps EXACTLY? Any mistakes made can and will cause your Arch system to fail its boot sequence.** 
-
-</details>
-
-<details>
- <summary><h4>Enable secure boot (optional)</h4></summary>
-
-Secure Boot is a security standard designed to ensure that a device boots using only trusted software. To enable it, go into your firmware settings and erase all of your secure boot keys. The way on how to do so differs between manufacturers.\
-Once you've done that, install sbctl by running the below command:
-
-```
-pacman -S sbctl
-```
-
-Then create secure boot keys by running the below command:
-```
-sbctl create-keys
-```
-
-Then enroll those keys, alongside Microsoft's, to the UEFI
-```
-sbctl enroll-keys -m
-```
-
-Check what files need to be signed by running:
-```
-sbctl verify
-```
-
-And sign those files. If you haven't unified your kernel images, sign your boot files as shown below:
-```
-sbctl sign -s /boot/vmlinuz-linux
-sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
-sbctl sign -s /usr/lib/systemd/boot/efi/systemd-bootx64.efi
-```
-
-And if you have, sign them as shown below:
-```
-sudo sbctl sign -s -o /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/systemd/boot/efi/systemd-bootx64.efi
-sudo sbctl sign -s /efi/EFI/BOOT/BOOTX64.EFI
-sudo sbctl sign -s /efi/EFI/Linux/arch-linux.efi
-sudo sbctl sign -s /efi/EFI/Linux/arch-linux-fallback.efi
-```
-
-Sign the Windows EFI files, if you're dual-booting:
-```
-sbctl sign -s /boot/efi/Microsoft/Boot/bootmgfw.efi
-sbctl sign -s /boot/efi/Microsoft/Boot/bootmgr.efi
-sbctl sign -s /boot/efi/Microsoft/Boot/memtest.efi
-```
-
-If you have any forks of the linux kernel installed (e.g. Linux Zen, Linux Hardened .etc), go ahead and sign those too.
 
 </details>
 
@@ -1045,7 +1017,7 @@ You can stop here if you want to have a desktop-less Arch system for any reason 
 
 ---
 
-### Display protocols & GPU Drivers
+### Display protocols and GPU Drivers
 
 #### Display protocols
 
@@ -1218,9 +1190,59 @@ Now everything is installed and after the final `reboot`, you will land in the S
 - Paccache can be used clean pacman cached packages either manually or in an automated way.
 </br>
 
+
 ## Extras
 
-### Apps I would personally recommend installing but aren't required
+## Enabling secure boot
+
+Secure Boot is a security standard designed to ensure that a device boots using only trusted software. To enable it, go into your firmware settings and erase all of your secure boot keys. The way on how to do so differs between manufacturers.\
+Once you've done that, install sbctl by running the below command:
+
+```
+pacman -S sbctl
+```
+
+Then create secure boot keys by running the below command:
+```
+sbctl create-keys
+```
+
+Then enroll those keys, alongside Microsoft's, to the UEFI
+```
+sbctl enroll-keys -m
+```
+
+Check what files need to be signed by running:
+```
+sbctl verify
+```
+
+And sign those files. If you haven't unified your kernel images, sign your boot files as shown below:
+```
+sbctl sign -s /boot/vmlinuz-linux
+sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
+sbctl sign -s /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+```
+
+And if you have, sign them as shown below:
+```
+sudo sbctl sign -s -o /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+sudo sbctl sign -s /efi/EFI/BOOT/BOOTX64.EFI
+sudo sbctl sign -s /efi/EFI/Linux/arch-linux.efi
+sudo sbctl sign -s /efi/EFI/Linux/arch-linux-fallback.efi
+```
+
+Sign the Windows EFI files, if you're dual-booting:
+```
+sbctl sign -s /boot/efi/Microsoft/Boot/bootmgfw.efi
+sbctl sign -s /boot/efi/Microsoft/Boot/bootmgr.efi
+sbctl sign -s /boot/efi/Microsoft/Boot/memtest.efi
+```
+
+If you have any forks of the linux kernel installed (e.g. Linux Zen, Linux Hardened .etc), go ahead and sign those too.
+
+### Cool apps
+
 You can install all the following packages or only the one you want.
 ```
 sudo pacman -S firefox openssh qbittorrent audacious wget screen git fastfetch lib32-mesa
@@ -1349,7 +1371,7 @@ man doas.conf # For configuration
 man doas # For usage
 ```
 
-## Maintenance, Performance Tuning & Monitoring
+## Maintenance, Performance Tuning and Monitoring
 
 ### Paccache
 Pacman Cache Cleaner.

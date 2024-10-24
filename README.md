@@ -1428,12 +1428,10 @@ Now open your browser and type `your-machine-ip:9000` into the searchbar and log
 
 ## Latest changes 
 
- - **Release 2024-10-06**
-   - Fixed a broken ToC item
-   - Updated ISO version number
-   - Added a few items to guide explanatory notes
-   - Added a few entries to the glossary
-   - Made the guide more generic to make it easier for readers with NVMe drives on their PCs
-   - Added a few instructions on how to dual-boot with SystemD-Boot 
+ - **Release 2024-10-24**
+   - Fixed broken ToC items
+   - The guide now uses partition labels for the sake of clarity
+   - Rearranged some sections for the sake of organisation
+   - Moved secure boot to extras sections
 
 **Full Changelog**: https://github.com/bahmoudd/arch-install-guide/releases

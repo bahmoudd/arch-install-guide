@@ -1204,24 +1204,24 @@ pacman -S sbctl
 
 Then create secure boot keys by running the below command:
 ```
-sbctl create-keys
+sudo sbctl create-keys
 ```
 
 Then enroll those keys, alongside Microsoft's, to the UEFI
 ```
-sbctl enroll-keys -m
+sudo sbctl enroll-keys -m
 ```
 
 Check what files need to be signed by running:
 ```
-sbctl verify
+sudo sbctl verify
 ```
 
 And sign those files. If you haven't unified your kernel images, sign your boot files as shown below:
 ```
-sbctl sign -s /boot/vmlinuz-linux
-sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
-sbctl sign -s /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+sudo sbctl sign -s /boot/vmlinuz-linux
+sudo sbctl sign -s /boot/EFI/BOOT/BOOTX64.EFI
+sudo sbctl sign -s /usr/lib/systemd/boot/efi/systemd-bootx64.efi
 ```
 
 And if you have, sign them as shown below:
@@ -1232,11 +1232,11 @@ sudo sbctl sign -s /efi/EFI/Linux/arch-linux.efi
 sudo sbctl sign -s /efi/EFI/Linux/arch-linux-fallback.efi
 ```
 
-Sign the Windows EFI files, if you're dual-booting:
+Sign the Windows EFI files (if you're dual-booting):
 ```
-sbctl sign -s /boot/efi/Microsoft/Boot/bootmgfw.efi
-sbctl sign -s /boot/efi/Microsoft/Boot/bootmgr.efi
-sbctl sign -s /boot/efi/Microsoft/Boot/memtest.efi
+sudo sbctl sign -s /boot/efi/Microsoft/Boot/bootmgfw.efi
+sudo sbctl sign -s /boot/efi/Microsoft/Boot/bootmgr.efi
+sudo sbctl sign -s /boot/efi/Microsoft/Boot/memtest.efi
 ```
 
 If you have any forks of the linux kernel installed (e.g. Linux Zen, Linux Hardened .etc), go ahead and sign those too.

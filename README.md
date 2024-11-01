@@ -1163,6 +1163,8 @@ cd ..
 sudo rm -rf yay
 ```
 
+<br/>
+
 ## Enabling secure boot
 
 Secure Boot is a security standard designed to ensure that a device boots using only trusted software. To enable it, go into your firmware settings and erase all of your secure boot keys. The way on how to do so differs between manufacturers.\
@@ -1211,6 +1213,8 @@ sudo sbctl sign -s /boot/efi/Microsoft/Boot/memtest.efi
 
 If you have any forks of the linux kernel installed (e.g. Linux Zen, Linux Hardened .etc), go ahead and sign those too.
 
+<br/>
+
 ### Cool apps
 
 You can install all the following packages or only the one you want.
@@ -1239,6 +1243,7 @@ sudo systemctl enable sshd.service
 sudo systemctl enable --now cups.service
 ```
 
+<br/>
 
 ### Integrating the AUR into pacman
 
@@ -1269,7 +1274,7 @@ Edit `/etc/pacman.conf` & add the below two lines.
 Include = /etc/pacman.d/chaotic-mirrorlist
 ```
 
-And synchronise pacman with both the multilib and the chaotic AUR repositories:
+And synchronise pacman with the chaotic AUR repo:
 ```
 sudo pacman -Syy
 ```
@@ -1291,6 +1296,8 @@ sudo powerpill -Su
 Then follow the instructions on screen.
 </details>
 
+<br/>
+
 ### Alternative shells
 
 The shell that comes with your system automatically is bash. However, bash isn't very configurable. To fix that, you can use an alternative shell. Some will be listed below:
@@ -1302,7 +1309,7 @@ fish    | An easy and highly configurable shell. It has features like autosugges
 nushell | An incredibly fast shell that centers around using objects and modules. It lacks a lot of features that bash, zsh and fish have, however.
 ----------------------
 
-To take a look at what shell you have as default (this will likely be bash), run the below command:
+To see what shell you have as default (this will likely be bash), run the below command:
 ```
 echo $SHELL
 ```
@@ -1322,6 +1329,8 @@ chsh -s [shell]
 ```
 chsh -s /usr/bin/zsh
 ```
+
+<br/>
 
 ### Aptpac
 
@@ -1352,6 +1361,8 @@ And finally, move it to ```/usr/local/bin``` so it can be run easily as a comman
 sudo make install
 ```
 
+<br/>
+
 ### Replacing sudo with doas
 
 Sudo has many issues with it. Firstly, it has a lot of features that only IT administrators would use (that many would consider bloat), and it has quite an old and messy codebase, leading it vulnerable to cybercriminals to attack your system, and is definitely no stranger to having bugs that have existed for over 5 years.\
@@ -1378,6 +1389,8 @@ Now you're ready to use doas on your system. Its configuration and usage is simi
 man doas.conf # For configuration
 man doas # For usage
 ```
+
+<br/>
 
 ## Maintenance, Performance Tuning and Monitoring
 
@@ -1417,6 +1430,8 @@ When = PostTransaction
 Exec = /usr/bin/paccache -rk
 ```
 Save & exit.
+
+<br/>
 
 ### Install Cockpit
 

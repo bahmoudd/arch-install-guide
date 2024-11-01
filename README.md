@@ -1,4 +1,4 @@
-> Tested working as of release 2024.10.01
+> Tested working as of release 2024.11.01
 
 # The ultimate Arch linux install guide (UEFI & MBR)
 

@@ -35,9 +35,10 @@
    - [Audio Utilities & Bluetooth](#audio-utilities-and-bluetooth)
  - [**The Conclusion**](#the-conclusion)
  - [**Extras (optional)**](#extras)
+   - [Yay](#install-yay)
    - [Enabling secure boot](#enabling-secure-boot)
    - [Cool apps](#cool-apps)
-   - [Yay](#install-yay)
+   - [Chaotic-AUR](#integrating-the-aur-into-pacman)
    - [Alternative Shells](#alternative-shells)
    - [Aptpac](#aptpac)
    - [Replacing sudo with doas](#replacing-sudo-with-doas)
@@ -1077,57 +1078,12 @@ Edit `/etc/pacman.conf` & uncomment the below two lines.
 #Include = /etc/pacman.d/mirrorlist
 ```
 
-### Integrating the AUR into pacman
+Save and exit.
 
-> [!NOTE]
-> It's better to use this method over yay as the packages are pre-built binaries (in simpler terms, it's faster to download)
-
-Chaotic-AUR is a method for retrieving packages in the AUR (packages made by the community that aren't any of the official repos, which are core, extra and multilib). It's better to use the Chaotic-AUR than other AUR helpers as the packages are pre-built binaries, meaning, your computer doesn't have to take its sweet time to create an app from the source code, as is common with helpers such as yay or paru. This is recommended if you're impatient and/or have a slow PC
-
-Retrieve the keyring for the Chaotic-AUR from the Ubuntu keyserver:
-```
-sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
-```
-
-Sign it locally:
-```
-sudo pacman-key --lsign-key 3056513887B78AEB
-```
-
-Then download both the keyring and mirrorlist:
-```
-sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
-sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
-```
-
-Edit `/etc/pacman.conf` & add the below two lines.
-```
-[chaotic-aur]
-Include = /etc/pacman.d/chaotic-mirrorlist
-```
-
-And synchronise pacman with both the multilib and the chaotic AUR repositories:
+Synchronise pacman with the multilib repo, as shown below:
 ```
 sudo pacman -Syy
 ```
-
-<details>
- <summary><h4>Use powerpill to download from all mirrors simultaneously (optional and highly recommended if you live in a third-world country)</h4></summary>
-
-
-Download powerpill:
-```                                                                                                                                                    
-sudo pacman -S powerpill
-```
-
-Initialise it as follows:
-```
-sudo powerpill -Su
-```
-
-Then follow the instructions on screen.
-</details>
-
 
 ### Install and Enable a Login Manager
 
@@ -1192,6 +1148,20 @@ Now everything is installed and after the final `reboot`, you will land in the S
 
 
 ## Extras
+
+### Install YAY
+
+Yet Another Yogurt - An AUR Helper - install this if you don't want to integrate the AUR into pacman.
+```
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+```
+The below commands delete the yay folder as it isn't necessary anymore
+```
+cd ..
+sudo rm -rf yay
+```
 
 ## Enabling secure boot
 
@@ -1269,19 +1239,57 @@ sudo systemctl enable sshd.service
 sudo systemctl enable --now cups.service
 ```
 
-### Install YAY
 
-Yet Another Yogurt - An AUR Helper - install this if you don't want to integrate the AUR into pacman.
+### Integrating the AUR into pacman
+
+> [!NOTE]
+> Chaotic-AUR does not include any nightly software into its repos - this is any software ending in '-git'. For this reason, it is recommended to use yay over this method.
+
+Chaotic-AUR is a method for retrieving packages in the AUR (packages made by the community that aren't any of the official repos, which are core, extra and multilib). It's better to use the Chaotic-AUR than other AUR helpers as the packages are pre-built binaries, meaning, your computer doesn't have to take its sweet time to create an app from the source code, as is common with helpers such as yay or paru. This is recommended if you're impatient and/or have a slow PC
+
+Retrieve the keyring for the Chaotic-AUR from the Ubuntu keyserver:
 ```
-git clone https://aur.archlinux.org/yay.git
-cd yay
-makepkg -si
+sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 ```
-The below commands delete the yay folder as it isn't necessary anymore
+
+Sign it locally:
 ```
-cd ..
-sudo rm -rf yay
+sudo pacman-key --lsign-key 3056513887B78AEB
 ```
+
+Then download both the keyring and mirrorlist:
+```
+sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+```
+
+Edit `/etc/pacman.conf` & add the below two lines.
+```
+[chaotic-aur]
+Include = /etc/pacman.d/chaotic-mirrorlist
+```
+
+And synchronise pacman with both the multilib and the chaotic AUR repositories:
+```
+sudo pacman -Syy
+```
+
+<details>
+ <summary><h4>Use powerpill to download from all mirrors simultaneously (optional and highly recommended if you live in a third-world country)</h4></summary>
+
+
+Download powerpill:
+```                                                                                                                                                    
+sudo pacman -S powerpill
+```
+
+Initialise it as follows:
+```
+sudo powerpill -Su
+```
+
+Then follow the instructions on screen.
+</details>
 
 ### Alternative shells
 

@@ -1451,10 +1451,10 @@ Now open your browser and type `your-machine-ip:9000` into the searchbar and log
 
 ## Latest changes 
 
- - **Release 2024-10-24**
-   - Fixed broken ToC items
-   - The guide now uses partition labels for the sake of clarity
-   - Rearranged some sections for the sake of organisation
-   - Moved secure boot to extras sections
+ - **Release 2024-11-01**
+   - Moved chaotic aur subheading to extras section
+   - Guide now uses CC BY-SA license
+   - There are now breaks between subheadings in the extras section for clarity
+   - Moved yay subheading towards the top of the extras section
 
 **Full Changelog**: https://github.com/bahmoudd/arch-install-guide/releases

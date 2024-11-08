@@ -58,12 +58,12 @@ Unix            | Unix is a computer OS, first developed at Bell Labs. It became
 Unix-like       | Any Operating System not derived off of any Unix system, but behaves like one.
 Kernel          | The middleman between the OS and the hardware.
 Linux           | A Unix-like kernel created by Linux Torvalds in 1991.
-Distro          | A distribution of Linux - meaning - an OS based off of the Linux kernel, these include Ubuntu, Debian, Red Hat, Fedora and Arch Linux amongst many others.
+Distro          | A distribution of Linux - meaning - an OS based off of the Linux kernel, these include Ubuntu, Debian, RHEL, Fedora and Arch Linux amongst many others.
 Bootloader      | A piece of software designed to load the necessary files that start your computer.
 Package Manager | A package manager is a program designed to automate the process of downloading, installing, updating, listing, removing and searching for software (bundled together as an app or "package")
 Greeter         | A greeter is a graphical login interface, and is often called the login screen. It essentially "greets" the user(s) to the system.
 Shell           | A shell is a text environment where you issue commands and information to your computer. 
-Comment         | Some text that Arch Linux ignores automatically. Comments begin with the hashtag. To comment something out, put a hastaf before it, and to uncomment something, remove the hashtag preceeding it
+Comment         | Some text that Arch Linux ignores automatically. Comments begin with the hashtag. To comment something out, put a hashtag before it, and to uncomment something, remove the hashtag preceeding it
 Parition        | Sections of a disk that keep different types of data separate
 Boot partition  | A partition that tells your firmware interface that your OS supports and runs on UEFI
 Root partition  | A partition which stores your OS

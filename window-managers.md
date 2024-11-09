@@ -158,7 +158,7 @@ sudo pacman -S sway swaylock swaybg swayidle
 <details>
   <summary><h4>river</h4></summary>
 
-![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/riverwm.jpg)
+![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/riverwm.png)
 
 To install river, use the below command:
 ```

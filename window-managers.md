@@ -21,24 +21,30 @@ This section will cover Stacking Window Managers.
 <details>
   <summary><h4>KDE Plasma</h4></summary>
 
-![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/plasma.png)
+![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/kde-plasma.png)
 
-To install KDE Plasma, use the below command:
+To just install KDE Plasma, use the below command:
 ```
-sudo pacman -S plasma konsole dolphin ark kwrite kcalc spectacle krunner partitionmanager
+sudo pacman -S plasma
+```
+
+The packages below provide a more integrated desktop experience for KDE Plasma
+
+```
+sudo pacman -S konsole dolphin ark kwrite kcalc spectacle krunner partitionmanager
 ```
 
 Packages         | Description
 ---------------- | ------------------------------------
 plasma           | KDE Plasma window manager.
-konsole          | KDE terminal.
-dolphin          | KDE file manager.
+konsole          | Terminal.
+dolphin          | File manager.
 ark              | Archiving Tool.
 kwrite           | Text editor.
 kcalc            | Scientific calculator.
-spectacle        | KDE screenshot capture utility.
-krunner          | KDE quick drop-down desktop search.
-partitionmanager | KDE disk & partition Manager.
+spectacle        | Screenshot capture utility.
+krunner          | Quick drop-down desktop search.
+partitionmanager | Disk & partition manager.
 </details>
 
 <details>
@@ -69,11 +75,11 @@ The packages that aren't `enlightenment` provide a more integrated desktop envir
 Packages         | Description
 ---------------- | ------------------------------------
 enlightenment    | Enlightenment window manager
-terminology      | Enlightenment terminal
-ecrire           | Enlightenment text editor
-evisum           | Enlightenment process viewer, similar to Task Manager on Windows
-ephoto           | Enlightenment photo viewer
-rage             | Enlightenment video viewer
+terminology      | Terminal
+ecrire           | Text editor
+evisum           | Process viewer, similar to Task Manager on Windows
+ephoto           | Photo viewer
+rage             | Video viewer
 
 </details>
 

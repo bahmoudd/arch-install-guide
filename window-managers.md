@@ -50,7 +50,7 @@ partitionmanager | Disk & partition manager.
 <details>
   <summary><h4>GNOME</h4></summary>
 
-![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/gnome.png)
+![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/GNOME_Shell.png)
 
 To install GNOME, use the below command:
 ```

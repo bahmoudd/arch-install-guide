@@ -146,7 +146,7 @@ cp /etc/xdg/awesome/rc.lua ~/.config/awesome/rc.lua
 <details>
   <summary><h4>Sway</h4></summary>
 
-![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/Sway_1.4_Window_Manager.png)
+![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/sway.png)
 
 Install Sway, as shown below:
 ```

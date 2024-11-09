@@ -1451,10 +1451,8 @@ Now open your browser and type `your-machine-ip:9000` into the searchbar and log
 
 ## Latest changes 
 
- - **Release 2024-11-01**
-   - Moved chaotic aur subheading to extras section
-   - Guide now uses CC BY-SA license
-   - There are now breaks between subheadings in the extras section for clarity
-   - Moved yay subheading towards the top of the extras section
+ - **Minor Release 2024-11-09**
+   - Fixed a few spelling errors
+   - The images used in window_managers.md are now larger and of higher resolution
 
 **Full Changelog**: https://github.com/bahmoudd/arch-install-guide/releases

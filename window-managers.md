@@ -63,7 +63,7 @@ sudo pacman -S gnome gnome-extra
 <details>
   <summary><h4>Enlightenment</h4></summary>
 
-![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/enlightenment.png)
+![](https://raw.githubusercontent.com/Exvix/arch-install-guide/main/images/Enlightenment.png)
 
 Install Enlightenment, as shown below:
 ```

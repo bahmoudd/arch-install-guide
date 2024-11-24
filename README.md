@@ -484,7 +484,7 @@ mount -m /dev/disk/by-partlabel/home /mnt/home
 
 If you're dual-booting:
 ```
-mount -m [windows boot partition] /efi
+mount -m [windows boot partition] /mnt/efi
 ```
 
 > Note: Your Windows Boot Partition is either /dev/sda1 or /dev/nvme0n1p1

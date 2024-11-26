@@ -29,15 +29,14 @@
    - [Connect to the internet (again)](#login-as-your-user-account)
    - [Display Server & GPU Drivers](#display-protocols-and-gpu-drivers)
    - [Multilib Repository (32-bit support on 64-bit systems)](#enable-multilib-repo)
-   - [Integrating the AUR into pacman](#integrating-the-aur-into-pacman)
    - [Login Manager](#install-and-enable-a-login-manager)
    - [Installing a Desktop Environment](#installing-a-desktop-environment)
    - [Audio Utilities & Bluetooth](#audio-utilities-and-bluetooth)
  - [**The Conclusion**](#the-conclusion)
  - [**Extras (optional)**](#extras)
+   - [Cool apps](#cool-apps)
    - [Yay](#install-yay)
    - [Enabling secure boot](#enabling-secure-boot)
-   - [Cool apps](#cool-apps)
    - [Chaotic-AUR](#integrating-the-aur-into-pacman)
    - [Alternative Shells](#alternative-shells)
    - [Aptpac](#aptpac)
@@ -1149,6 +1148,36 @@ Now everything is installed and after the final `reboot`, you will land in the S
 
 ## Extras
 
+### Cool apps
+
+You can install all the following packages or only the one you want.
+```
+sudo pacman -S firefox openssh qbittorrent audacious wget screen git fastfetch lib32-mesa
+```
+Packages    | Description
+----------- | ----------
+firefox     | Mozilla Firefox Web Browser.
+openssh     | Secure Shell access server, allows you to access remote computers or servers.
+qbittorrent | Qt-based BitTorrent Client.
+audacious   | Qt-based music player.
+wget\*      | Wget is a free utility for non-interactive download of files from the Web. 
+screen      | Is a full-screen window manager that multiplexes a physical terminal between several processes, typically interactive shells.
+git\*       | Github command-line utility tools. (needed to access the AUR) 
+fastfetch   | Fastfetch is a command-line system information tool, that is the sucessor to NeoFetch.
+cups\*      | Printer service
+lib32-mesa\*| Optional dependency for Steam game using the Vulkan backend 
+
+
+> \* - These are some of the more important packages, which a lot of programs tend to use. They're optional but it is highly recommended to install both of them.
+
+### Enable OpenSSH daemon and CUPS printer service
+```
+sudo systemctl enable sshd.service
+sudo systemctl enable --now cups.service
+```
+
+</br>
+
 ### Install YAY
 
 Yet Another Yogurt - An AUR Helper - install this if you don't want to integrate the AUR into pacman.
@@ -1212,36 +1241,6 @@ sudo sbctl sign -s /boot/efi/Microsoft/Boot/memtest.efi
 ```
 
 If you have any forks of the linux kernel installed (e.g. Linux Zen, Linux Hardened .etc), go ahead and sign those too.
-
-<br/>
-
-### Cool apps
-
-You can install all the following packages or only the one you want.
-```
-sudo pacman -S firefox openssh qbittorrent audacious wget screen git fastfetch lib32-mesa
-```
-Packages    | Description
------------ | ----------
-firefox     | Mozilla Firefox Web Browser.
-openssh     | Secure Shell access server, allows you to access remote computers or servers.
-qbittorrent | Qt-based BitTorrent Client.
-audacious   | Qt-based music player.
-wget\*      | Wget is a free utility for non-interactive download of files from the Web. 
-screen      | Is a full-screen window manager that multiplexes a physical terminal between several processes, typically interactive shells.
-git\*       | Github command-line utility tools. (needed to access the AUR) 
-fastfetch   | Fastfetch is a command-line system information tool, that is the sucessor to NeoFetch.
-cups\*      | Printer service
-lib32-mesa\*| Optional dependency for Steam game using the Vulkan backend 
-
-
-> \* - These are some of the more important packages, which a lot of programs tend to use. They're optional but it is highly recommended to install both of them.
-
-### Enable OpenSSH daemon and CUPS printer service
-```
-sudo systemctl enable sshd.service
-sudo systemctl enable --now cups.service
-```
 
 <br/>
 

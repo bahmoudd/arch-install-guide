@@ -491,7 +491,7 @@ mount -m [windows boot partition] /mnt/efi
 </details>
 
 <details>
- <summary><h3>MBR</h3></summary>
+ <summary><h3>BIOS</h3></summary>
 
 To initialise the disk you want to install Arch on ("sdx" from now on), run the below command:
 ```

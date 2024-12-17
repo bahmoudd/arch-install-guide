@@ -1061,6 +1061,8 @@ sudo pacman -S [GPU driver]
 ```
 
 - For Nvidia GPUs, type `nvidia` & `nvidia-settings`. For more info/old GPUs, refer to [Arch Wiki - Nvidia](https://wiki.archlinux.org/index.php/NVIDIA).
+- If you want an open-source Nvidia GPU drive and your GPU family is "turing" or newer, type `nvidia-open` and `nvidia-settings` (or `nvidia-open-dkms` for kernel derivatives)
+- If you want an open-source (albeit work-in-progress) driver for any GPU family older than "turing", type `xf86-video-nouveau`
 - For newer AMD GPUs, type `xf86-video-amdgpu`.
 - For legacy Radeon GPUs like HD 7xxx Series & below, type `xf86-video-ati`.
 - For dedicated Intel Graphics, type `xf86-video-intel`.
@@ -1133,6 +1135,11 @@ pipewire-pulse | A general sound server intended as a middle-man between your so
 sudo systemctl enable bluetooth.service
 ```
 
+If at any point, you experience sound issues when running Wine applications, you may need to install an audio driver package as shown below:
+```
+sudo pacman -Syu lib32-alsa-lib lib32-alsa-plugins lib32-pipewire
+```
+
 ### Final Reboot
 ```
 reboot
@@ -1165,6 +1172,7 @@ screen      | Is a full-screen window manager that multiplexes a physical termin
 git\*       | Github command-line utility tools. (needed to access the AUR) 
 fastfetch   | Fastfetch is a command-line system information tool, that is the sucessor to NeoFetch.
 cups\*      | Printer service
+wine\*      | Compatibility layer for Windows applications. Proton needs this application in order to run most Steam games
 lib32-mesa\*| Optional dependency for Steam game using the Vulkan backend 
 
 
@@ -1175,6 +1183,24 @@ lib32-mesa\*| Optional dependency for Steam game using the Vulkan backend
 sudo systemctl enable sshd.service
 sudo systemctl enable --now cups.service
 ```
+
+</br>
+
+### Installing Vulkan and OpenGL drivers
+
+For pretty much any game to work, you need an OpenGL and a Vulkan driver. Check your GPU driver for the OpenGL and Vulkan drivers below:
+
+GPU driver            | OpenGL driver                     | Vulkan driver                         |
+--------------------- | --------------------------------- | ------------------------------------- |
+xf86-video-intel      | mesa & lib32-mesa                 | vulkan-intel & lib32-vulkan-intel     |
+xf86-video-amdgpu     | mesa & lib32-mesa                 | vulkan-radeon & lib32-vulkan-radeon   |
+xf86-video-ati        | mesa & lib32-mesa                 | (N/A)                                 |
+xf86-video-nouveau    | mesa & lib32-mesa                 | vulkan-nouveau & lib32-vulkan-nouveau |
+nvidia or nvidia-open | nvidia-utils & lib32-nvidia-utils | (Same as OpenGL driver)               |
+
+> [!NOTE]
+> You want to install both the multilib (prefixed with lib32-*) and non-multilib drivers to ensure compatibility. Additionally, the drivers are listed by their name in the Arch Linux repositories - all the packages listed above can be installed as they are named above. 
+
 
 </br>
 
@@ -1450,8 +1476,9 @@ Now open your browser and type `your-machine-ip:9000` into the searchbar and log
 
 ## Latest changes 
 
- - **Minor Release 2024-11-09**
-   - Fixed a few spelling errors
-   - The images used in window_managers.md are now larger and of higher resolution
+ - **Minor Release 2024-12-17**
+   - Incremented "tested as of release" number
+   - Added more stuff for NVIDIA drivers
+   - Small fixes and improvement
 
 **Full Changelog**: https://github.com/bahmoudd/arch-install-guide/releases

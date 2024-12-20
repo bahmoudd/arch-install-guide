@@ -2,6 +2,8 @@
 
 # The ultimate Arch linux install guide (UEFI & MBR)
 
+## NOTE! THIS REPO HAS BEEN ARCHIVED! For an up-to-date version, please visit https://bahmoudd.github.io/arch-install-guide
+
 ## Table of Contents
  - [**Glossary**](#glossary)
  - [**Introduction**](#introduction)
